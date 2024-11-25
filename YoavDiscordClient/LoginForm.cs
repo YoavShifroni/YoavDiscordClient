@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,16 +14,27 @@ namespace YoavDiscordClient
 {
     public partial class LoginForm : Form
     {
-
+        /// <summary>
+        /// The code that sent to the user mail
+        /// </summary>
         private string _code;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public LoginForm()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// The function check if the server ip id valid if it is it will check if the username
+        /// and password length are ok and if they are it will start the process to login the user into the project
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void loginButton_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Enter function login click: " + DateTime.Now.Millisecond);
             if (!this.IsValidIpAddress(this.serverIpTextBox.Text))
             {
                 MessageBox.Show("please check the server ip");
@@ -34,12 +46,11 @@ namespace YoavDiscordClient
                 return;
             }
             ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessLogin(this.usernameTextBox.Text, this.passwordTextBox.Text);
-            Console.WriteLine("Leave function login click: " + DateTime.Now.Millisecond);
 
         }
 
         /// <summary>
-        /// the function check if the string ip is a valid ip address, ip it is it will return true otherwise false
+        /// The function check if the string ip is a valid ip address, ip it is it will return true otherwise false
         /// I took this function from the website StackOverFlow in this link: 
         /// https://stackoverflow.com/questions/799060/how-to-determine-if-a-string-is-a-valid-ipv4-or-ipv6-address-in-c
         /// </summary>
@@ -62,6 +73,12 @@ namespace YoavDiscordClient
             return false;
         }
 
+        /// <summary>
+        /// The function change the PasswordChar in the password text box so when it's checked it will show to password and when it's not check
+        /// it will show circle for each leater in the password so you wouldn't be able to read it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void showPasswordCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (showPasswordCheckBox.Checked)
@@ -74,6 +91,11 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// The function will remove all the text that exist in all the text boxes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void clearButton_Click(object sender, EventArgs e)
         {
             this.usernameTextBox.Text = "";
@@ -82,6 +104,12 @@ namespace YoavDiscordClient
             this.serverIpTextBox.Focus();
         }
 
+        /// <summary>
+        /// The function check if the username is long enough and if the server ip is valid, if they are it will start the process to let 
+        /// the user create a new password for himself 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void changePasswordLabel_Click(object sender, EventArgs e)
         {
             if(this.usernameTextBox.Text.Length < 3 || !this.IsValidIpAddress(this.serverIpTextBox.Text))
@@ -95,12 +123,21 @@ namespace YoavDiscordClient
             this.Visible = false;
         }
 
+        /// <summary>
+        /// The function move the user to the register window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void goToRegisterLabel_Click(object sender, EventArgs e)
         {
             DiscordFormsHolder.getInstance().RegistrationForm.Visible = true;
             this.Visible = false;
         }
 
+        /// <summary>
+        /// The function save the code in his property and change some visual stuff in this window
+        /// </summary>
+        /// <param name="code"></param>
         public void ShowNext(string code)
         {
             this._code = code;
@@ -115,6 +152,12 @@ namespace YoavDiscordClient
             this.submitCodeButton.Visible = true;
         }
 
+        /// <summary>
+        /// The function check if the code that the user enter is the same code that sent to his mail, if it is it will show him the captch
+        /// that he need to enter to confirm that he isn't a bot
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void submitCodeButton_Click(object sender, EventArgs e)
         {
             if (this.codeRecivedInMailTextBox.Text != this._code)
@@ -127,6 +170,9 @@ namespace YoavDiscordClient
             NextStage();
         }
 
+        /// <summary>
+        /// The function change some visual stuff in this window
+        /// </summary>
         private void NextStage()
         {
             this.codeRecivedInMailLabel.Enabled = false;
@@ -138,10 +184,14 @@ namespace YoavDiscordClient
             this.checkThatTheCodesAreTheSameButton.Visible = true;
         }
 
+
+        /// <summary>
+        /// The function display the captcha - the code that the user need to enter to confirm that he isn't a bot
+        /// </summary>
         private void DisplayCaptcha()
         {
             this.enterTheCodeShownAboveTextBox.Text = "";
-            string captchaCode = ConnectionManager.getInstance(null).GetRandomCode();
+            string captchaCode = this.GetRandomCodeForCaptcha();
             Font font = new Font("Arial", 12, FontStyle.Bold);
             Brush brush = new SolidBrush(Color.Black);
             Bitmap bitmap = new Bitmap(this.captchaPictureBox.Width, this.captchaPictureBox.Height);
@@ -156,6 +206,28 @@ namespace YoavDiscordClient
             this.captchaPictureBox.Tag = captchaCode;
         }
 
+        /// <summary>
+        /// The function create a random code with a length of 6 characters and return it
+        /// </summary>
+        /// <returns></returns>
+        public string GetRandomCodeForCaptcha()
+        {
+            var charsALL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+            var randomIns = new Random();
+            var rndChars = Enumerable.Range(0, 6)
+                            .Select(_ => charsALL[randomIns.Next(charsALL.Length)])
+                            .ToArray();
+            return new string(rndChars);
+        }
+
+
+        /// <summary>
+        /// The function check if the code that the user enter is the same code that appering on the picture box, if it is it will start
+        /// the process to enter the user into the discord, if it isn't a message will apper saying that the codes aren't the same and a new captcha
+        /// code will apper
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkThatTheCodesAreTheSameButton_Click(object sender, EventArgs e)
         {
             if(this.captchaPictureBox.Tag.ToString() != this.enterTheCodeShownAboveTextBox.Text)
@@ -165,7 +237,31 @@ namespace YoavDiscordClient
                 return;
             }
             MessageBox.Show("Captcha is correct");
-            ConnectionManager.getInstance(null).ProcessSuccessesLogin();
+            ConnectionManager.getInstance(null).ProcessSuccessesLoginOrRegistration();
+        }
+
+        public void ShowCooldownTimer(int time)
+        {
+            CountDownTimer2 timer = new CountDownTimer2(time, 0);
+
+            timer.Start();
+
+            this.ToggleLoginStatus(false);
+
+        }
+
+        public void ToggleLoginStatus(bool status)
+        {
+            this.loginButton.Enabled = status;
+            this.goToRegisterLabel.Enabled = status;
+            this.changePasswordLabel.Enabled = status;
+            this.cooldownTimeLabel.Visible = !status;
+
+        }
+
+        public void ShowCooldownTimerOnLabel(string text)
+        {
+            this.cooldownTimeLabel.Text = text;
         }
     }
 }

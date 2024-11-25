@@ -9,21 +9,43 @@ namespace YoavDiscordClient
 {
     public class DiscordFormsHolder
     {
+        /// <summary>
+        /// Login form instance
+        /// </summary>
         public LoginForm LoginForm;
 
+        /// <summary>
+        /// Registration form instance
+        /// </summary>
         public RegistrationForm RegistrationForm;
 
+        /// <summary>
+        /// Forgot password form instance
+        /// </summary>
         public ForgotPasswordForm ForgotPasswordForm;
 
+        /// <summary>
+        /// Profile picture form instance
+        /// </summary>
         public ProfilePictureForm ProfilePictureForm;
 
+        /// <summary>
+        /// Default profile pictures form instance
+        /// </summary>
         public DefaultProfilePicturesForm DefaultProfilePictureForm;
 
+        /// <summary>
+        /// The instance of this class per singleton design pattern
+        /// </summary>
         private static DiscordFormsHolder instance = null;
 
 
 
-
+        /// <summary>
+        /// Static getInstance method, as in Singleton patterns.
+        /// Protected with mutex
+        /// </summary>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static DiscordFormsHolder getInstance()
         {
@@ -34,6 +56,9 @@ namespace YoavDiscordClient
             return DiscordFormsHolder.instance;
         }
 
+        /// <summary>
+        /// Private constructor, create instance for each form
+        /// </summary>
         private DiscordFormsHolder() 
         {
             this.LoginForm = new LoginForm();

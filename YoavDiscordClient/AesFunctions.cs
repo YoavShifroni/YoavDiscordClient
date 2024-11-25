@@ -8,11 +8,18 @@ namespace YoavDiscordClient
 {
     public static class AesFunctions
     {
+        /// <summary>
+        /// Static property that create the AES key and iv
+        /// </summary>
         public static AesKeys AesKeys= new AesKeys();
 
-  
 
-        // Encrypts a string and returns the encrypted data as a base64 string
+
+        /// <summary>
+        /// Encrypts a plain text string using the AES key and Iv, returning the result as a Base64-encoded string.
+        /// </summary>
+        /// <param name="plainText">The plain text string to encrypt.</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="plainText"/> is null or empty.</exception>
         public static string Encrypt(string plainText)
         {
             if (string.IsNullOrEmpty(plainText))
@@ -37,7 +44,11 @@ namespace YoavDiscordClient
             }
         }
 
-        // Decrypts a base64 string and returns the original string
+        /// <summary>
+        /// Decrypts a Base64-encoded encrypted string using the AES key and Iv, returning the original plain text.
+        /// </summary>
+        /// <param name="cipherText">The Base64-encoded string to decrypt.</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="cipherText"/> is null or empty.</exception>
         public static string Decrypt(string cipherText)
         {
             if (string.IsNullOrEmpty(cipherText))

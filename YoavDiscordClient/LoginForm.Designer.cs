@@ -49,6 +49,7 @@
             this.checkThatTheCodesAreTheSameButton = new System.Windows.Forms.Button();
             this.enterTheCodeShownAboveTextBox = new System.Windows.Forms.TextBox();
             this.enterTheCodeShownAboveLabel = new System.Windows.Forms.Label();
+            this.cooldownTimeLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -298,12 +299,24 @@
             this.enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
             this.enterTheCodeShownAboveLabel.Visible = false;
             // 
+            // cooldownTimeLabel
+            // 
+            this.cooldownTimeLabel.Font = new System.Drawing.Font("Nirmala UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cooldownTimeLabel.ForeColor = System.Drawing.Color.Black;
+            this.cooldownTimeLabel.Location = new System.Drawing.Point(28, 583);
+            this.cooldownTimeLabel.Name = "cooldownTimeLabel";
+            this.cooldownTimeLabel.Size = new System.Drawing.Size(213, 49);
+            this.cooldownTimeLabel.TabIndex = 50;
+            this.cooldownTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cooldownTimeLabel.Visible = false;
+            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(289, 1076);
+            this.Controls.Add(this.cooldownTimeLabel);
             this.Controls.Add(this.checkThatTheCodesAreTheSameButton);
             this.Controls.Add(this.enterTheCodeShownAboveTextBox);
             this.Controls.Add(this.enterTheCodeShownAboveLabel);
@@ -361,6 +374,7 @@
         private System.Windows.Forms.Button checkThatTheCodesAreTheSameButton;
         private System.Windows.Forms.TextBox enterTheCodeShownAboveTextBox;
         private System.Windows.Forms.Label enterTheCodeShownAboveLabel;
+        private System.Windows.Forms.Label cooldownTimeLabel;
     }
 }
 

@@ -53,7 +53,7 @@
             // 
             // firstPictureBox
             // 
-            this.firstPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.firstPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.firstPictureBox.Location = new System.Drawing.Point(27, 124);
             this.firstPictureBox.Name = "firstPictureBox";
             this.firstPictureBox.Size = new System.Drawing.Size(146, 131);
@@ -63,7 +63,7 @@
             // 
             // secondPictureBox
             // 
-            this.secondPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.secondPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.secondPictureBox.Location = new System.Drawing.Point(242, 124);
             this.secondPictureBox.Name = "secondPictureBox";
             this.secondPictureBox.Size = new System.Drawing.Size(146, 131);
@@ -73,7 +73,7 @@
             // 
             // thirdPictureBox
             // 
-            this.thirdPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.thirdPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.thirdPictureBox.Location = new System.Drawing.Point(456, 124);
             this.thirdPictureBox.Name = "thirdPictureBox";
             this.thirdPictureBox.Size = new System.Drawing.Size(146, 131);
@@ -83,7 +83,7 @@
             // 
             // fourthPictureBox
             // 
-            this.fourthPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.fourthPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.fourthPictureBox.Location = new System.Drawing.Point(663, 124);
             this.fourthPictureBox.Name = "fourthPictureBox";
             this.fourthPictureBox.Size = new System.Drawing.Size(146, 131);
@@ -93,7 +93,7 @@
             // 
             // fifthPictureBox
             // 
-            this.fifthPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.fifthPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.fifthPictureBox.Location = new System.Drawing.Point(27, 315);
             this.fifthPictureBox.Name = "fifthPictureBox";
             this.fifthPictureBox.Size = new System.Drawing.Size(146, 131);
@@ -103,7 +103,7 @@
             // 
             // sixPictureBox
             // 
-            this.sixPictureBox.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.sixPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.sixPictureBox.Location = new System.Drawing.Point(242, 315);
             this.sixPictureBox.Name = "sixPictureBox";
             this.sixPictureBox.Size = new System.Drawing.Size(146, 131);

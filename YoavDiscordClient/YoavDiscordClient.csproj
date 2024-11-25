@@ -54,6 +54,8 @@
     <Compile Include="ClientServerProtocol.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="ConnectionWithServer.cs" />
+    <Compile Include="CountDownTimer.cs" />
+    <Compile Include="CountDownTimer2.cs" />
     <Compile Include="DefaultProfilePicturesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +90,7 @@
     <Compile Include="RegistrationForm.Designer.cs">
       <DependentUpon>RegistrationForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="RegistrationInfo.cs" />
     <Compile Include="RsaFunctions.cs" />
     <Compile Include="TypeOfCommand.cs" />
     <EmbeddedResource Include="DefaultProfilePicturesForm.resx">
@@ -110,6 +113,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RegistrationForm.resx">
       <DependentUpon>RegistrationForm.cs</DependentUpon>
@@ -127,6 +131,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\horseImage.png" />
+    <None Include="Resources\dogPicture.png" />
+    <None Include="Resources\defaultDiscordImage.png" />
+    <None Include="Resources\cowImage.png" />
+    <None Include="Resources\catImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\monkeyImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

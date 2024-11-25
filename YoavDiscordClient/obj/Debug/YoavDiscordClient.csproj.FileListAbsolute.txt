@@ -14,3 +14,4 @@ D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\bin\Debug\Newtonsoft.Json.x
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.csproj.CopyComplete
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.ForgotPasswordForm.resources
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.ProfilePictureForm.resources
+D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.DefaultProfilePicturesForm.resources

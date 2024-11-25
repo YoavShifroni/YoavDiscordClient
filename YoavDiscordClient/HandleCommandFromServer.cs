@@ -8,13 +8,18 @@ namespace YoavDiscordClient
 {
     public class HandleCommandFromServer
     {
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public HandleCommandFromServer() 
         {
 
         }
 
-
+        /// <summary>
+        /// The function get the message that the server sent to the client and will call the right function in order to handle this message
+        /// </summary>
+        /// <param name="command"></param>
         public void HandleCommand(string command)
         {
             Console.WriteLine(command);
@@ -29,12 +34,16 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessCodeSentToEmail(clientServerProtocol.Code);
                     break;
 
-                case TypeOfCommand.Enter_Yoav_Discord_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessesLogin();
+                case TypeOfCommand.Successes_Username_Not_In_The_System_Command:
+                    ConnectionManager.getInstance(null).ProcessSuccessesUsernameNotInTheSystem();
                     break;
 
                 case TypeOfCommand.Successes_Registration_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessesRegistration();
+                    ConnectionManager.getInstance(null).ProcessSuccessesLoginOrRegistration();
+                    break;
+
+                case TypeOfCommand.Login_Cooldown_Command:
+                    ConnectionManager.getInstance(null).ProcessLoginCooldown(clientServerProtocol.Message, clientServerProtocol.TimeToCooldown);
                     break;
 
 

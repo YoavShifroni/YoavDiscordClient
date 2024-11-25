@@ -50,6 +50,11 @@
             this.usernameTextBox = new System.Windows.Forms.TextBox();
             this.usernameLabel = new System.Windows.Forms.Label();
             this.startLabel = new System.Windows.Forms.Label();
+            this.checkThatTheCodesAreTheSameButton = new System.Windows.Forms.Button();
+            this.enterTheCodeShownAboveTextBox = new System.Windows.Forms.TextBox();
+            this.enterTheCodeShownAboveLabel = new System.Windows.Forms.Label();
+            this.captchaPictureBox = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // showPasswordCheckBox
@@ -75,6 +80,7 @@
             this.serverIpTextBox.Name = "serverIpTextBox";
             this.serverIpTextBox.Size = new System.Drawing.Size(216, 25);
             this.serverIpTextBox.TabIndex = 51;
+            this.serverIpTextBox.Text = "127.0.0.1";
             // 
             // serverIpLabel
             // 
@@ -193,6 +199,7 @@
             this.emailTextBox.Name = "emailTextBox";
             this.emailTextBox.Size = new System.Drawing.Size(216, 25);
             this.emailTextBox.TabIndex = 45;
+            this.emailTextBox.Text = "yoavshifroni@gmail.com";
             this.emailTextBox.WordWrap = false;
             // 
             // emailLabel
@@ -263,6 +270,7 @@
             this.lastNameTextBox.Name = "lastNameTextBox";
             this.lastNameTextBox.Size = new System.Drawing.Size(216, 25);
             this.lastNameTextBox.TabIndex = 39;
+            this.lastNameTextBox.Text = "Shifroni";
             this.lastNameTextBox.WordWrap = false;
             // 
             // lastNameLabel
@@ -284,6 +292,7 @@
             this.firstNameTextBox.Name = "firstNameTextBox";
             this.firstNameTextBox.Size = new System.Drawing.Size(216, 25);
             this.firstNameTextBox.TabIndex = 37;
+            this.firstNameTextBox.Text = "yoav";
             this.firstNameTextBox.WordWrap = false;
             // 
             // firstNameLabel
@@ -306,6 +315,7 @@
             this.passwordTextBox.PasswordChar = '•';
             this.passwordTextBox.Size = new System.Drawing.Size(216, 25);
             this.passwordTextBox.TabIndex = 35;
+            this.passwordTextBox.Text = "Yh123!";
             this.passwordTextBox.WordWrap = false;
             // 
             // PasswordLabel
@@ -327,6 +337,7 @@
             this.usernameTextBox.Name = "usernameTextBox";
             this.usernameTextBox.Size = new System.Drawing.Size(216, 25);
             this.usernameTextBox.TabIndex = 33;
+            this.usernameTextBox.Text = "yoavv";
             this.usernameTextBox.WordWrap = false;
             // 
             // usernameLabel
@@ -349,12 +360,64 @@
             this.startLabel.TabIndex = 31;
             this.startLabel.Text = "Get Started";
             // 
+            // checkThatTheCodesAreTheSameButton
+            // 
+            this.checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
+            this.checkThatTheCodesAreTheSameButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
+            this.checkThatTheCodesAreTheSameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkThatTheCodesAreTheSameButton.ForeColor = System.Drawing.Color.White;
+            this.checkThatTheCodesAreTheSameButton.Location = new System.Drawing.Point(167, 852);
+            this.checkThatTheCodesAreTheSameButton.Name = "checkThatTheCodesAreTheSameButton";
+            this.checkThatTheCodesAreTheSameButton.Size = new System.Drawing.Size(216, 35);
+            this.checkThatTheCodesAreTheSameButton.TabIndex = 56;
+            this.checkThatTheCodesAreTheSameButton.Text = "CHECK";
+            this.checkThatTheCodesAreTheSameButton.UseVisualStyleBackColor = false;
+            this.checkThatTheCodesAreTheSameButton.Visible = false;
+            this.checkThatTheCodesAreTheSameButton.Click += new System.EventHandler(this.checkThatTheCodesAreTheSameButton_Click);
+            // 
+            // enterTheCodeShownAboveTextBox
+            // 
+            this.enterTheCodeShownAboveTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
+            this.enterTheCodeShownAboveTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.enterTheCodeShownAboveTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.enterTheCodeShownAboveTextBox.Location = new System.Drawing.Point(167, 808);
+            this.enterTheCodeShownAboveTextBox.Multiline = true;
+            this.enterTheCodeShownAboveTextBox.Name = "enterTheCodeShownAboveTextBox";
+            this.enterTheCodeShownAboveTextBox.Size = new System.Drawing.Size(216, 25);
+            this.enterTheCodeShownAboveTextBox.TabIndex = 55;
+            this.enterTheCodeShownAboveTextBox.Visible = false;
+            this.enterTheCodeShownAboveTextBox.WordWrap = false;
+            // 
+            // enterTheCodeShownAboveLabel
+            // 
+            this.enterTheCodeShownAboveLabel.AutoSize = true;
+            this.enterTheCodeShownAboveLabel.Location = new System.Drawing.Point(164, 778);
+            this.enterTheCodeShownAboveLabel.Name = "enterTheCodeShownAboveLabel";
+            this.enterTheCodeShownAboveLabel.Size = new System.Drawing.Size(154, 17);
+            this.enterTheCodeShownAboveLabel.TabIndex = 54;
+            this.enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
+            this.enterTheCodeShownAboveLabel.Visible = false;
+            // 
+            // captchaPictureBox
+            // 
+            this.captchaPictureBox.Location = new System.Drawing.Point(172, 635);
+            this.captchaPictureBox.Name = "captchaPictureBox";
+            this.captchaPictureBox.Size = new System.Drawing.Size(211, 113);
+            this.captchaPictureBox.TabIndex = 53;
+            this.captchaPictureBox.TabStop = false;
+            this.captchaPictureBox.Visible = false;
+            // 
             // RegistrationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(595, 645);
+            this.ClientSize = new System.Drawing.Size(595, 930);
+            this.Controls.Add(this.checkThatTheCodesAreTheSameButton);
+            this.Controls.Add(this.enterTheCodeShownAboveTextBox);
+            this.Controls.Add(this.enterTheCodeShownAboveLabel);
+            this.Controls.Add(this.captchaPictureBox);
             this.Controls.Add(this.showPasswordCheckBox);
             this.Controls.Add(this.serverIpTextBox);
             this.Controls.Add(this.serverIpLabel);
@@ -380,10 +443,11 @@
             this.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(165)))), ((int)(((byte)(169)))));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "RegistrationForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "RegistrationForm";
+            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -412,5 +476,9 @@
         private System.Windows.Forms.TextBox usernameTextBox;
         private System.Windows.Forms.Label usernameLabel;
         private System.Windows.Forms.Label startLabel;
+        private System.Windows.Forms.Button checkThatTheCodesAreTheSameButton;
+        private System.Windows.Forms.TextBox enterTheCodeShownAboveTextBox;
+        private System.Windows.Forms.Label enterTheCodeShownAboveLabel;
+        private System.Windows.Forms.PictureBox captchaPictureBox;
     }
 }

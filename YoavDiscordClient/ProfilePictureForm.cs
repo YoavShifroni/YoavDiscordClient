@@ -14,24 +14,44 @@ namespace YoavDiscordClient
 {
     public partial class ProfilePictureForm : Form
     {
-
+        /// <summary>
+        /// ???
+        /// </summary>
         private Bitmap originalImage;
 
+        /// <summary>
+        /// Pointer that represent where the user clicked
+        /// </summary>
         private Point circleCenter;
 
+        /// <summary>
+        /// Radius for the circle
+        /// </summary>
         private int circleRadius;
 
+        /// <summary>
+        /// Boolean that tell is image is loaded yet or no
+        /// </summary>
         private bool isImageLoaded = false;
 
+        /// <summary>
+        /// Boolean that tell is there is already a circle on the image or no
+        /// </summary>
         private bool isThereACircleOnTheImage = false;
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ProfilePictureForm()
         {
             InitializeComponent();
         }
 
-
+        /// <summary>
+        /// The function is called when the "see deafult option" button is clicked and will move the user to the deafult profile pictures window
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void seeDefaultOptionsButton_Click(object sender, EventArgs e)
         {
             this.Visible = false;
@@ -39,6 +59,13 @@ namespace YoavDiscordClient
         }
 
 
+        /// <summary>
+        /// The function let the user chose an image from his file explorer
+        /// I took this function from the website StackOverFlow in this link:
+        /// https://stackoverflow.com/questions/13775006/how-to-browse-and-save-the-image-in-folder
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void uploadPhotoButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -134,26 +161,40 @@ namespace YoavDiscordClient
 
         private void chooseThisPhotoButton_Click(object sender, EventArgs e)
         {
-            if(this.isThereACircleOnTheImage)
+            if(!this.isThereACircleOnTheImage)
             {
-                Bitmap croppedImage = CropToCircle(originalImage, circleCenter, circleRadius);
-                byte[] imageToByteArray = this.ImageToByteArray(croppedImage);
-                ConnectionManager.getInstance(null).ProcessProfilePictureSelected(imageToByteArray);
+                MessageBox.Show("you need to select a circle before choosing an image");
+                return;
             }
+            Bitmap croppedImage = CropToCircle(originalImage, circleCenter, circleRadius);
+            byte[] imageToByteArray = this.ImageToByteArray(croppedImage);
+            RegistrationInfo registrationInfo = DiscordFormsHolder.getInstance().RegistrationForm.RegistrationInfo;
+            ConnectionManager.getInstance(null).ProcessRegistration(registrationInfo, imageToByteArray);
         }
 
+        /// <summary>
+        /// The functino convert the object image to byte array
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
         private byte[] ImageToByteArray(Image image)
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png); // Save as PNG or any format you prefer
+                image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg); // Save as PNG or any format you prefer
                 return ms.ToArray();
             }
         }
 
+        /// <summary>
+        /// The function get as a parameter image and display it in the picture box
+        /// </summary>
+        /// <param name="photo"></param>
         public void DisplayPhotoFromDefaultOptions(Image photo)
         {
             this.userProfilePictureBox.Image = photo;
+            this.originalImage = new Bitmap(photo);
+            this.isImageLoaded = true;
         }
 
         

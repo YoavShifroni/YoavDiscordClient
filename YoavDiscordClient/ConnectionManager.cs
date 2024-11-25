@@ -11,18 +11,34 @@ namespace YoavDiscordClient
 {
     public class ConnectionManager
     {
-
+        /// <summary>
+        /// The code that sent to the user when he want to change his password
+        /// </summary>
         public string Code { get; set; }
 
+        /// <summary>
+        /// The username of this user
+        /// </summary>
         public string Username { get; set; }
 
+        /// <summary>
+        /// The only instance of this class, used in order to send and receive messages to/ from the server
+        /// </summary>
         public ConnectionWithServer ConnectionWithServer { get; set; }
 
+        /// <summary>
+        /// The instance of this class per singleton design pattern
+        /// </summary>
         private static ConnectionManager instance = null;
 
 
 
-
+        /// <summary>
+        /// Static getInstance method, as in Singleton patterns. Protected with mutex
+        /// </summary>
+        /// <param name="ipAddress"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static ConnectionManager getInstance(string ipAddress)
         {
@@ -38,12 +54,20 @@ namespace YoavDiscordClient
             return ConnectionManager.instance;
         }
 
-
+        /// <summary>
+        /// Constructor with parameter
+        /// </summary>
+        /// <param name="ipAddress"></param>
         private ConnectionManager(string ipAddress)
         {
             this.ConnectionWithServer = ConnectionWithServer.getInstance(ipAddress);
         }
 
+        /// <summary>
+        /// The function send message to the server with the login command and the username and password that the user entered
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
         public void ProcessLogin(string username, string password)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -53,22 +77,33 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
-
-        public void ProcessRegistration(string username, string password, string firstName, string lastName, string email, string city, string gender) 
+        /// <summary>
+        /// The function send message to the server with the registration command and the username, password,
+        /// first name, last name, email, city, gender and profile picture that the user entered/ choosed
+        /// </summary>
+        /// <param name="registrationInfo"></param>
+        /// <param name="imageToByteArray"></param>
+        public void ProcessRegistration(RegistrationInfo registrationInfo, byte[] imageToByteArray) 
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Registration_Command;
-            clientServerProtocol.Username = username;
-            clientServerProtocol.Password = password;
-            clientServerProtocol.FirstName = firstName;
-            clientServerProtocol.LastName = lastName;
-            clientServerProtocol.Email = email;
-            clientServerProtocol.City = city;
-            clientServerProtocol.Gender = gender;
+            clientServerProtocol.Username = registrationInfo.Username;
+            clientServerProtocol.Password = registrationInfo.Password;
+            clientServerProtocol.FirstName = registrationInfo.FirstName;
+            clientServerProtocol.LastName = registrationInfo.LastName;
+            clientServerProtocol.Email = registrationInfo.Email;
+            clientServerProtocol.City = registrationInfo.City;
+            clientServerProtocol.Gender = registrationInfo.Gender;
+            clientServerProtocol.ProfilePicture = imageToByteArray;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
 
         }
 
+        /// <summary>
+        /// The function send message to the server with the forgot password command and with the username that the user entered and the code 
+        /// that will be sent to his mail
+        /// </summary>
+        /// <param name="username"></param>
         public void ProcessForgotPassword(string username)
         {
             this.Code = this.GetRandomCode();
@@ -80,6 +115,10 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
+        /// <summary>
+        /// The function create a random code with a length of 6 characters and return it
+        /// </summary>
+        /// <returns></returns>
         public string GetRandomCode()
         {
             var charsALL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz#?!@$%^&*-";
@@ -90,6 +129,11 @@ namespace YoavDiscordClient
             return new string(rndChars);
         }
 
+        /// <summary>
+        /// The function send message to the server with the update password command and the username and the new password that the user entered
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="newPassword"></param>
         public void ProcessUpdatePassword(string username, string newPassword)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -99,34 +143,60 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
+        /// <summary>
+        /// The function show to the user an error message when an error command was received from the server
+        /// </summary>
+        /// <param name="message"></param>
         public void ProcessError(string message)
         {
             MessageBox.Show(message);
         }
 
+        /// <summary>
+        /// The function show the user a message that tell him that code was sent to his mail and will call other function that will show him
+        /// where he need to enter the code
+        /// </summary>
+        /// <param name="code"></param>
         public void ProcessCodeSentToEmail(string code)
         {
             MessageBox.Show("code sent to your email, check what is the code and enter it in the right place");
             DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ShowNext(code)));
         }
 
-        public void ProcessSuccessesLogin()
+        /// <summary>
+        /// The function show the user a message that tell him that he login/ register successesfuly and .....
+        /// </summary>
+        public void ProcessSuccessesLoginOrRegistration()
         {
-            MessageBox.Show("Login successesfuly!!"); // for now...
+            MessageBox.Show("Login / Registration successesfuly!!"); // for now...
         }
 
-        public void ProcessSuccessesRegistration()
-        {
-            MessageBox.Show("Registration successesfuly, now chose your profile picture");
-            DiscordFormsHolder.getInstance().RegistrationForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().RegistrationForm.MoveToProfilePictureForm()));
-        }
-
-        public void ProcessProfilePictureSelected(byte[] imageToByteArray)
+        /// <summary>
+        /// The function send message to the server with the check if the username already exist command and the username that the user entered
+        /// </summary>
+        /// <param name="username"></param>
+        public void ProcessCheckIfUsernameAlreadyExist(string username)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
-            clientServerProtocol.TypeOfCommand = TypeOfCommand.Profile_Picture_Selected_Command;
-            clientServerProtocol.ProfilePicture = imageToByteArray;
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Check_If_Username_Already_Exist_Command;
+            clientServerProtocol.Username = username;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        /// <summary>
+        /// The function show the user a message that tells him that all the details that he entered are ok and will call another function
+        /// that will display him the captcha part
+        /// </summary>
+        public void ProcessSuccessesUsernameNotInTheSystem()
+        {
+            MessageBox.Show("All details are correct, now lets check that you are not a bot");
+            DiscordFormsHolder.getInstance().RegistrationForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().RegistrationForm.NextStage()));
+        }
+
+        public void ProcessLoginCooldown(string message, int timeToCooldown)
+        {
+            MessageBox.Show(message);
+            DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ShowCooldownTimer(timeToCooldown)));
         }
     }
 }

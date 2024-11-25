@@ -9,8 +9,14 @@ namespace YoavDiscordClient
     [Serializable]
     public class AesKeys
     {
+        /// <summary>
+        /// Byte's array that represent the AES key
+        /// </summary>
         public byte[] Key { get; set; }
 
+        /// <summary>
+        /// Byte's array that represent the AES iv
+        /// </summary>
         public byte[] Iv { get; set; }
 
 

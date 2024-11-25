@@ -45,6 +45,7 @@ namespace YoavDiscordClient
         {
             this.Visible = false;
             DiscordFormsHolder.getInstance().ProfilePictureForm.Visible = true;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ProfilePicture);
         }
 
         /// <summary>
@@ -187,6 +188,7 @@ namespace YoavDiscordClient
             }
             this.Visible = false;
             DiscordFormsHolder.getInstance().ProfilePictureForm.Visible = true;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ProfilePicture);
             MessageBox.Show("click where you want that the center of the circle that will represent your profile picture will be");
         }
 

@@ -19,6 +19,8 @@ namespace YoavDiscordClient
         /// </summary>
         private string _code;
 
+
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -45,6 +47,7 @@ namespace YoavDiscordClient
                 MessageBox.Show("your username/ password is to short, please fix them :)");
                 return;
             }
+            DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(false);
             ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessLogin(this.usernameTextBox.Text, this.passwordTextBox.Text);
 
         }
@@ -117,6 +120,7 @@ namespace YoavDiscordClient
                 MessageBox.Show("please fill your username and server ip first");
                 return;
             }
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ForgotPassword);
             ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessForgotPassword(this.usernameTextBox.Text);
             MessageBox.Show("email with code was sent to you right now, check your email and enter the code in the right place");
             DiscordFormsHolder.getInstance().ForgotPasswordForm.Visible = true;
@@ -132,6 +136,7 @@ namespace YoavDiscordClient
         {
             DiscordFormsHolder.getInstance().RegistrationForm.Visible = true;
             this.Visible = false;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.Registration);
         }
 
         /// <summary>
@@ -240,9 +245,14 @@ namespace YoavDiscordClient
             ConnectionManager.getInstance(null).ProcessSuccessesLoginOrRegistration();
         }
 
+
+        /// <summary>
+        /// The function create a CountDownTimer instance that represent the time that left until the user can try to login again
+        /// </summary>
+        /// <param name="time"></param>
         public void ShowCooldownTimer(int time)
         {
-            CountDownTimer2 timer = new CountDownTimer2(time, 0);
+            CountDownTimer timer = new CountDownTimer(time, 0);
 
             timer.Start();
 
@@ -250,6 +260,11 @@ namespace YoavDiscordClient
 
         }
 
+
+        /// <summary>
+        /// The function change the Enable status of some Controls according to the bool value
+        /// </summary>
+        /// <param name="status"></param>
         public void ToggleLoginStatus(bool status)
         {
             this.loginButton.Enabled = status;
@@ -259,9 +274,16 @@ namespace YoavDiscordClient
 
         }
 
+
+        /// <summary>
+        /// The function show to user the time that left until the user can try to login again
+        /// </summary>
+        /// <param name="text"></param>
         public void ShowCooldownTimerOnLabel(string text)
         {
             this.cooldownTimeLabel.Text = text;
         }
+
+        
     }
 }

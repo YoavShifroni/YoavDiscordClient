@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace YoavDiscordClient
 {
@@ -22,7 +23,7 @@ namespace YoavDiscordClient
         /// <param name="command"></param>
         public void HandleCommand(string command)
         {
-            Console.WriteLine(command);
+            DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(true)));
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol(command);
             switch(clientServerProtocol.TypeOfCommand)
             {

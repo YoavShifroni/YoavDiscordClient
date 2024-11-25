@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace YoavDiscordClient
 {
@@ -33,6 +34,12 @@ namespace YoavDiscordClient
         /// Default profile pictures form instance
         /// </summary>
         public DefaultProfilePicturesForm DefaultProfilePictureForm;
+
+
+        /// <summary>
+        /// Form instance that represent the current active form
+        /// </summary>
+        private Form _activeForm;
 
         /// <summary>
         /// The instance of this class per singleton design pattern
@@ -67,5 +74,57 @@ namespace YoavDiscordClient
             this.ProfilePictureForm = new ProfilePictureForm();
             this.DefaultProfilePictureForm = new DefaultProfilePicturesForm();
         }
+        
+        /// <summary>
+        /// The function return the active form
+        /// </summary>
+        /// <returns></returns>
+        public Form GetActiveForm()
+        {
+            return this._activeForm;
+        }
+
+
+        /// <summary>
+        /// The function set the active form according to the enum value
+        /// </summary>
+        /// <param name="formName"></param>
+        public void SetActiveForm(FormNames formName) 
+        {
+            switch (formName)
+            {
+                case FormNames.Login:
+                    this._activeForm = LoginForm;
+                    break;
+
+                case FormNames.Registration:
+                    this._activeForm = RegistrationForm;
+                    break;
+
+                case FormNames.ForgotPassword:
+                    this._activeForm = ForgotPasswordForm;
+                    break;
+
+                case FormNames.ProfilePicture:
+                    this._activeForm = ProfilePictureForm;
+                    break;
+
+                case FormNames.DefaultProfilePicture:
+                    this._activeForm = DefaultProfilePictureForm;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// The function change the active form currsor and enabled status according to the bool
+        /// </summary>
+        /// <param name="active"></param>
+        public void ChangeCursorSignAndActiveFormStatus(bool active)
+        {
+            this._activeForm.Cursor = active ? Cursors.Arrow : Cursors.WaitCursor;
+            this._activeForm.Enabled = active;
+        }
+
+
     }
 }

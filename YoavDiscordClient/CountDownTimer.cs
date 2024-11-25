@@ -1,113 +1,127 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
 
 namespace YoavDiscordClient
 {
+    /// <summary>
+    /// A countdown timer that uses a Timer and Stopwatch for precise timing.
+    /// I took inspiration from this code on stackoverflow: https://stackoverflow.com/questions/6191576/seconds-countdown-timer
+    /// </summary>
     public class CountDownTimer : IDisposable
     {
-        public Stopwatch _stpWatch = new Stopwatch();
+        /// <summary>
+        /// The UI timer responsible for triggering periodic updates.
+        /// </summary>
+        private Timer _timer = new Timer();
 
-        public Action TimeChanged;
-        public Action CountDownFinished;
+        /// <summary>
+        /// Tracks the elapsed time since the timer started.
+        /// </summary>
+        private Stopwatch _stpWatch = new Stopwatch();
 
-        public bool IsRunnign => timer.Enabled;
+        /// <summary>
+        /// Gets the remaining time for the countdown.
+        /// </summary>
+        private TimeSpan TimeLeft =>
+            (_totalDuration.TotalMilliseconds - _stpWatch.ElapsedMilliseconds) > 0
+            ? TimeSpan.FromMilliseconds(_totalDuration.TotalMilliseconds - _stpWatch.ElapsedMilliseconds)
+            : TimeSpan.Zero;
 
-        public int StepMs
-        {
-            get => timer.Interval;
-            set => timer.Interval = value;
-        }
+        /// <summary>
+        /// The total duration of the countdown.
+        /// </summary>
+        private TimeSpan _totalDuration;
 
-        private Timer timer = new Timer();
+        /// <summary>
+        /// The interval at which the timer updates, in milliseconds.
+        /// </summary>
+        private int StepMs;
 
-        private TimeSpan _max = TimeSpan.FromMilliseconds(30000);
+        /// <summary>
+        /// Indicates whether the countdown has finished.
+        /// </summary>
+        private bool _isFinished;
 
-        public TimeSpan TimeLeft => (_max.TotalMilliseconds - _stpWatch.ElapsedMilliseconds) > 0 ? TimeSpan.FromMilliseconds(_max.TotalMilliseconds - _stpWatch.ElapsedMilliseconds) : TimeSpan.FromMilliseconds(0);
+        /// <summary>
+        /// The remaining time formatted as a string (mm:ss.fff).
+        /// </summary>
+        private string TimeLeftMsStr => TimeLeft.ToString(@"mm\:ss\.fff");
 
-        private bool _mustStop => (_max.TotalMilliseconds - _stpWatch.ElapsedMilliseconds) < 0;
-
-        public string TimeLeftStr => TimeLeft.ToString(@"\mm\:ss");
-
-        public string TimeLeftMsStr => TimeLeft.ToString(@"mm\:ss\.fff");
-
-        private void TimerTick(object sender, EventArgs e)
-        {
-            TimeChanged?.Invoke();
-
-            if (_mustStop)
-            {
-                CountDownFinished?.Invoke();
-                _stpWatch.Stop();
-                timer.Enabled = false;
-            }
-        }
-
+        /// <summary>
+        /// Initializes a new instance of this class with a specified duration.
+        /// </summary>
+        /// <param name="min">The countdown duration in minutes.</param>
+        /// <param name="sec">The countdown duration in seconds.</param>
         public CountDownTimer(int min, int sec)
         {
             SetTime(min, sec);
             Init();
         }
 
-        public CountDownTimer(TimeSpan ts)
+        /// <summary>
+        /// Handles the timer's Tick event to update the UI and check for completion.
+        /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">Event data.</param>
+        private void TimerTick(object sender, EventArgs e)
         {
-            SetTime(ts);
-            Init();
+            DiscordFormsHolder.getInstance().LoginForm.ShowCooldownTimerOnLabel(this.TimeLeftMsStr);
+
+            if (this.TimeLeft == TimeSpan.Zero && !_isFinished)
+            {
+                this._isFinished = true;
+                this.Stop();
+                MessageBox.Show("Timer finished, you can try to login again");
+                DiscordFormsHolder.getInstance().LoginForm.ToggleLoginStatus(true);
+                this.Dispose();
+            }
         }
 
-        public CountDownTimer()
-        {
-            Init();
-        }
-
+        /// <summary>
+        /// Initializes the timer and event handlers.
+        /// </summary>
         private void Init()
         {
             StepMs = 77;
-            timer.Tick += new EventHandler(TimerTick);
+            this._timer.Tick += new EventHandler(TimerTick);
+            this._isFinished = false;
         }
 
-        public void SetTime(TimeSpan ts)
+        /// <summary>
+        /// Sets the total countdown duration.
+        /// </summary>
+        /// <param name="min">The duration in minutes.</param>
+        /// <param name="sec">The duration in seconds.</param>
+        private void SetTime(int min, int sec)
         {
-            _max = ts;
-            TimeChanged?.Invoke();
+            this._totalDuration = TimeSpan.FromSeconds(min * 60 + sec);
         }
 
-        public void SetTime(int min, int sec = 0) => SetTime(TimeSpan.FromSeconds(min * 60 + sec));
-
+        /// <summary>
+        /// Starts the countdown timer.
+        /// </summary>
         public void Start()
         {
-            timer.Start();
+            this._timer.Start();
             _stpWatch.Start();
         }
 
-        public void Pause()
+        /// <summary>
+        /// Stops the countdown timer.
+        /// </summary>
+        private void Stop()
         {
-            timer.Stop();
+            this._timer.Stop();
             _stpWatch.Stop();
         }
 
-        public void Stop()
+        /// <summary>
+        /// Releases all resources used by the <see cref="CountDownTimer"/>.
+        /// </summary>
+        public void Dispose()
         {
-            Reset();
-            Pause();
+            this._timer.Dispose();
         }
-
-        public void Reset()
-        {
-            _stpWatch.Reset();
-        }
-
-        public void Restart()
-        {
-            _stpWatch.Reset();
-            timer.Start();
-        }
-
-        public void Dispose() => timer.Dispose();
     }
 }

@@ -193,6 +193,11 @@ namespace YoavDiscordClient
             DiscordFormsHolder.getInstance().RegistrationForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().RegistrationForm.NextStage()));
         }
 
+        /// <summary>
+        /// The function show the user a message that tells him that because he got his username or password wrong lots of times he will need to wait some time
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="timeToCooldown"></param>
         public void ProcessLoginCooldown(string message, int timeToCooldown)
         {
             MessageBox.Show(message);

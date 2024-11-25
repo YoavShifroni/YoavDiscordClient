@@ -16,6 +16,7 @@ namespace YoavDiscordClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.Login);
             Application.Run(DiscordFormsHolder.getInstance().LoginForm);
         }
     }

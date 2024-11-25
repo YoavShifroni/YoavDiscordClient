@@ -137,6 +137,7 @@ namespace YoavDiscordClient
         /// <param name="ar"></param>
         private void ReceiveMessage(IAsyncResult ar)
         {
+
             try
             {
                 int bytesRead;
@@ -165,6 +166,7 @@ namespace YoavDiscordClient
                     {
                         textFromServer = AesFunctions.Decrypt(textFromServer);
                         string[] stringSeparators = new string[] { "\r\n" };
+                        Console.WriteLine("Recived from server: " + textFromServer);
                         string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
                         for (int i = 0; i < lines.Length; i++)
                         {

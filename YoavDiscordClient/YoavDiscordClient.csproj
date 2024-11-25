@@ -55,7 +55,6 @@
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="ConnectionWithServer.cs" />
     <Compile Include="CountDownTimer.cs" />
-    <Compile Include="CountDownTimer2.cs" />
     <Compile Include="DefaultProfilePicturesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,6 +68,7 @@
     <Compile Include="ForgotPasswordForm.Designer.cs">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormNames.cs" />
     <Compile Include="HandleCommandFromServer.cs" />
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>

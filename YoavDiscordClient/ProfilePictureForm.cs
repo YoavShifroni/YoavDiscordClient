@@ -15,32 +15,32 @@ namespace YoavDiscordClient
     public partial class ProfilePictureForm : Form
     {
         /// <summary>
-        /// ???
+        /// The original image loaded by the user.
         /// </summary>
         private Bitmap originalImage;
 
         /// <summary>
-        /// Pointer that represent where the user clicked
+        /// Pointer that represents where the user clicked.
         /// </summary>
         private Point circleCenter;
 
         /// <summary>
-        /// Radius for the circle
+        /// Radius for the circle.
         /// </summary>
         private int circleRadius;
 
         /// <summary>
-        /// Boolean that tell is image is loaded yet or no
+        /// Boolean that tells if an image is loaded yet or not.
         /// </summary>
         private bool isImageLoaded = false;
 
         /// <summary>
-        /// Boolean that tell is there is already a circle on the image or no
+        /// Boolean that tells if there is already a circle on the image or not.
         /// </summary>
         private bool isThereACircleOnTheImage = false;
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         public ProfilePictureForm()
         {
@@ -48,7 +48,8 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// The function is called when the "see deafult option" button is clicked and will move the user to the deafult profile pictures window
+        /// The function is called when the "see default option" button is clicked 
+        /// and will move the user to the default profile pictures window.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -56,12 +57,12 @@ namespace YoavDiscordClient
         {
             this.Visible = false;
             DiscordFormsHolder.getInstance().DefaultProfilePictureForm.Visible = true;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.DefaultProfilePicture);
         }
 
-
         /// <summary>
-        /// The function let the user chose an image from his file explorer
-        /// I took this function from the website StackOverFlow in this link:
+        /// The function lets the user choose an image from their file explorer.
+        /// I took this function from StackOverflow:
         /// https://stackoverflow.com/questions/13775006/how-to-browse-and-save-the-image-in-folder
         /// </summary>
         /// <param name="sender"></param>
@@ -80,6 +81,11 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Handles mouse click on the picture box, letting the user set a circular region.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void userProfilePictureBox_MouseClick(object sender, MouseEventArgs e)
         {
             if (isImageLoaded)
@@ -92,8 +98,8 @@ namespace YoavDiscordClient
                 circleCenter = new Point((int)(e.X * xScale), (int)(e.Y * yScale));
 
                 // Default radius for the circle
-                circleRadius = (int)(Math.Min(originalImage.Width, originalImage.Height)*0.45);
-                if(circleRadius > 400)
+                circleRadius = (int)(Math.Min(originalImage.Width, originalImage.Height) * 0.45);
+                if (circleRadius > 400)
                 {
                     circleRadius = 400;
                 }
@@ -101,6 +107,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Displays a preview of the circular mask over the image.
+        /// </summary>
         private void DisplayCircularMaskPreview()
         {
             // Create a new bitmap that will display the circular mask over the image
@@ -136,6 +145,12 @@ namespace YoavDiscordClient
             this.isThereACircleOnTheImage = true;
         }
 
+        /// <summary>
+        /// Crops the original image to a circular region based on the specified center and radius.
+        /// </summary>
+        /// <param name="originalImage"></param>
+        /// <param name="center"></param>
+        /// <param name="radius"></param>
         private Bitmap CropToCircle(Bitmap originalImage, Point center, int radius)
         {
             Bitmap croppedImage = new Bitmap(radius * 2, radius * 2);
@@ -159,11 +174,16 @@ namespace YoavDiscordClient
             return croppedImage;
         }
 
+        /// <summary>
+        /// Handles the click event for choosing the selected circular region as the profile picture.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void chooseThisPhotoButton_Click(object sender, EventArgs e)
         {
-            if(!this.isThereACircleOnTheImage)
+            if (!this.isThereACircleOnTheImage)
             {
-                MessageBox.Show("you need to select a circle before choosing an image");
+                MessageBox.Show("You need to select a circle before choosing an image");
                 return;
             }
             Bitmap croppedImage = CropToCircle(originalImage, circleCenter, circleRadius);
@@ -173,10 +193,9 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// The functino convert the object image to byte array
+        /// The function converts an Image object to a byte array.
         /// </summary>
         /// <param name="image"></param>
-        /// <returns></returns>
         private byte[] ImageToByteArray(Image image)
         {
             using (MemoryStream ms = new MemoryStream())
@@ -187,7 +206,7 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// The function get as a parameter image and display it in the picture box
+        /// The function gets an image and displays it in the picture box.
         /// </summary>
         /// <param name="photo"></param>
         public void DisplayPhotoFromDefaultOptions(Image photo)
@@ -196,7 +215,5 @@ namespace YoavDiscordClient
             this.originalImage = new Bitmap(photo);
             this.isImageLoaded = true;
         }
-
-        
     }
 }

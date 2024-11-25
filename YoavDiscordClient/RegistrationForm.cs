@@ -207,6 +207,7 @@ namespace YoavDiscordClient
         {
             DiscordFormsHolder.getInstance().LoginForm.Visible = true;
             this.Visible = false;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.Login);
         }
 
 
@@ -282,6 +283,7 @@ namespace YoavDiscordClient
         {
             this.Visible = false;
             DiscordFormsHolder.getInstance().ProfilePictureForm.Visible = true;
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ProfilePicture);
         }
     }
 }

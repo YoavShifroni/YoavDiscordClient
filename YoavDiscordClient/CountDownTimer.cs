@@ -44,7 +44,6 @@ namespace YoavDiscordClient
             {
                 CountDownFinished?.Invoke();
                 _stpWatch.Stop();
-                //timer.Stop();
                 timer.Enabled = false;
             }
         }

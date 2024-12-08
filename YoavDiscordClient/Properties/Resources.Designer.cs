@@ -83,6 +83,16 @@ namespace YoavDiscordClient.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap deafenLogo {
+            get {
+                object obj = ResourceManager.GetObject("deafenLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap defaultDiscordImage {
             get {
                 object obj = ResourceManager.GetObject("defaultDiscordImage", resourceCulture);
@@ -116,6 +126,26 @@ namespace YoavDiscordClient.Properties {
         internal static System.Drawing.Bitmap monkeyImage {
             get {
                 object obj = ResourceManager.GetObject("monkeyImage", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap muteLogo {
+            get {
+                object obj = ResourceManager.GetObject("muteLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap settingsLogo {
+            get {
+                object obj = ResourceManager.GetObject("settingsLogo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

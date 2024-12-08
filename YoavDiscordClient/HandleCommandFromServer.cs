@@ -39,8 +39,13 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessSuccessesUsernameNotInTheSystem();
                     break;
 
-                case TypeOfCommand.Successes_Registration_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessesLoginOrRegistration();
+                case TypeOfCommand.Successes_Connected_To_The_Application_Command:
+                    ConnectionManager.getInstance(null).ProcessSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
+                        clientServerProtocol.Username);
+                    break;
+
+                case TypeOfCommand.Successes_Forgot_Password_Command:
+                    ConnectionManager.getInstance(null).ProcessSuccessesForgotPassword();
                     break;
 
                 case TypeOfCommand.Login_Cooldown_Command:

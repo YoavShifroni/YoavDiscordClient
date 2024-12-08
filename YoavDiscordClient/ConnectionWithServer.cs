@@ -25,16 +25,6 @@ namespace YoavDiscordClient
         private TcpClient _tcpClient;
 
         /// <summary>
-        /// Byte's array that will be used for receiving messages from the server
-        /// </summary>
-        private byte[] _data;
-
-        /// <summary>
-        /// Boolean that tell if this is the first message that received from the server
-        /// </summary>
-        private bool _isFirstMessageReceived = true;
-
-        /// <summary>
         /// Boolean that tell if the rsa public key already sent to the server or not
         /// </summary>
         private bool _isRsaSent = false;
@@ -43,6 +33,8 @@ namespace YoavDiscordClient
         /// Instance of the class handle command from server that will be used everytime that the user will receive a message from the server
         /// </summary>
         private HandleCommandFromServer _handleCommandFromServer;
+
+        private TcpConnectionHandler _tcpConnectionHandler;
 
         /// <summary>
         /// The instance of this class per singleton design pattern
@@ -77,18 +69,12 @@ namespace YoavDiscordClient
         /// <param name="ipAddress"></param>
         private ConnectionWithServer(string ipAddress)
         {
-            this._tcpClient = new TcpClient();
+            this._tcpConnectionHandler = new TcpConnectionHandler(new TcpClient(), this);
             this._handleCommandFromServer = new HandleCommandFromServer();
-            this._tcpClient.Connect(ipAddress, PORT_NUMBER);
-            var jsonString = JsonConvert.SerializeObject(RsaFunctions.PublicKey);
-            this.SendMessage(jsonString);
-            this._isRsaSent = true;
-            this._data = new byte[this._tcpClient.ReceiveBufferSize];
-            this._tcpClient.GetStream().BeginRead(this._data,
-                                                 0,
-                                                 System.Convert.ToInt32(this._tcpClient.ReceiveBufferSize),
-                                                 ReceiveMessage,
-                                                 null);
+            this._tcpConnectionHandler.Connect(ipAddress, PORT_NUMBER);
+            this._tcpConnectionHandler.SendRsaPublicKey();
+            this._tcpConnectionHandler.StartListen();
+            
         }
 
         /// <summary>
@@ -97,99 +83,36 @@ namespace YoavDiscordClient
         /// <param name="message"></param>
         public void SendMessage(string message)
         {
-            try
-            {
-                // send message to the server
-                NetworkStream ns = this._tcpClient.GetStream();
-
-                if(this._isRsaSent)
-                {
-                    while(this._isFirstMessageReceived)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    message = AesFunctions.Encrypt(message);
-                    Console.WriteLine("message sent to the server: " + message);
-                }
-
-                byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
-                byte[] length = BitConverter.GetBytes(data.Length);
-                byte[] bytes = new byte[data.Length + 4];
-                // combine byte array, I took this code from the website StackOverFlow in this link:
-                // https://stackoverflow.com/questions/415291/best-way-to-combine-two-or-more-byte-arrays-in-c-sharp
-                System.Buffer.BlockCopy(length, 0, bytes, 0,  length.Length); 
-                System.Buffer.BlockCopy(data, 0, bytes, length.Length, data.Length);
-
-                // send the text
-                ns.Write(bytes, 0, bytes.Length);
-                ns.Flush();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
+            this._tcpConnectionHandler.SendMessage(message);
         }
 
-        /// <summary>
-        /// The function is the endless loop of reading messages that the server sends to the client and works in a different thread than the forms
-        /// In case the TCP connection is disconnected, it will show a message box with an error
-        /// </summary>
-        /// <param name="ar"></param>
-        private void ReceiveMessage(IAsyncResult ar)
+        public void ProcessMessage(byte[] messageData, int bytesRead, bool isFirstMessage)
         {
+            string textFromServer = System.Text.Encoding.UTF8.GetString(messageData, 0, bytesRead);
 
-            try
+            if (isFirstMessage)
             {
-                int bytesRead;
-
-                // read the data from the server
-                bytesRead = this._tcpClient.GetStream().EndRead(ar);
-
-                if (bytesRead < 1)
-                {
-                    MessageBox.Show("You are disconnected");
-                    //GameViewManager.getInstance(null).StopGame();
-                    return;
-                }
-                else
-                {
-                    // invoke the delegate to display the recived data
-                    string textFromServer = System.Text.Encoding.UTF8.GetString(this._data, 0, bytesRead);
-
-                    if(this._isFirstMessageReceived)
-                    {
-                        textFromServer = RsaFunctions.Decrypt(textFromServer);
-                        AesFunctions.AesKeys = JsonConvert.DeserializeObject<AesKeys>(textFromServer);
-                        this._isFirstMessageReceived = false;
-                    }
-                    else
-                    {
-                        textFromServer = AesFunctions.Decrypt(textFromServer);
-                        string[] stringSeparators = new string[] { "\r\n" };
-                        Console.WriteLine("Recived from server: " + textFromServer);
-                        string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 0; i < lines.Length; i++)
-                        {
-                            this._handleCommandFromServer.HandleCommand(lines[i]);
-
-                        }
-                    }
-
-
-                }
-
-                // continue reading
-                this._tcpClient.GetStream().BeginRead(this._data,
-                                         0,
-                                         System.Convert.ToInt32(this._tcpClient.ReceiveBufferSize),
-                                         ReceiveMessage,
-                                         null);
+                textFromServer = RsaFunctions.Decrypt(textFromServer);
+                AesFunctions.AesKeys = JsonConvert.DeserializeObject<AesKeys>(textFromServer);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.ToString());
-                // ignore the error... fired when the user loggs off
+                textFromServer = AesFunctions.Decrypt(textFromServer);
+                string[] stringSeparators = new string[] { "\r\n" };
+                Console.WriteLine("Recived from server: " + textFromServer);
+                string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    this._handleCommandFromServer.HandleCommand(lines[i]);
 
+                }
+            }
+
+            if (bytesRead < 1)
+            {
+                MessageBox.Show("You are disconnected");
+                //GameViewManager.getInstance(null).StopGame();
+                return;
             }
         }
     }

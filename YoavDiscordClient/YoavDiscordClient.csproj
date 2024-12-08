@@ -51,6 +51,15 @@
   <ItemGroup>
     <Compile Include="AesFunctions.cs" />
     <Compile Include="AesKeys.cs" />
+    <Compile Include="ChatMessagePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CircleButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CirclePictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ClientServerProtocol.cs" />
     <Compile Include="ConnectionManager.cs" />
     <Compile Include="ConnectionWithServer.cs" />
@@ -60,6 +69,12 @@
     </Compile>
     <Compile Include="DefaultProfilePicturesForm.Designer.cs">
       <DependentUpon>DefaultProfilePicturesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DiscordApp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DiscordApp.Designer.cs">
+      <DependentUpon>DiscordApp.cs</DependentUpon>
     </Compile>
     <Compile Include="DiscordFormsHolder.cs" />
     <Compile Include="ForgotPasswordForm.cs">
@@ -92,9 +107,13 @@
     </Compile>
     <Compile Include="RegistrationInfo.cs" />
     <Compile Include="RsaFunctions.cs" />
+    <Compile Include="TcpConnectionHandler.cs" />
     <Compile Include="TypeOfCommand.cs" />
     <EmbeddedResource Include="DefaultProfilePicturesForm.resx">
       <DependentUpon>DefaultProfilePicturesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiscordApp.resx">
+      <DependentUpon>DiscordApp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ForgotPasswordForm.resx">
       <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
@@ -141,6 +160,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\monkeyImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settingsLogo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\settingsLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\muteLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deafenLogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

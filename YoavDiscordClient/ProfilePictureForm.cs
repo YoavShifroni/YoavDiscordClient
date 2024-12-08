@@ -215,5 +215,8 @@ namespace YoavDiscordClient
             this.originalImage = new Bitmap(photo);
             this.isImageLoaded = true;
         }
+
+
+        
     }
 }

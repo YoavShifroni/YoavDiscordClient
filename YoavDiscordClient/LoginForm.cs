@@ -115,14 +115,18 @@ namespace YoavDiscordClient
         /// <param name="e"></param>
         private void changePasswordLabel_Click(object sender, EventArgs e)
         {
-            if(this.usernameTextBox.Text.Length < 3 || !this.IsValidIpAddress(this.serverIpTextBox.Text))
+            if (this.usernameTextBox.Text.Length < 3 || !this.IsValidIpAddress(this.serverIpTextBox.Text))
             {
                 MessageBox.Show("please fill your username and server ip first");
                 return;
             }
-            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ForgotPassword);
             ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessForgotPassword(this.usernameTextBox.Text);
+        }
+
+        public void ForgotPasswordNextStage()
+        {
             MessageBox.Show("email with code was sent to you right now, check your email and enter the code in the right place");
+            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.ForgotPassword);
             DiscordFormsHolder.getInstance().ForgotPasswordForm.Visible = true;
             this.Visible = false;
         }
@@ -242,7 +246,7 @@ namespace YoavDiscordClient
                 return;
             }
             MessageBox.Show("Captcha is correct");
-            ConnectionManager.getInstance(null).ProcessSuccessesLoginOrRegistration();
+            ConnectionManager.getInstance(null).ProcessGetProfilePictureAndUsername();
         }
 
 
@@ -284,6 +288,9 @@ namespace YoavDiscordClient
             this.cooldownTimeLabel.Text = text;
         }
 
-        
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

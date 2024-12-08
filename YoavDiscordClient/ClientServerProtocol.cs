@@ -60,7 +60,6 @@ namespace YoavDiscordClient
         /// </summary>
         public byte[] ProfilePicture { get; set; }
 
-
         /// <summary>
         /// The number of minutes that the user need to wait
         /// </summary>
@@ -131,8 +130,14 @@ namespace YoavDiscordClient
                     this.Code = answer[1];
                     break;
 
+                case TypeOfCommand.Get_Username_And_Profile_Picture_Command:
                 case TypeOfCommand.Successes_Username_Not_In_The_System_Command:
-                case TypeOfCommand.Successes_Registration_Command:
+                case TypeOfCommand.Successes_Forgot_Password_Command:
+                    break;
+
+                case TypeOfCommand.Successes_Connected_To_The_Application_Command:
+                    this.ProfilePicture = Convert.FromBase64String(answer[1]);
+                    this.Username = answer[2];
                     break;
 
 
@@ -195,7 +200,12 @@ namespace YoavDiscordClient
 
 
                 case TypeOfCommand.Successes_Username_Not_In_The_System_Command:
-                case TypeOfCommand.Successes_Registration_Command:
+                case TypeOfCommand.Successes_Forgot_Password_Command:
+                    break;
+
+                case TypeOfCommand.Successes_Connected_To_The_Application_Command:
+                    toSend += Convert.ToBase64String(this.ProfilePicture) + "\n";
+                    toSend += this.Username + "\n";
                     break;
 
             }

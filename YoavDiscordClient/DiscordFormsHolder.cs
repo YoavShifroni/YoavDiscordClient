@@ -36,6 +36,8 @@ namespace YoavDiscordClient
         public DefaultProfilePicturesForm DefaultProfilePictureForm;
 
 
+        public DiscordApp DiscordApp;
+
         /// <summary>
         /// Form instance that represent the current active form
         /// </summary>
@@ -73,6 +75,7 @@ namespace YoavDiscordClient
             this.ForgotPasswordForm = new ForgotPasswordForm();
             this.ProfilePictureForm = new ProfilePictureForm();
             this.DefaultProfilePictureForm = new DefaultProfilePicturesForm();
+            this.DiscordApp = new DiscordApp();
         }
         
         /// <summary>
@@ -123,6 +126,14 @@ namespace YoavDiscordClient
         {
             this._activeForm.Cursor = active ? Cursors.Arrow : Cursors.WaitCursor;
             this._activeForm.Enabled = active;
+        }
+
+        public void MoveToTheDiscordAppWindow(byte[] profilePicture, string username)
+        {
+            this.DiscordApp.SetUsernameAndProfilePicture(profilePicture, username);
+            this._activeForm.Visible = false;
+            this.DiscordApp.Visible = true;
+            this._activeForm = DiscordApp;
         }
 
 

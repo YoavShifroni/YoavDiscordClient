@@ -35,6 +35,8 @@ namespace YoavDiscordClient
                 MessageBox.Show("check the code that you entered, it's not similer to the code that you recived in the email");
                 return;
             }
+            MessageBox.Show("Well done, the code you entered is correct, now write the new password you want. Rememer: you cannot change your" +
+                " password to the same password you currently have");
             this.checkButton.Enabled = false;
             this.passwordLabel.Visible = true;
             this.passwordTextBox.Visible = true;

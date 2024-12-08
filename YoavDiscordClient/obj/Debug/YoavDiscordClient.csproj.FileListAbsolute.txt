@@ -15,3 +15,4 @@ D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.ForgotPasswordForm.resources
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.ProfilePictureForm.resources
 D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.DefaultProfilePicturesForm.resources
+D:\Visual Studio\YoavDiscordClient\YoavDiscordClient\obj\Debug\YoavDiscordClient.DiscordApp.resources

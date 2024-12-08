@@ -292,7 +292,7 @@
             this.firstNameTextBox.Name = "firstNameTextBox";
             this.firstNameTextBox.Size = new System.Drawing.Size(216, 25);
             this.firstNameTextBox.TabIndex = 37;
-            this.firstNameTextBox.Text = "yoav";
+            this.firstNameTextBox.Text = "yoavvvv";
             this.firstNameTextBox.WordWrap = false;
             // 
             // firstNameLabel
@@ -337,7 +337,7 @@
             this.usernameTextBox.Name = "usernameTextBox";
             this.usernameTextBox.Size = new System.Drawing.Size(216, 25);
             this.usernameTextBox.TabIndex = 33;
-            this.usernameTextBox.Text = "yoavv";
+            this.usernameTextBox.Text = "yoavvvv";
             this.usernameTextBox.WordWrap = false;
             // 
             // usernameLabel

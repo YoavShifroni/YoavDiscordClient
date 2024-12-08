@@ -166,9 +166,11 @@ namespace YoavDiscordClient
         /// <summary>
         /// The function show the user a message that tell him that he login/ register successesfuly and .....
         /// </summary>
-        public void ProcessSuccessesLoginOrRegistration()
+        public void ProcessSuccessConnctedToTheApplication(byte[] profilePicture, string username)
         {
-            MessageBox.Show("Login / Registration successesfuly!!"); // for now...
+            MessageBox.Show("Login / Registration successesfuly!!");
+            DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().MoveToTheDiscordAppWindow(profilePicture, username)));
+
         }
 
         /// <summary>
@@ -202,6 +204,18 @@ namespace YoavDiscordClient
         {
             MessageBox.Show(message);
             DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ShowCooldownTimer(timeToCooldown)));
+        }
+
+        public void ProcessSuccessesForgotPassword()
+        {
+            DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ForgotPasswordNextStage()));
+        }
+
+        public void ProcessGetProfilePictureAndUsername()
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Username_And_Profile_Picture_Command;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
     }
 }

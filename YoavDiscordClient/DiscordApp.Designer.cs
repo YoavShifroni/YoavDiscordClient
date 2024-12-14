@@ -83,6 +83,7 @@
             this.userInfoPanel.Controls.Add(this.userProfilePicturePictureBox);
             this.userInfoPanel.Controls.Add(this.usernameLabel);
             this.userInfoPanel.Controls.Add(this.settingsButton);
+            this.userInfoPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.userInfoPanel.Location = new System.Drawing.Point(0, 1068);
             this.userInfoPanel.Name = "userInfoPanel";
             this.userInfoPanel.Size = new System.Drawing.Size(471, 141);
@@ -131,6 +132,7 @@
             // 
             // voiceChannel3Button
             // 
+            this.voiceChannel3Button.AutoSize = true;
             this.voiceChannel3Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.voiceChannel3Button.FlatAppearance.BorderSize = 0;
             this.voiceChannel3Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -140,7 +142,7 @@
             this.voiceChannel3Button.ForeColor = System.Drawing.Color.White;
             this.voiceChannel3Button.Location = new System.Drawing.Point(73, 596);
             this.voiceChannel3Button.Name = "voiceChannel3Button";
-            this.voiceChannel3Button.Size = new System.Drawing.Size(328, 30);
+            this.voiceChannel3Button.Size = new System.Drawing.Size(328, 35);
             this.voiceChannel3Button.TabIndex = 10;
             this.voiceChannel3Button.TabStop = false;
             this.voiceChannel3Button.Text = "Voice Chanel 3";
@@ -148,6 +150,7 @@
             // 
             // voiceChannel2Button
             // 
+            this.voiceChannel2Button.AutoSize = true;
             this.voiceChannel2Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.voiceChannel2Button.FlatAppearance.BorderSize = 0;
             this.voiceChannel2Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -157,7 +160,7 @@
             this.voiceChannel2Button.ForeColor = System.Drawing.Color.White;
             this.voiceChannel2Button.Location = new System.Drawing.Point(73, 512);
             this.voiceChannel2Button.Name = "voiceChannel2Button";
-            this.voiceChannel2Button.Size = new System.Drawing.Size(328, 30);
+            this.voiceChannel2Button.Size = new System.Drawing.Size(328, 35);
             this.voiceChannel2Button.TabIndex = 9;
             this.voiceChannel2Button.TabStop = false;
             this.voiceChannel2Button.Text = "Voice Chanel 2";
@@ -165,6 +168,7 @@
             // 
             // voiceChannel1Button
             // 
+            this.voiceChannel1Button.AutoSize = true;
             this.voiceChannel1Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.voiceChannel1Button.FlatAppearance.BorderSize = 0;
             this.voiceChannel1Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -174,7 +178,7 @@
             this.voiceChannel1Button.ForeColor = System.Drawing.Color.White;
             this.voiceChannel1Button.Location = new System.Drawing.Point(73, 439);
             this.voiceChannel1Button.Name = "voiceChannel1Button";
-            this.voiceChannel1Button.Size = new System.Drawing.Size(328, 30);
+            this.voiceChannel1Button.Size = new System.Drawing.Size(328, 35);
             this.voiceChannel1Button.TabIndex = 7;
             this.voiceChannel1Button.TabStop = false;
             this.voiceChannel1Button.Text = "Voice Chanel 1";
@@ -193,6 +197,7 @@
             // 
             // textChanel3Button
             // 
+            this.textChanel3Button.AutoSize = true;
             this.textChanel3Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.textChanel3Button.FlatAppearance.BorderSize = 0;
             this.textChanel3Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -202,7 +207,7 @@
             this.textChanel3Button.ForeColor = System.Drawing.Color.White;
             this.textChanel3Button.Location = new System.Drawing.Point(73, 295);
             this.textChanel3Button.Name = "textChanel3Button";
-            this.textChanel3Button.Size = new System.Drawing.Size(328, 30);
+            this.textChanel3Button.Size = new System.Drawing.Size(328, 35);
             this.textChanel3Button.TabIndex = 6;
             this.textChanel3Button.TabStop = false;
             this.textChanel3Button.Text = "Text Chanel 3";
@@ -210,6 +215,7 @@
             // 
             // textChanel2Button
             // 
+            this.textChanel2Button.AutoSize = true;
             this.textChanel2Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.textChanel2Button.FlatAppearance.BorderSize = 0;
             this.textChanel2Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -219,7 +225,7 @@
             this.textChanel2Button.ForeColor = System.Drawing.Color.White;
             this.textChanel2Button.Location = new System.Drawing.Point(73, 211);
             this.textChanel2Button.Name = "textChanel2Button";
-            this.textChanel2Button.Size = new System.Drawing.Size(328, 30);
+            this.textChanel2Button.Size = new System.Drawing.Size(328, 35);
             this.textChanel2Button.TabIndex = 5;
             this.textChanel2Button.TabStop = false;
             this.textChanel2Button.Text = "Text Chanel 2";
@@ -227,6 +233,7 @@
             // 
             // textChanel1Button
             // 
+            this.textChanel1Button.AutoSize = true;
             this.textChanel1Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
             this.textChanel1Button.FlatAppearance.BorderSize = 0;
             this.textChanel1Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(68)))), ((int)(((byte)(75)))));
@@ -236,7 +243,7 @@
             this.textChanel1Button.ForeColor = System.Drawing.Color.White;
             this.textChanel1Button.Location = new System.Drawing.Point(73, 138);
             this.textChanel1Button.Name = "textChanel1Button";
-            this.textChanel1Button.Size = new System.Drawing.Size(328, 30);
+            this.textChanel1Button.Size = new System.Drawing.Size(328, 37);
             this.textChanel1Button.TabIndex = 4;
             this.textChanel1Button.TabStop = false;
             this.textChanel1Button.Text = "Text Chanel 1";
@@ -350,8 +357,9 @@
             // 
             // DiscordApp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(49)))), ((int)(((byte)(54)))));
             this.ClientSize = new System.Drawing.Size(2159, 1209);
             this.Controls.Add(this.chatAreaPanel);
@@ -363,6 +371,7 @@
             this.Text = "DiscordApp";
             this.Load += new System.EventHandler(this.DiscordApp_Load);
             this.leftSidePanel.ResumeLayout(false);
+            this.leftSidePanel.PerformLayout();
             this.userInfoPanel.ResumeLayout(false);
             this.rightSidePanel.ResumeLayout(false);
             this.chatAreaPanel.ResumeLayout(false);

@@ -16,5 +16,6 @@ namespace YoavDiscordClient
         ForgotPassword,
         ProfilePicture,
         DefaultProfilePicture,
+        DiscordApp,
     }
 }

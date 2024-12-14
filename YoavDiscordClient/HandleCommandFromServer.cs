@@ -28,7 +28,7 @@ namespace YoavDiscordClient
             switch(clientServerProtocol.TypeOfCommand)
             {
                 case TypeOfCommand.Error_Command:
-                    ConnectionManager.getInstance(null).ProcessError(clientServerProtocol.Message);
+                    ConnectionManager.getInstance(null).ProcessError(clientServerProtocol.ErrorMessage);
                     break;
 
                 case TypeOfCommand.Code_Sent_To_Email_Command:
@@ -49,7 +49,17 @@ namespace YoavDiscordClient
                     break;
 
                 case TypeOfCommand.Login_Cooldown_Command:
-                    ConnectionManager.getInstance(null).ProcessLoginCooldown(clientServerProtocol.Message, clientServerProtocol.TimeToCooldown);
+                    ConnectionManager.getInstance(null).ProcessLoginCooldown(clientServerProtocol.ErrorMessage, clientServerProtocol.TimeToCooldown);
+                    break;
+
+                case TypeOfCommand.Message_From_Other_User_Command:
+                    ConnectionManager.getInstance(null).ProcessMessageFromOtherUserCommand(clientServerProtocol.UserId, clientServerProtocol.Username,
+                        clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent);
+                    break;
+
+                case TypeOfCommand.Return_Image_Of_User_Command:
+                    ConnectionManager.getInstance(null).ProcessReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture,
+                        clientServerProtocol.Username, clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent);
                     break;
 
 

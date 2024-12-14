@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -47,6 +48,11 @@ namespace YoavDiscordClient
         /// The instance of this class per singleton design pattern
         /// </summary>
         private static DiscordFormsHolder instance = null;
+
+
+        public const float optimizedScreenWidth = 2560f;
+
+        public const float optimizedScreenHeight = 1440f;
 
 
 
@@ -133,7 +139,62 @@ namespace YoavDiscordClient
             this.DiscordApp.SetUsernameAndProfilePicture(profilePicture, username);
             this._activeForm.Visible = false;
             this.DiscordApp.Visible = true;
-            this._activeForm = DiscordApp;
+            this.SetActiveForm(FormNames.DiscordApp);
+        }
+
+        public static void ResizeFormBasedOnResolution(Form form, float optimizedFormWidth, float optimizedFormHeight)
+        {
+            var screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            var screenHeight = Screen.PrimaryScreen.Bounds.Height;
+
+
+            // Check if the form's size exceeds the screen's resolution
+            if (DiscordFormsHolder.optimizedScreenWidth > screenWidth || DiscordFormsHolder.optimizedScreenHeight > screenHeight)
+            {
+                
+
+                // Preserve aspect ratio while resizing
+
+                // Set new dimensions based on screen resolution
+                int maxWidth = (int)(screenWidth * (optimizedFormWidth / DiscordFormsHolder.optimizedScreenWidth));
+                int maxHeight = (int)(screenHeight * (optimizedFormHeight / DiscordFormsHolder.optimizedScreenHeight));
+
+                double ratioWidth = (double)screenWidth / DiscordFormsHolder.optimizedScreenWidth;
+                double ratioHeight = (double)screenHeight / DiscordFormsHolder.optimizedScreenHeight;
+
+                // Apply new size to the form
+                form.Width = maxWidth;
+                form.Height = maxHeight;
+                ScaleControls(form.Controls, ratioWidth, ratioHeight);
+
+            }
+        }
+
+        // Helper method to scale controls
+        private static void ScaleControls(Control.ControlCollection controls, double ratioWidth, double ratioHeight)
+        {
+
+            // Scale all controls on the form
+            foreach (Control control in controls)
+            {
+                // Scale dimensions
+                control.Width = (int)(control.Width * ratioWidth);
+                control.Height = (int)(control.Height * ratioHeight);
+
+                // Scale position
+                control.Left = (int)(control.Left * ratioWidth);
+                control.Top = (int)(control.Top * ratioHeight);
+
+                // Scale font size
+                float newFontSize = control.Font.Size * (float)Math.Min(ratioWidth, ratioHeight);
+                control.Font = new Font(control.Font.FontFamily, newFontSize);
+
+                // Recursively scale child controls
+                if (control.HasChildren)
+                {
+                    ScaleControls(control.Controls, ratioWidth, ratioHeight);
+                }
+            }
         }
 
 

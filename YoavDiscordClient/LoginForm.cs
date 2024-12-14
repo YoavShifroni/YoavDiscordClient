@@ -19,6 +19,8 @@ namespace YoavDiscordClient
         /// </summary>
         private string _code;
 
+        private bool _isCooldownSizeChanged = false;
+
 
 
         /// <summary>
@@ -286,11 +288,22 @@ namespace YoavDiscordClient
         public void ShowCooldownTimerOnLabel(string text)
         {
             this.cooldownTimeLabel.Text = text;
+            if (!this._isCooldownSizeChanged)
+            {
+                int centerX = (this.ClientSize.Width - this.cooldownTimeLabel.Width) / 2;
+
+                // Set the control's Left property to center it
+                this.cooldownTimeLabel.Left = centerX;
+
+                this._isCooldownSizeChanged = true;
+            }
         }
+
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
 
+            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 305f, 1134f);
         }
     }
 }

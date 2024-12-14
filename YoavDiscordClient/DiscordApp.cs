@@ -18,11 +18,7 @@ namespace YoavDiscordClient
 
         private string _username;
 
-        private bool _isWindowAlreadyChanged = false;
-
-        private double _ratioWidth;
-
-        private double _ratioHeight;
+        private Dictionary<int, Image> usersImages = new Dictionary<int, Image>();
 
         public DiscordApp()
         {
@@ -49,16 +45,18 @@ namespace YoavDiscordClient
         {
             if(this.messageInputTextBox.Text.Length == 0)
             {
+                MessageBox.Show("you can't send an empty message!");
                 return;
             }
-            this.AddMessageToChat(_username, this.messageInputTextBox.Text, this._userProfilePicture);
+            this.AddMessageToChat(this._username, this.messageInputTextBox.Text, this._userProfilePicture, DateTime.Now);
+            ConnectionManager.getInstance(null).ProcessSendMessage(this.messageInputTextBox.Text, DateTime.Now);
             this.messageInputTextBox.Text = "";
         }
 
-        private void AddMessageToChat(string username, string message, Image profileImage)
+        public void AddMessageToChat(string username, string message, Image profileImage, DateTime time)
         {
             // Create a new ChatMessagePanel for the new message
-            ChatMessagePanel newMessagePanel = new ChatMessagePanel(username, message, profileImage, DateTime.Now);
+            ChatMessagePanel newMessagePanel = new ChatMessagePanel(username, message, profileImage, time);
 
             // Calculate the Y-position where the new message will go (at the bottom)
             int newYPosition = chatAreaPanel.Controls.Count > 3
@@ -74,6 +72,16 @@ namespace YoavDiscordClient
 
             // Optionally, scroll the panel to the latest message (if you are using a scrollable panel)
             chatAreaPanel.ScrollControlIntoView(newMessagePanel);
+        }
+
+        public void AddMessageToChatFromOtherUser(string username, int userId, string message, DateTime time)
+        {
+            if (!this.usersImages.ContainsKey(userId))
+            {
+                ConnectionManager.getInstance(null).ProcessFetchImageOfUser(userId, username, message, time);
+                return;
+            }
+            this.AddMessageToChat(username, message, this.usersImages[userId], time);
         }
 
 
@@ -95,37 +103,22 @@ namespace YoavDiscordClient
 
         private void DiscordApp_Load(object sender, EventArgs e)
         {
-            this.AddPicturesToTheWindow();
-            Rectangle resolutionRect = System.Windows.Forms.Screen.FromControl(this).Bounds;
-            if (this.Width >= resolutionRect.Width || this.Height >= resolutionRect.Height || this._isWindowAlreadyChanged)
-            {
-                if (this._isWindowAlreadyChanged == false)
-                {
-                    this._isWindowAlreadyChanged = true;
-                    double ratio = this.Width / this.Height;
-                    int newWidth = (int)(resolutionRect.Width * 0.7);
-                    int newHeight = (int)(resolutionRect.Height * 0.7 * ratio);
-                    this._ratioWidth = (double)newWidth / (double)this.Width;
-                    this._ratioHeight = (double)newHeight / (double)this.Height;
-                    this.Width = newWidth;
-                    this.Height = newHeight;
-                }
+            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 2175f, 1248f);
 
-                foreach (Control control in this.Controls)
-                {
-                    control.Width = (int)(control.Width * this._ratioWidth);
-                    control.Height = (int)(control.Height * this._ratioHeight);
-                    control.Left = (int)(control.Left * this._ratioWidth);
-                    control.Top = (int)(control.Top * this._ratioHeight);
-                    float fontSize = (float)(control.Font.Size * 0.7);
-                    control.Font = new Font(control.Font.Name, fontSize);
-                }
-            }
+            this.AddPicturesToTheWindow();
+
         }
 
         private void textChanel1Button_Click(object sender, EventArgs e)
         {
 
+        }
+
+        public void AddNewUserImageAndShowItsMessage(int userId, byte[] profilePicture, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent)
+        {
+
+            this.usersImages[userId] = this.ByteArrayToImage(profilePicture);
+            this.AddMessageToChatFromOtherUser(username, userId, messageThatTheUserSent, timeThatTheMessageWasSent);
         }
     }
 }

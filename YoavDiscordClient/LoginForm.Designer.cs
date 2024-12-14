@@ -1,4 +1,6 @@
-﻿namespace YoavDiscordClient
+﻿using System.Windows.Forms;
+
+namespace YoavDiscordClient
 {
     partial class LoginForm
     {
@@ -73,6 +75,7 @@
             // 
             // loginButton
             // 
+            this.loginButton.AutoSize = true;
             this.loginButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
             this.loginButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.loginButton.FlatAppearance.BorderSize = 0;
@@ -121,6 +124,7 @@
             // 
             // clearButton
             // 
+            this.clearButton.AutoSize = true;
             this.clearButton.BackColor = System.Drawing.Color.White;
             this.clearButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -237,6 +241,7 @@
             // 
             // submitCodeButton
             // 
+            this.submitCodeButton.AutoSize = true;
             this.submitCodeButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
             this.submitCodeButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.submitCodeButton.FlatAppearance.BorderSize = 0;
@@ -262,6 +267,7 @@
             // 
             // checkThatTheCodesAreTheSameButton
             // 
+            this.checkThatTheCodesAreTheSameButton.AutoSize = true;
             this.checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
             this.checkThatTheCodesAreTheSameButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
@@ -301,22 +307,24 @@
             // 
             // cooldownTimeLabel
             // 
+            this.cooldownTimeLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.cooldownTimeLabel.AutoSize = true;
             this.cooldownTimeLabel.BackColor = System.Drawing.Color.Silver;
             this.cooldownTimeLabel.Font = new System.Drawing.Font("Nirmala UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cooldownTimeLabel.ForeColor = System.Drawing.Color.Black;
             this.cooldownTimeLabel.Location = new System.Drawing.Point(28, 583);
             this.cooldownTimeLabel.Name = "cooldownTimeLabel";
-            this.cooldownTimeLabel.Size = new System.Drawing.Size(213, 49);
+            this.cooldownTimeLabel.Size = new System.Drawing.Size(0, 30);
             this.cooldownTimeLabel.TabIndex = 50;
             this.cooldownTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.cooldownTimeLabel.Visible = false;
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(289, 1076);
+            this.ClientSize = new System.Drawing.Size(289, 1095);
             this.Controls.Add(this.cooldownTimeLabel);
             this.Controls.Add(this.checkThatTheCodesAreTheSameButton);
             this.Controls.Add(this.enterTheCodeShownAboveTextBox);

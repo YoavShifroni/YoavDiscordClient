@@ -68,6 +68,7 @@ namespace YoavDiscordClient
         {
             DiscordFormsHolder.getInstance().LoginForm.ShowCooldownTimerOnLabel(this.TimeLeftMsStr);
 
+
             if (this.TimeLeft == TimeSpan.Zero && !_isFinished)
             {
                 this._isFinished = true;

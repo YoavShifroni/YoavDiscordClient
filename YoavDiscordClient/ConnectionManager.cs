@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -216,6 +218,47 @@ namespace YoavDiscordClient
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Username_And_Profile_Picture_Command;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessSendMessage(string text, DateTime now)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Send_Message_Command;
+            clientServerProtocol.MessageThatTheUserSent = text;
+            clientServerProtocol.TimeThatTheMessageWasSent = now;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent)
+        {
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddMessageToChatFromOtherUser(
+                username, userId, messageThatTheUserSent, timeThatTheMessageWasSent)));
+        }
+
+        private Image ByteArrayToImage(byte[] byteArray)
+        {
+            using (MemoryStream ms = new MemoryStream(byteArray))
+            {
+                return Image.FromStream(ms);
+            }
+        }
+
+        public void ProcessFetchImageOfUser(int userId, string username, string message, DateTime time)
+        {
+            ClientServerProtocol clientServerProtocol= new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_Image_Of_User_Command;
+            clientServerProtocol.UserId = userId;
+            clientServerProtocol.Username = username;
+            clientServerProtocol.MessageThatTheUserSent = message;
+            clientServerProtocol.TimeThatTheMessageWasSent= time;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessReturnImageOfUser(int userId, byte[] profilePicture, string username, string messageThatTheUserSent,
+            DateTime timeThatTheMessageWasSent)
+        {
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddNewUserImageAndShowItsMessage(
+                userId, profilePicture, username, messageThatTheUserSent, timeThatTheMessageWasSent)));
         }
     }
 }

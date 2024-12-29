@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -220,19 +221,20 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
-        public void ProcessSendMessage(string text, DateTime now)
+        public void ProcessSendMessage(string text, int chatRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Send_Message_Command;
             clientServerProtocol.MessageThatTheUserSent = text;
-            clientServerProtocol.TimeThatTheMessageWasSent = now;
+            clientServerProtocol.ChatRoomId = chatRoomId;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
-        public void ProcessMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent)
+        public void ProcessMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent,
+            int chatRoomId)
         {
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddMessageToChatFromOtherUser(
-                username, userId, messageThatTheUserSent, timeThatTheMessageWasSent)));
+                username, userId, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
         }
 
         private Image ByteArrayToImage(byte[] byteArray)
@@ -243,7 +245,7 @@ namespace YoavDiscordClient
             }
         }
 
-        public void ProcessFetchImageOfUser(int userId, string username, string message, DateTime time)
+        public void ProcessFetchImageOfUser(int userId, string username, string message, DateTime time, int chatRoomId)
         {
             ClientServerProtocol clientServerProtocol= new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_Image_Of_User_Command;
@@ -251,14 +253,29 @@ namespace YoavDiscordClient
             clientServerProtocol.Username = username;
             clientServerProtocol.MessageThatTheUserSent = message;
             clientServerProtocol.TimeThatTheMessageWasSent= time;
+            clientServerProtocol.ChatRoomId = chatRoomId;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
         public void ProcessReturnImageOfUser(int userId, byte[] profilePicture, string username, string messageThatTheUserSent,
-            DateTime timeThatTheMessageWasSent)
+            DateTime timeThatTheMessageWasSent, int chatRoomId)
         {
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddNewUserImageAndShowItsMessage(
-                userId, profilePicture, username, messageThatTheUserSent, timeThatTheMessageWasSent)));
+                userId, profilePicture, username, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
+        }
+
+        public void ProcessGetMessagesHistoryOfChatRoom(int chatRoomId)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Messages_History_Of_Chat_Room_Command;
+            clientServerProtocol.ChatRoomId= chatRoomId;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessReturnMessagesHistoryOfChatRoom(string messagesOfAChatRoomJson)
+        {
+            List<UserMessage> messages = JsonConvert.DeserializeObject<List<UserMessage>>(messagesOfAChatRoomJson);
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.SetMessagesHistoryOfAChatRoom(messages)));
         }
     }
 }

@@ -35,16 +35,16 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessCodeSentToEmail(clientServerProtocol.Code);
                     break;
 
-                case TypeOfCommand.Successes_Username_Not_In_The_System_Command:
+                case TypeOfCommand.Success_Username_Not_In_The_System_Command:
                     ConnectionManager.getInstance(null).ProcessSuccessesUsernameNotInTheSystem();
                     break;
 
-                case TypeOfCommand.Successes_Connected_To_The_Application_Command:
+                case TypeOfCommand.Success_Connected_To_The_Application_Command:
                     ConnectionManager.getInstance(null).ProcessSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
                         clientServerProtocol.Username);
                     break;
 
-                case TypeOfCommand.Successes_Forgot_Password_Command:
+                case TypeOfCommand.Success_Forgot_Password_Command:
                     ConnectionManager.getInstance(null).ProcessSuccessesForgotPassword();
                     break;
 
@@ -54,12 +54,17 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.Message_From_Other_User_Command:
                     ConnectionManager.getInstance(null).ProcessMessageFromOtherUserCommand(clientServerProtocol.UserId, clientServerProtocol.Username,
-                        clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent);
+                        clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent, clientServerProtocol.ChatRoomId);
                     break;
 
                 case TypeOfCommand.Return_Image_Of_User_Command:
                     ConnectionManager.getInstance(null).ProcessReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture,
-                        clientServerProtocol.Username, clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent);
+                        clientServerProtocol.Username, clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent,
+                        clientServerProtocol.ChatRoomId);
+                    break;
+
+                case TypeOfCommand.Return_Messages_History_Of_Chat_Room_Command:
+                    ConnectionManager.getInstance(null).ProcessReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoomJson);
                     break;
 
 

@@ -32,6 +32,7 @@
             this.userInfoPanel = new System.Windows.Forms.Panel();
             this.muteButton = new System.Windows.Forms.Button();
             this.deafenButton = new System.Windows.Forms.Button();
+            this.userProfilePicturePictureBox = new YoavDiscordClient.CirclePictureBox();
             this.usernameLabel = new System.Windows.Forms.Label();
             this.settingsButton = new System.Windows.Forms.Button();
             this.voiceChannel3Button = new System.Windows.Forms.Button();
@@ -46,15 +47,17 @@
             this.offlineUsersLabel = new System.Windows.Forms.Label();
             this.onlineUsersLabel = new System.Windows.Forms.Label();
             this.chatAreaPanel = new System.Windows.Forms.Panel();
+            this.ChatMessagesPanel1 = new System.Windows.Forms.Panel();
+            this.ChatMessagesPanel2 = new System.Windows.Forms.Panel();
+            this.ChatMessagesPanel3 = new System.Windows.Forms.Panel();
             this.sendMessageButton = new System.Windows.Forms.Button();
             this.messageInputTextBox = new System.Windows.Forms.TextBox();
             this.nameOfTheProjectLabel = new System.Windows.Forms.Label();
-            this.userProfilePicturePictureBox = new YoavDiscordClient.CirclePictureBox();
             this.leftSidePanel.SuspendLayout();
             this.userInfoPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.userProfilePicturePictureBox)).BeginInit();
             this.rightSidePanel.SuspendLayout();
             this.chatAreaPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.userProfilePicturePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // leftSidePanel
@@ -108,6 +111,16 @@
             this.deafenButton.Size = new System.Drawing.Size(47, 47);
             this.deafenButton.TabIndex = 13;
             this.deafenButton.UseVisualStyleBackColor = true;
+            // 
+            // userProfilePicturePictureBox
+            // 
+            this.userProfilePicturePictureBox.BackColor = System.Drawing.Color.Gray;
+            this.userProfilePicturePictureBox.Location = new System.Drawing.Point(12, 37);
+            this.userProfilePicturePictureBox.Name = "userProfilePicturePictureBox";
+            this.userProfilePicturePictureBox.Size = new System.Drawing.Size(105, 86);
+            this.userProfilePicturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.userProfilePicturePictureBox.TabIndex = 12;
+            this.userProfilePicturePictureBox.TabStop = false;
             // 
             // usernameLabel
             // 
@@ -210,8 +223,10 @@
             this.textChanel3Button.Size = new System.Drawing.Size(328, 35);
             this.textChanel3Button.TabIndex = 6;
             this.textChanel3Button.TabStop = false;
+            this.textChanel3Button.Tag = "3";
             this.textChanel3Button.Text = "Text Chanel 3";
             this.textChanel3Button.UseVisualStyleBackColor = false;
+            this.textChanel3Button.Click += new System.EventHandler(this.textChanel3Button_Click);
             // 
             // textChanel2Button
             // 
@@ -228,8 +243,10 @@
             this.textChanel2Button.Size = new System.Drawing.Size(328, 35);
             this.textChanel2Button.TabIndex = 5;
             this.textChanel2Button.TabStop = false;
+            this.textChanel2Button.Tag = "2";
             this.textChanel2Button.Text = "Text Chanel 2";
             this.textChanel2Button.UseVisualStyleBackColor = false;
+            this.textChanel2Button.Click += new System.EventHandler(this.textChanel2Button_Click);
             // 
             // textChanel1Button
             // 
@@ -246,6 +263,7 @@
             this.textChanel1Button.Size = new System.Drawing.Size(328, 37);
             this.textChanel1Button.TabIndex = 4;
             this.textChanel1Button.TabStop = false;
+            this.textChanel1Button.Tag = "1";
             this.textChanel1Button.Text = "Text Chanel 1";
             this.textChanel1Button.UseVisualStyleBackColor = false;
             this.textChanel1Button.Click += new System.EventHandler(this.textChanel1Button_Click);
@@ -297,6 +315,9 @@
             // chatAreaPanel
             // 
             this.chatAreaPanel.AutoScroll = true;
+            this.chatAreaPanel.Controls.Add(this.ChatMessagesPanel1);
+            this.chatAreaPanel.Controls.Add(this.ChatMessagesPanel2);
+            this.chatAreaPanel.Controls.Add(this.ChatMessagesPanel3);
             this.chatAreaPanel.Controls.Add(this.sendMessageButton);
             this.chatAreaPanel.Controls.Add(this.messageInputTextBox);
             this.chatAreaPanel.Controls.Add(this.nameOfTheProjectLabel);
@@ -305,6 +326,32 @@
             this.chatAreaPanel.Name = "chatAreaPanel";
             this.chatAreaPanel.Size = new System.Drawing.Size(1300, 1209);
             this.chatAreaPanel.TabIndex = 4;
+            // 
+            // ChatMessagesPanel1
+            // 
+            this.ChatMessagesPanel1.Location = new System.Drawing.Point(0, 86);
+            this.ChatMessagesPanel1.Name = "ChatMessagesPanel1";
+            this.ChatMessagesPanel1.Size = new System.Drawing.Size(1300, 1043);
+            this.ChatMessagesPanel1.TabIndex = 15;
+            this.ChatMessagesPanel1.Tag = "0";
+            // 
+            // ChatMessagesPanel2
+            // 
+            this.ChatMessagesPanel2.Location = new System.Drawing.Point(0, 86);
+            this.ChatMessagesPanel2.Name = "ChatMessagesPanel2";
+            this.ChatMessagesPanel2.Size = new System.Drawing.Size(1300, 1043);
+            this.ChatMessagesPanel2.TabIndex = 15;
+            this.ChatMessagesPanel2.Tag = "0";
+            this.ChatMessagesPanel2.Visible = false;
+            // 
+            // ChatMessagesPanel3
+            // 
+            this.ChatMessagesPanel3.Location = new System.Drawing.Point(0, 86);
+            this.ChatMessagesPanel3.Name = "ChatMessagesPanel3";
+            this.ChatMessagesPanel3.Size = new System.Drawing.Size(1300, 1043);
+            this.ChatMessagesPanel3.TabIndex = 15;
+            this.ChatMessagesPanel3.Tag = "0";
+            this.ChatMessagesPanel3.Visible = false;
             // 
             // sendMessageButton
             // 
@@ -345,16 +392,6 @@
             this.nameOfTheProjectLabel.Text = "Yoav Discord";
             this.nameOfTheProjectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // userProfilePicturePictureBox
-            // 
-            this.userProfilePicturePictureBox.BackColor = System.Drawing.Color.Gray;
-            this.userProfilePicturePictureBox.Location = new System.Drawing.Point(12, 37);
-            this.userProfilePicturePictureBox.Name = "userProfilePicturePictureBox";
-            this.userProfilePicturePictureBox.Size = new System.Drawing.Size(105, 86);
-            this.userProfilePicturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.userProfilePicturePictureBox.TabIndex = 12;
-            this.userProfilePicturePictureBox.TabStop = false;
-            // 
             // DiscordApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -373,10 +410,10 @@
             this.leftSidePanel.ResumeLayout(false);
             this.leftSidePanel.PerformLayout();
             this.userInfoPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.userProfilePicturePictureBox)).EndInit();
             this.rightSidePanel.ResumeLayout(false);
             this.chatAreaPanel.ResumeLayout(false);
             this.chatAreaPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.userProfilePicturePictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -405,5 +442,9 @@
         private CirclePictureBox userProfilePicturePictureBox;
         private System.Windows.Forms.Button muteButton;
         private System.Windows.Forms.Button deafenButton;
+        private System.Windows.Forms.Panel ChatMessagesPanel1;
+        private System.Windows.Forms.Panel ChatMessagesPanel2;
+        private System.Windows.Forms.Panel ChatMessagesPanel3;
+
     }
 }

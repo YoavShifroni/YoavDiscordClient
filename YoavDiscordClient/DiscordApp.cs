@@ -41,6 +41,24 @@ namespace YoavDiscordClient
             }
         }
 
+
+        private int WhichChatMessagesPanelIsVisible()
+        {
+            if (this.ChatMessagesPanel1.Visible)
+            {
+                return 1;
+            }
+            if (this.ChatMessagesPanel2.Visible)
+            {
+                return 2;
+            }
+            if (this.ChatMessagesPanel3.Visible)
+            {
+                return 3;
+            }
+            return -1;
+        }
+
         private void sendMessageButton_Click(object sender, EventArgs e)
         {
             if(this.messageInputTextBox.Text.Length == 0)
@@ -48,40 +66,44 @@ namespace YoavDiscordClient
                 MessageBox.Show("you can't send an empty message!");
                 return;
             }
-            this.AddMessageToChat(this._username, this.messageInputTextBox.Text, this._userProfilePicture, DateTime.Now);
-            ConnectionManager.getInstance(null).ProcessSendMessage(this.messageInputTextBox.Text, DateTime.Now);
+            int chatRoomId = this.WhichChatMessagesPanelIsVisible();
+            this.AddMessageToChat(this._username, this.messageInputTextBox.Text, this._userProfilePicture, DateTime.Now, chatRoomId);
+            ConnectionManager.getInstance(null).ProcessSendMessage(this.messageInputTextBox.Text, chatRoomId);
             this.messageInputTextBox.Text = "";
         }
 
-        public void AddMessageToChat(string username, string message, Image profileImage, DateTime time)
+        public void AddMessageToChat(string username, string message, Image profileImage, DateTime time, int chatRoomId)
         {
             // Create a new ChatMessagePanel for the new message
             ChatMessagePanel newMessagePanel = new ChatMessagePanel(username, message, profileImage, time);
 
+            string nameOfActivePanel = $"ChatMessagesPanel{chatRoomId}";
+            Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
             // Calculate the Y-position where the new message will go (at the bottom)
-            int newYPosition = chatAreaPanel.Controls.Count > 3
-                ? chatAreaPanel.Controls[chatAreaPanel.Controls.Count - 1].Bottom + 10  // Add some space between messages
+            Panel messagesPanel = ((Panel)control[0]);
+            int newYPosition = messagesPanel.Controls.Count > 0
+                ? messagesPanel.Controls[messagesPanel.Controls.Count - 1].Bottom + 10  // Add some space between messages
                 : 50;  // If no controls are in the panel yet, start from the top
-                // TODO: change this so the panel will start under the label
 
             // Set the location of the new message panel
             newMessagePanel.Location = new Point(10, newYPosition);
 
             // Add the new message panel to the chatAreaPanel
-            chatAreaPanel.Controls.Add(newMessagePanel);
+            messagesPanel.Controls.Add(newMessagePanel);
 
             // Optionally, scroll the panel to the latest message (if you are using a scrollable panel)
-            chatAreaPanel.ScrollControlIntoView(newMessagePanel);
+            messagesPanel.ScrollControlIntoView(newMessagePanel);
         }
 
-        public void AddMessageToChatFromOtherUser(string username, int userId, string message, DateTime time)
+
+        public void AddMessageToChatFromOtherUser(string username, int userId, string message, DateTime time, int chatRoomId)
         {
             if (!this.usersImages.ContainsKey(userId))
             {
-                ConnectionManager.getInstance(null).ProcessFetchImageOfUser(userId, username, message, time);
+                ConnectionManager.getInstance(null).ProcessFetchImageOfUser(userId, username, message, time, chatRoomId);
                 return;
             }
-            this.AddMessageToChat(username, message, this.usersImages[userId], time);
+            this.AddMessageToChat(username, message, this.usersImages[userId], time, chatRoomId);
         }
 
 
@@ -107,18 +129,67 @@ namespace YoavDiscordClient
 
             this.AddPicturesToTheWindow();
 
+            ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+
+        }
+
+
+
+        public void AddNewUserImageAndShowItsMessage(int userId, byte[] profilePicture, string username, string messageThatTheUserSent, 
+            DateTime timeThatTheMessageWasSent, int chatRoomId)
+        {
+
+            this.usersImages[userId] = this.ByteArrayToImage(profilePicture);
+            this.AddMessageToChatFromOtherUser(username, userId, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId);
         }
 
         private void textChanel1Button_Click(object sender, EventArgs e)
         {
+            this.ChatMessagesPanel1.Visible = true;
+            this.ChatMessagesPanel2.Visible = false;
+            this.ChatMessagesPanel3.Visible = false;
+            if (((string)this.ChatMessagesPanel1.Tag) == "0")
+            {
+                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+            }
 
         }
 
-        public void AddNewUserImageAndShowItsMessage(int userId, byte[] profilePicture, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent)
+        private void textChanel2Button_Click(object sender, EventArgs e)
         {
+            this.ChatMessagesPanel1.Visible = false;
+            this.ChatMessagesPanel2.Visible = true;
+            this.ChatMessagesPanel3.Visible = false;
+            if (((string)this.ChatMessagesPanel2.Tag) == "0")
+            {
+                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(2);
+            }
+        }
 
-            this.usersImages[userId] = this.ByteArrayToImage(profilePicture);
-            this.AddMessageToChatFromOtherUser(username, userId, messageThatTheUserSent, timeThatTheMessageWasSent);
+        private void textChanel3Button_Click(object sender, EventArgs e)
+        {
+            this.ChatMessagesPanel1.Visible = false;
+            this.ChatMessagesPanel2.Visible = false;
+            this.ChatMessagesPanel3.Visible = true;
+            if (((string)this.ChatMessagesPanel3.Tag) == "0")
+            {
+                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(3);
+            }
+        }
+
+        public void SetMessagesHistoryOfAChatRoom(List<UserMessage> messages)
+        {
+            foreach(UserMessage message in messages)
+            {
+                this.AddMessageToChatFromOtherUser(message.Username, message.userId, message.Message, message.Time, message.ChatRoomId);
+            }
+            if(messages != null && messages.Count > 0)
+            {
+                string nameOfActivePanel = $"ChatMessagesPanel{messages[0].ChatRoomId}";
+                Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+                control[0].Tag = "1";
+            }
+            
         }
     }
 }

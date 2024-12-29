@@ -14,10 +14,17 @@ namespace YoavDiscordClient
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            DiscordFormsHolder.getInstance().SetActiveForm(FormNames.Login);
-            Application.Run(DiscordFormsHolder.getInstance().LoginForm);
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                DiscordFormsHolder.getInstance().SetActiveForm(FormNames.Login);
+                Application.Run(DiscordFormsHolder.getInstance().LoginForm);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
     }
 }

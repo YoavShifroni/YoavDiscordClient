@@ -334,6 +334,7 @@
             this.ChatMessagesPanel1.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel1.TabIndex = 15;
             this.ChatMessagesPanel1.Tag = "0";
+            this.ChatMessagesPanel1.AutoScroll = true;
             // 
             // ChatMessagesPanel2
             // 
@@ -342,6 +343,7 @@
             this.ChatMessagesPanel2.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel2.TabIndex = 15;
             this.ChatMessagesPanel2.Tag = "0";
+            this.ChatMessagesPanel2.AutoScroll = true;
             this.ChatMessagesPanel2.Visible = false;
             // 
             // ChatMessagesPanel3
@@ -351,6 +353,7 @@
             this.ChatMessagesPanel3.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel3.TabIndex = 15;
             this.ChatMessagesPanel3.Tag = "0";
+            this.ChatMessagesPanel3.AutoScroll = true;
             this.ChatMessagesPanel3.Visible = false;
             // 
             // sendMessageButton

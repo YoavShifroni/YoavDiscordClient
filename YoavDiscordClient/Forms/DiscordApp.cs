@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -20,9 +21,24 @@ namespace YoavDiscordClient
 
         private Dictionary<int, Image> usersImages = new Dictionary<int, Image>();
 
+
+        
+
+
         public DiscordApp()
         {
             InitializeComponent();
+
+        }
+
+        private void DiscordApp_Load(object sender, EventArgs e)
+        {
+            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 2175f, 1248f);
+
+            this.AddPicturesToTheWindow();
+
+            ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+
         }
 
         public void SetUsernameAndProfilePicture(byte[] profilePicture, string username)
@@ -81,7 +97,7 @@ namespace YoavDiscordClient
             Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
             // Calculate the Y-position where the new message will go (at the bottom)
             Panel messagesPanel = ((Panel)control[0]);
-            int newYPosition = messagesPanel.Controls.Count > 0
+            int newYPosition = messagesPanel.Controls.Count > 1
                 ? messagesPanel.Controls[messagesPanel.Controls.Count - 1].Bottom + 10  // Add some space between messages
                 : 50;  // If no controls are in the panel yet, start from the top
 
@@ -91,8 +107,17 @@ namespace YoavDiscordClient
             // Add the new message panel to the chatAreaPanel
             messagesPanel.Controls.Add(newMessagePanel);
 
-            // Optionally, scroll the panel to the latest message (if you are using a scrollable panel)
+            //// Optionally, scroll the panel to the latest message (if you are using a scrollable panel)
             messagesPanel.ScrollControlIntoView(newMessagePanel);
+
+            //string nameOfActiveScrollBar = $"customScrollBar{chatRoomId}";
+            //Control[] controls = messagesPanel.Controls.Find(nameOfActiveScrollBar, true);
+            //CustomScrollBar customScrollBar = ((CustomScrollBar)controls[0]);
+            //customScrollBar.Maximum = messagesPanel.VerticalScroll.Maximum;
+            //customScrollBar.ScrollValue = messagesPanel.VerticalScroll.Maximum;
+            ////this.UpdateScrollBarVisibility(messagesPanel, customScrollBar);
+
+            //this.UpdateScrollBarThumbSize(customScrollBar, messagesPanel);
         }
 
 
@@ -122,19 +147,6 @@ namespace YoavDiscordClient
             this.muteButton.Image = this.ResizeImage(originalMuteLogoImage, this.muteButton.Width, this.muteButton.Height);
         }
 
-
-        private void DiscordApp_Load(object sender, EventArgs e)
-        {
-            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 2175f, 1248f);
-
-            this.AddPicturesToTheWindow();
-
-            ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
-
-        }
-
-
-
         public void AddNewUserImageAndShowItsMessage(int userId, byte[] profilePicture, string username, string messageThatTheUserSent, 
             DateTime timeThatTheMessageWasSent, int chatRoomId)
         {
@@ -148,6 +160,9 @@ namespace YoavDiscordClient
             this.ChatMessagesPanel1.Visible = true;
             this.ChatMessagesPanel2.Visible = false;
             this.ChatMessagesPanel3.Visible = false;
+            //this.customScrollBar1.Visible = true;
+            //this.customScrollBar2.Visible = false;
+            //this.customScrollBar3.Visible = false;
             if (((string)this.ChatMessagesPanel1.Tag) == "0")
             {
                 ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
@@ -160,6 +175,9 @@ namespace YoavDiscordClient
             this.ChatMessagesPanel1.Visible = false;
             this.ChatMessagesPanel2.Visible = true;
             this.ChatMessagesPanel3.Visible = false;
+            //this.customScrollBar1.Visible = false;
+            //this.customScrollBar2.Visible = true;
+            //this.customScrollBar3.Visible = false;
             if (((string)this.ChatMessagesPanel2.Tag) == "0")
             {
                 ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(2);
@@ -171,6 +189,9 @@ namespace YoavDiscordClient
             this.ChatMessagesPanel1.Visible = false;
             this.ChatMessagesPanel2.Visible = false;
             this.ChatMessagesPanel3.Visible = true;
+            //this.customScrollBar1.Visible = false;
+            //this.customScrollBar2.Visible = false;
+            //this.customScrollBar3.Visible = true;
             if (((string)this.ChatMessagesPanel3.Tag) == "0")
             {
                 ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(3);
@@ -190,6 +211,99 @@ namespace YoavDiscordClient
                 control[0].Tag = "1";
             }
             
+        }
+
+        //private void CustomScrollBar1_ScrollValueChanged(object sender, EventArgs e)
+        //{
+        //    // Set the panel's vertical scroll value
+        //    this.ChatMessagesPanel1.VerticalScroll.Value = this.customScrollBar1.ScrollValue;
+        //    this.ChatMessagesPanel1.PerformLayout(); // Redraw the panel
+        //}
+
+        //private void CustomScrollBar2_ScrollValueChanged(object sender, EventArgs e)
+        //{
+        //    // Set the panel's vertical scroll value
+        //    if (this.ChatMessagesPanel2.VerticalScroll.Value != this.customScrollBar2.ScrollValue)
+        //    {
+        //        this.ChatMessagesPanel2.VerticalScroll.Value = this.customScrollBar2.ScrollValue;
+        //        this.ChatMessagesPanel2.PerformLayout(); // Redraw the panel
+
+        //    }
+
+        //}
+
+        //private void CustomScrollBar3_ScrollValueChanged(object sender, EventArgs e)
+        //{
+        //    // Set the panel's vertical scroll value
+        //    this.ChatMessagesPanel3.VerticalScroll.Value = this.customScrollBar3.ScrollValue;
+        //    this.ChatMessagesPanel3.PerformLayout(); // Redraw the panel
+        //}
+
+        //private void ChatMessagesPanel1_Scroll(object sender, ScrollEventArgs e)
+        //{
+        //    this.customScrollBar1.ScrollValue = this.ChatMessagesPanel1.VerticalScroll.Value;
+        //}
+
+        //private void ChatMessagesPanel2_Scroll(object sender, ScrollEventArgs e)
+        //{
+        //    this.customScrollBar2.ScrollValue = this.ChatMessagesPanel2.VerticalScroll.Value;
+        //}
+
+        //private void ChatMessagesPanel3_Scroll(object sender, ScrollEventArgs e)
+        //{
+        //    this.customScrollBar3.ScrollValue = this.ChatMessagesPanel3.VerticalScroll.Value;
+        //}
+
+        //private void UpdateScrollBarVisibility(Panel chatPanel, CustomScrollBar customScrollBar)
+        //{
+        //    int totalContentHeight = chatPanel.DisplayRectangle.Height; // Total height of content
+        //    int visibleHeight = chatPanel.ClientSize.Height;            // Visible height of the panel
+
+        //    if (totalContentHeight > visibleHeight)
+        //    {
+        //        customScrollBar.Visible = true;
+        //        customScrollBar.MaximumValue = totalContentHeight - visibleHeight;
+        //    }
+        //    else
+        //    {
+        //        customScrollBar.Visible = false;
+        //    }
+        //}
+
+
+        //private void UpdateScrollBarThumbSize(CustomScrollBar customScrollBar, Panel chatPanel)
+        //{
+        //    int totalContentHeight = chatPanel.DisplayRectangle.Height; // Total height of content
+        //    int visibleHeight = chatPanel.ClientSize.Height;            // Visible height of the panel
+
+        //    if (totalContentHeight > 0 && visibleHeight > 0)
+        //    {
+        //        // Calculate the thumb size proportionally
+        //        float thumbSizeRatio = (float)visibleHeight / totalContentHeight;
+
+        //        // Set the scrollbar's thumb size
+        //        customScrollBar.LargeChange = (int)(customScrollBar.Maximum * thumbSizeRatio);
+        //    }
+        //    else
+        //    {
+        //        // Default thumb size if no content
+        //        customScrollBar.LargeChange = customScrollBar.Maximum;
+        //    }
+        //}
+
+        private void voiceChannel1Button_Click(object sender, EventArgs e)
+        {
+            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(1);
+        }
+
+        private void voiceChannel2Button_Click(object sender, EventArgs e)
+        {
+            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(2);
+        }
+
+        private void voiceChannel3Button_Click(object sender, EventArgs e)
+        {
+            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(3);
         }
     }
 }

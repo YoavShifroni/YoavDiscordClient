@@ -277,5 +277,13 @@ namespace YoavDiscordClient
             List<UserMessage> messages = JsonConvert.DeserializeObject<List<UserMessage>>(messagesOfAChatRoomJson);
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.SetMessagesHistoryOfAChatRoom(messages)));
         }
+
+        public void ProcessConnectToMediaRoom(int mediaRoomId)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Connect_To_Media_Room_Command;
+            clientServerProtocol.MediaRoomId = mediaRoomId;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
     }
 }

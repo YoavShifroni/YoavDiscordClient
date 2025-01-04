@@ -160,6 +160,7 @@
             this.voiceChannel3Button.TabStop = false;
             this.voiceChannel3Button.Text = "Voice Chanel 3";
             this.voiceChannel3Button.UseVisualStyleBackColor = false;
+            this.voiceChannel3Button.Click += new System.EventHandler(this.voiceChannel3Button_Click);
             // 
             // voiceChannel2Button
             // 
@@ -178,6 +179,7 @@
             this.voiceChannel2Button.TabStop = false;
             this.voiceChannel2Button.Text = "Voice Chanel 2";
             this.voiceChannel2Button.UseVisualStyleBackColor = false;
+            this.voiceChannel2Button.Click += new System.EventHandler(this.voiceChannel2Button_Click);
             // 
             // voiceChannel1Button
             // 
@@ -196,6 +198,7 @@
             this.voiceChannel1Button.TabStop = false;
             this.voiceChannel1Button.Text = "Voice Chanel 1";
             this.voiceChannel1Button.UseVisualStyleBackColor = false;
+            this.voiceChannel1Button.Click += new System.EventHandler(this.voiceChannel1Button_Click);
             // 
             // voiceChannelsLabel
             // 
@@ -329,31 +332,34 @@
             // 
             // ChatMessagesPanel1
             // 
+            this.ChatMessagesPanel1.AutoScroll = true;
+            this.ChatMessagesPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(49)))), ((int)(((byte)(54)))));
             this.ChatMessagesPanel1.Location = new System.Drawing.Point(0, 86);
             this.ChatMessagesPanel1.Name = "ChatMessagesPanel1";
             this.ChatMessagesPanel1.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel1.TabIndex = 15;
             this.ChatMessagesPanel1.Tag = "0";
-            this.ChatMessagesPanel1.AutoScroll = true;
             // 
             // ChatMessagesPanel2
             // 
+            this.ChatMessagesPanel2.AutoScroll = true;
+            this.ChatMessagesPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(49)))), ((int)(((byte)(54)))));
             this.ChatMessagesPanel2.Location = new System.Drawing.Point(0, 86);
             this.ChatMessagesPanel2.Name = "ChatMessagesPanel2";
             this.ChatMessagesPanel2.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel2.TabIndex = 15;
             this.ChatMessagesPanel2.Tag = "0";
-            this.ChatMessagesPanel2.AutoScroll = true;
             this.ChatMessagesPanel2.Visible = false;
             // 
             // ChatMessagesPanel3
             // 
+            this.ChatMessagesPanel3.AutoScroll = true;
+            this.ChatMessagesPanel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(47)))), ((int)(((byte)(49)))), ((int)(((byte)(54)))));
             this.ChatMessagesPanel3.Location = new System.Drawing.Point(0, 86);
             this.ChatMessagesPanel3.Name = "ChatMessagesPanel3";
             this.ChatMessagesPanel3.Size = new System.Drawing.Size(1300, 1043);
             this.ChatMessagesPanel3.TabIndex = 15;
             this.ChatMessagesPanel3.Tag = "0";
-            this.ChatMessagesPanel3.AutoScroll = true;
             this.ChatMessagesPanel3.Visible = false;
             // 
             // sendMessageButton
@@ -448,6 +454,9 @@
         private System.Windows.Forms.Panel ChatMessagesPanel1;
         private System.Windows.Forms.Panel ChatMessagesPanel2;
         private System.Windows.Forms.Panel ChatMessagesPanel3;
+        //private CustomScrollBar customScrollBar1;
+        //private CustomScrollBar customScrollBar2;
+        //private CustomScrollBar customScrollBar3;
 
     }
 }

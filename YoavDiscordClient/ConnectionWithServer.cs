@@ -99,12 +99,11 @@ namespace YoavDiscordClient
             {
                 textFromServer = AesFunctions.Decrypt(textFromServer);
                 string[] stringSeparators = new string[] { "\r\n" };
-                Console.WriteLine("Recived from server: " + textFromServer);
+                System.Diagnostics.Debug.WriteLine("Recived from server: " + textFromServer);
                 string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < lines.Length; i++)
+                foreach (string line in lines)
                 {
-                    this._handleCommandFromServer.HandleCommand(lines[i]);
-
+                    Task.Run(() => this._handleCommandFromServer.HandleCommand(line));
                 }
             }
 

@@ -91,7 +91,7 @@ namespace YoavDiscordClient
         /// <param name="message"></param>
         public void SendMessage(string message)
         {
-            Console.WriteLine(message);
+            System.Diagnostics.Debug.WriteLine(message);
             try
             {
                 // send message to the server
@@ -112,7 +112,7 @@ namespace YoavDiscordClient
                         Thread.Sleep(1000);
                     }
                     message = AesFunctions.Encrypt(message);
-                    Console.WriteLine("message sent to the server: " + message);
+                    System.Diagnostics.Debug.WriteLine("message sent to the server: " + message);
                 }
 
                 byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
@@ -129,7 +129,7 @@ namespace YoavDiscordClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
 
@@ -159,7 +159,7 @@ namespace YoavDiscordClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
                 stream.Close();
             }
         }

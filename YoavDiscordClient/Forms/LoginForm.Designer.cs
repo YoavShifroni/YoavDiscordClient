@@ -30,335 +30,334 @@ namespace YoavDiscordClient
         /// </summary>
         private void InitializeComponent()
         {
-            this.serverIpLabel = new System.Windows.Forms.Label();
-            this.dontHaveAnAccountLabel = new System.Windows.Forms.Label();
-            this.loginButton = new System.Windows.Forms.Button();
-            this.usernameLabel = new System.Windows.Forms.Label();
-            this.showPasswordCheckBox = new System.Windows.Forms.CheckBox();
-            this.goToRegisterLabel = new System.Windows.Forms.Label();
-            this.clearButton = new System.Windows.Forms.Button();
-            this.changePasswordLabel = new System.Windows.Forms.Label();
-            this.passwordLabel = new System.Windows.Forms.Label();
-            this.passwordTextBox = new System.Windows.Forms.TextBox();
-            this.usernameTextBox = new System.Windows.Forms.TextBox();
-            this.serverIpTextBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.startLabel = new System.Windows.Forms.Label();
-            this.codeRecivedInMailLabel = new System.Windows.Forms.Label();
-            this.codeRecivedInMailTextBox = new System.Windows.Forms.TextBox();
-            this.submitCodeButton = new System.Windows.Forms.Button();
-            this.captchaPictureBox = new System.Windows.Forms.PictureBox();
-            this.checkThatTheCodesAreTheSameButton = new System.Windows.Forms.Button();
-            this.enterTheCodeShownAboveTextBox = new System.Windows.Forms.TextBox();
-            this.enterTheCodeShownAboveLabel = new System.Windows.Forms.Label();
-            this.cooldownTimeLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).BeginInit();
-            this.SuspendLayout();
+            serverIpLabel = new Label();
+            dontHaveAnAccountLabel = new Label();
+            loginButton = new Button();
+            usernameLabel = new Label();
+            showPasswordCheckBox = new CheckBox();
+            goToRegisterLabel = new Label();
+            clearButton = new Button();
+            changePasswordLabel = new Label();
+            passwordLabel = new Label();
+            passwordTextBox = new TextBox();
+            usernameTextBox = new TextBox();
+            serverIpTextBox = new TextBox();
+            label1 = new Label();
+            startLabel = new Label();
+            codeRecivedInMailLabel = new Label();
+            codeRecivedInMailTextBox = new TextBox();
+            submitCodeButton = new Button();
+            captchaPictureBox = new PictureBox();
+            checkThatTheCodesAreTheSameButton = new Button();
+            enterTheCodeShownAboveTextBox = new TextBox();
+            enterTheCodeShownAboveLabel = new Label();
+            cooldownTimeLabel = new Label();
+            ((System.ComponentModel.ISupportInitialize)captchaPictureBox).BeginInit();
+            SuspendLayout();
             // 
             // serverIpLabel
             // 
-            this.serverIpLabel.AutoSize = true;
-            this.serverIpLabel.Location = new System.Drawing.Point(22, 136);
-            this.serverIpLabel.Name = "serverIpLabel";
-            this.serverIpLabel.Size = new System.Drawing.Size(63, 17);
-            this.serverIpLabel.TabIndex = 39;
-            this.serverIpLabel.Text = "Server Ip";
+            serverIpLabel.AutoSize = true;
+            serverIpLabel.Location = new System.Drawing.Point(22, 136);
+            serverIpLabel.Name = "serverIpLabel";
+            serverIpLabel.Size = new System.Drawing.Size(63, 17);
+            serverIpLabel.TabIndex = 39;
+            serverIpLabel.Text = "Server Ip";
             // 
             // dontHaveAnAccountLabel
             // 
-            this.dontHaveAnAccountLabel.AutoSize = true;
-            this.dontHaveAnAccountLabel.Location = new System.Drawing.Point(58, 523);
-            this.dontHaveAnAccountLabel.Name = "dontHaveAnAccountLabel";
-            this.dontHaveAnAccountLabel.Size = new System.Drawing.Size(147, 17);
-            this.dontHaveAnAccountLabel.TabIndex = 37;
-            this.dontHaveAnAccountLabel.Text = "Dont Have an Account";
+            dontHaveAnAccountLabel.AutoSize = true;
+            dontHaveAnAccountLabel.Location = new System.Drawing.Point(58, 523);
+            dontHaveAnAccountLabel.Name = "dontHaveAnAccountLabel";
+            dontHaveAnAccountLabel.Size = new System.Drawing.Size(147, 17);
+            dontHaveAnAccountLabel.TabIndex = 37;
+            dontHaveAnAccountLabel.Text = "Dont Have an Account";
             // 
             // loginButton
             // 
-            this.loginButton.AutoSize = true;
-            this.loginButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.loginButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.loginButton.FlatAppearance.BorderSize = 0;
-            this.loginButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.loginButton.ForeColor = System.Drawing.Color.White;
-            this.loginButton.Location = new System.Drawing.Point(25, 408);
-            this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(216, 35);
-            this.loginButton.TabIndex = 35;
-            this.loginButton.Text = "LOGIN";
-            this.loginButton.UseVisualStyleBackColor = false;
-            this.loginButton.Click += new System.EventHandler(this.loginButton_Click);
+            loginButton.AutoSize = true;
+            loginButton.BackColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            loginButton.Cursor = Cursors.Hand;
+            loginButton.FlatAppearance.BorderSize = 0;
+            loginButton.FlatStyle = FlatStyle.Flat;
+            loginButton.ForeColor = System.Drawing.Color.White;
+            loginButton.Location = new System.Drawing.Point(25, 408);
+            loginButton.Name = "loginButton";
+            loginButton.Size = new System.Drawing.Size(216, 35);
+            loginButton.TabIndex = 35;
+            loginButton.Text = "LOGIN";
+            loginButton.UseVisualStyleBackColor = false;
+            loginButton.Click += loginButton_Click;
             // 
             // usernameLabel
             // 
-            this.usernameLabel.AutoSize = true;
-            this.usernameLabel.Location = new System.Drawing.Point(22, 205);
-            this.usernameLabel.Name = "usernameLabel";
-            this.usernameLabel.Size = new System.Drawing.Size(69, 17);
-            this.usernameLabel.TabIndex = 30;
-            this.usernameLabel.Text = "Username";
+            usernameLabel.AutoSize = true;
+            usernameLabel.Location = new System.Drawing.Point(22, 205);
+            usernameLabel.Name = "usernameLabel";
+            usernameLabel.Size = new System.Drawing.Size(69, 17);
+            usernameLabel.TabIndex = 30;
+            usernameLabel.Text = "Username";
             // 
             // showPasswordCheckBox
             // 
-            this.showPasswordCheckBox.AutoSize = true;
-            this.showPasswordCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.showPasswordCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.showPasswordCheckBox.Location = new System.Drawing.Point(122, 330);
-            this.showPasswordCheckBox.Name = "showPasswordCheckBox";
-            this.showPasswordCheckBox.Size = new System.Drawing.Size(119, 21);
-            this.showPasswordCheckBox.TabIndex = 34;
-            this.showPasswordCheckBox.Text = "Show Password";
-            this.showPasswordCheckBox.UseVisualStyleBackColor = true;
-            this.showPasswordCheckBox.CheckedChanged += new System.EventHandler(this.showPasswordCheckBox_CheckedChanged);
+            showPasswordCheckBox.AutoSize = true;
+            showPasswordCheckBox.Cursor = Cursors.Hand;
+            showPasswordCheckBox.FlatStyle = FlatStyle.Flat;
+            showPasswordCheckBox.Location = new System.Drawing.Point(122, 330);
+            showPasswordCheckBox.Name = "showPasswordCheckBox";
+            showPasswordCheckBox.Size = new System.Drawing.Size(119, 21);
+            showPasswordCheckBox.TabIndex = 34;
+            showPasswordCheckBox.Text = "Show Password";
+            showPasswordCheckBox.UseVisualStyleBackColor = true;
+            showPasswordCheckBox.CheckedChanged += showPasswordCheckBox_CheckedChanged;
             // 
             // goToRegisterLabel
             // 
-            this.goToRegisterLabel.AutoSize = true;
-            this.goToRegisterLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.goToRegisterLabel.Location = new System.Drawing.Point(87, 551);
-            this.goToRegisterLabel.Name = "goToRegisterLabel";
-            this.goToRegisterLabel.Size = new System.Drawing.Size(76, 17);
-            this.goToRegisterLabel.TabIndex = 38;
-            this.goToRegisterLabel.Text = "Create One";
-            this.goToRegisterLabel.Click += new System.EventHandler(this.goToRegisterLabel_Click);
+            goToRegisterLabel.AutoSize = true;
+            goToRegisterLabel.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            goToRegisterLabel.Location = new System.Drawing.Point(87, 551);
+            goToRegisterLabel.Name = "goToRegisterLabel";
+            goToRegisterLabel.Size = new System.Drawing.Size(76, 17);
+            goToRegisterLabel.TabIndex = 38;
+            goToRegisterLabel.Text = "Create One";
+            goToRegisterLabel.Click += goToRegisterLabel_Click;
             // 
             // clearButton
             // 
-            this.clearButton.AutoSize = true;
-            this.clearButton.BackColor = System.Drawing.Color.White;
-            this.clearButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.clearButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.clearButton.Location = new System.Drawing.Point(25, 462);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(216, 35);
-            this.clearButton.TabIndex = 36;
-            this.clearButton.Text = "CLEAR";
-            this.clearButton.UseVisualStyleBackColor = false;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            clearButton.AutoSize = true;
+            clearButton.BackColor = System.Drawing.Color.White;
+            clearButton.Cursor = Cursors.Hand;
+            clearButton.FlatStyle = FlatStyle.Flat;
+            clearButton.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            clearButton.Location = new System.Drawing.Point(25, 462);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new System.Drawing.Size(216, 35);
+            clearButton.TabIndex = 36;
+            clearButton.Text = "CLEAR";
+            clearButton.UseVisualStyleBackColor = false;
+            clearButton.Click += clearButton_Click;
             // 
             // changePasswordLabel
             // 
-            this.changePasswordLabel.AutoSize = true;
-            this.changePasswordLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.changePasswordLabel.Location = new System.Drawing.Point(169, 366);
-            this.changePasswordLabel.Name = "changePasswordLabel";
-            this.changePasswordLabel.Size = new System.Drawing.Size(68, 17);
-            this.changePasswordLabel.TabIndex = 42;
-            this.changePasswordLabel.Text = "Click here";
-            this.changePasswordLabel.Click += new System.EventHandler(this.changePasswordLabel_Click);
+            changePasswordLabel.AutoSize = true;
+            changePasswordLabel.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            changePasswordLabel.Location = new System.Drawing.Point(169, 366);
+            changePasswordLabel.Name = "changePasswordLabel";
+            changePasswordLabel.Size = new System.Drawing.Size(68, 17);
+            changePasswordLabel.TabIndex = 42;
+            changePasswordLabel.Text = "Click here";
+            changePasswordLabel.Click += changePasswordLabel_Click;
             // 
             // passwordLabel
             // 
-            this.passwordLabel.AutoSize = true;
-            this.passwordLabel.Location = new System.Drawing.Point(22, 279);
-            this.passwordLabel.Name = "passwordLabel";
-            this.passwordLabel.Size = new System.Drawing.Size(66, 17);
-            this.passwordLabel.TabIndex = 32;
-            this.passwordLabel.Text = "Password";
+            passwordLabel.AutoSize = true;
+            passwordLabel.Location = new System.Drawing.Point(22, 279);
+            passwordLabel.Name = "passwordLabel";
+            passwordLabel.Size = new System.Drawing.Size(66, 17);
+            passwordLabel.TabIndex = 32;
+            passwordLabel.Text = "Password";
             // 
             // passwordTextBox
             // 
-            this.passwordTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.passwordTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.passwordTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.passwordTextBox.Location = new System.Drawing.Point(25, 299);
-            this.passwordTextBox.Multiline = true;
-            this.passwordTextBox.Name = "passwordTextBox";
-            this.passwordTextBox.PasswordChar = '•';
-            this.passwordTextBox.Size = new System.Drawing.Size(216, 25);
-            this.passwordTextBox.TabIndex = 33;
-            this.passwordTextBox.Text = "Yh123!";
-            this.passwordTextBox.WordWrap = false;
+            passwordTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            passwordTextBox.BorderStyle = BorderStyle.None;
+            passwordTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            passwordTextBox.Location = new System.Drawing.Point(25, 299);
+            passwordTextBox.Multiline = true;
+            passwordTextBox.Name = "passwordTextBox";
+            passwordTextBox.PasswordChar = '•';
+            passwordTextBox.Size = new System.Drawing.Size(216, 25);
+            passwordTextBox.TabIndex = 33;
+            passwordTextBox.Text = "Yh123!";
+            passwordTextBox.WordWrap = false;
             // 
             // usernameTextBox
             // 
-            this.usernameTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.usernameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.usernameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.usernameTextBox.Location = new System.Drawing.Point(25, 224);
-            this.usernameTextBox.Multiline = true;
-            this.usernameTextBox.Name = "usernameTextBox";
-            this.usernameTextBox.Size = new System.Drawing.Size(216, 25);
-            this.usernameTextBox.TabIndex = 31;
-            this.usernameTextBox.Text = "yoav";
-            this.usernameTextBox.WordWrap = false;
+            usernameTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            usernameTextBox.BorderStyle = BorderStyle.None;
+            usernameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            usernameTextBox.Location = new System.Drawing.Point(25, 224);
+            usernameTextBox.Multiline = true;
+            usernameTextBox.Name = "usernameTextBox";
+            usernameTextBox.Size = new System.Drawing.Size(216, 25);
+            usernameTextBox.TabIndex = 31;
+            usernameTextBox.Text = "yoav";
+            usernameTextBox.WordWrap = false;
             // 
             // serverIpTextBox
             // 
-            this.serverIpTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.serverIpTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.serverIpTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.serverIpTextBox.Location = new System.Drawing.Point(25, 156);
-            this.serverIpTextBox.Multiline = true;
-            this.serverIpTextBox.Name = "serverIpTextBox";
-            this.serverIpTextBox.Size = new System.Drawing.Size(216, 25);
-            this.serverIpTextBox.TabIndex = 40;
-            this.serverIpTextBox.Text = "127.0.0.1";
+            serverIpTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            serverIpTextBox.BorderStyle = BorderStyle.None;
+            serverIpTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            serverIpTextBox.Location = new System.Drawing.Point(25, 156);
+            serverIpTextBox.Multiline = true;
+            serverIpTextBox.Name = "serverIpTextBox";
+            serverIpTextBox.Size = new System.Drawing.Size(216, 25);
+            serverIpTextBox.TabIndex = 40;
+            serverIpTextBox.Text = "10.0.0.26";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 366);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(152, 17);
-            this.label1.TabIndex = 41;
-            this.label1.Text = "Forgot your password -";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(20, 366);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(152, 17);
+            label1.TabIndex = 41;
+            label1.Text = "Forgot your password -";
             // 
             // startLabel
             // 
-            this.startLabel.AutoSize = true;
-            this.startLabel.Font = new System.Drawing.Font("MS UI Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.startLabel.Location = new System.Drawing.Point(56, 62);
-            this.startLabel.Name = "startLabel";
-            this.startLabel.Size = new System.Drawing.Size(155, 27);
-            this.startLabel.TabIndex = 29;
-            this.startLabel.Text = "Get Started";
+            startLabel.AutoSize = true;
+            startLabel.Font = new System.Drawing.Font("MS UI Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            startLabel.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            startLabel.Location = new System.Drawing.Point(56, 62);
+            startLabel.Name = "startLabel";
+            startLabel.Size = new System.Drawing.Size(155, 27);
+            startLabel.TabIndex = 29;
+            startLabel.Text = "Get Started";
             // 
             // codeRecivedInMailLabel
             // 
-            this.codeRecivedInMailLabel.AutoSize = true;
-            this.codeRecivedInMailLabel.Location = new System.Drawing.Point(25, 632);
-            this.codeRecivedInMailLabel.Name = "codeRecivedInMailLabel";
-            this.codeRecivedInMailLabel.Size = new System.Drawing.Size(222, 17);
-            this.codeRecivedInMailLabel.TabIndex = 43;
-            this.codeRecivedInMailLabel.Text = "Code that you recived in your mail";
-            this.codeRecivedInMailLabel.Visible = false;
+            codeRecivedInMailLabel.AutoSize = true;
+            codeRecivedInMailLabel.Location = new System.Drawing.Point(25, 632);
+            codeRecivedInMailLabel.Name = "codeRecivedInMailLabel";
+            codeRecivedInMailLabel.Size = new System.Drawing.Size(222, 17);
+            codeRecivedInMailLabel.TabIndex = 43;
+            codeRecivedInMailLabel.Text = "Code that you recived in your mail";
+            codeRecivedInMailLabel.Visible = false;
             // 
             // codeRecivedInMailTextBox
             // 
-            this.codeRecivedInMailTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.codeRecivedInMailTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.codeRecivedInMailTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.codeRecivedInMailTextBox.Location = new System.Drawing.Point(28, 662);
-            this.codeRecivedInMailTextBox.Multiline = true;
-            this.codeRecivedInMailTextBox.Name = "codeRecivedInMailTextBox";
-            this.codeRecivedInMailTextBox.Size = new System.Drawing.Size(216, 25);
-            this.codeRecivedInMailTextBox.TabIndex = 44;
-            this.codeRecivedInMailTextBox.Visible = false;
-            this.codeRecivedInMailTextBox.WordWrap = false;
+            codeRecivedInMailTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            codeRecivedInMailTextBox.BorderStyle = BorderStyle.None;
+            codeRecivedInMailTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            codeRecivedInMailTextBox.Location = new System.Drawing.Point(28, 662);
+            codeRecivedInMailTextBox.Multiline = true;
+            codeRecivedInMailTextBox.Name = "codeRecivedInMailTextBox";
+            codeRecivedInMailTextBox.Size = new System.Drawing.Size(216, 25);
+            codeRecivedInMailTextBox.TabIndex = 44;
+            codeRecivedInMailTextBox.Visible = false;
+            codeRecivedInMailTextBox.WordWrap = false;
             // 
             // submitCodeButton
             // 
-            this.submitCodeButton.AutoSize = true;
-            this.submitCodeButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.submitCodeButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.submitCodeButton.FlatAppearance.BorderSize = 0;
-            this.submitCodeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.submitCodeButton.ForeColor = System.Drawing.Color.White;
-            this.submitCodeButton.Location = new System.Drawing.Point(28, 706);
-            this.submitCodeButton.Name = "submitCodeButton";
-            this.submitCodeButton.Size = new System.Drawing.Size(216, 35);
-            this.submitCodeButton.TabIndex = 45;
-            this.submitCodeButton.Text = "SUBMIT";
-            this.submitCodeButton.UseVisualStyleBackColor = false;
-            this.submitCodeButton.Visible = false;
-            this.submitCodeButton.Click += new System.EventHandler(this.submitCodeButton_Click);
+            submitCodeButton.AutoSize = true;
+            submitCodeButton.BackColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            submitCodeButton.Cursor = Cursors.Hand;
+            submitCodeButton.FlatAppearance.BorderSize = 0;
+            submitCodeButton.FlatStyle = FlatStyle.Flat;
+            submitCodeButton.ForeColor = System.Drawing.Color.White;
+            submitCodeButton.Location = new System.Drawing.Point(28, 706);
+            submitCodeButton.Name = "submitCodeButton";
+            submitCodeButton.Size = new System.Drawing.Size(216, 35);
+            submitCodeButton.TabIndex = 45;
+            submitCodeButton.Text = "SUBMIT";
+            submitCodeButton.UseVisualStyleBackColor = false;
+            submitCodeButton.Visible = false;
+            submitCodeButton.Click += submitCodeButton_Click;
             // 
             // captchaPictureBox
             // 
-            this.captchaPictureBox.Location = new System.Drawing.Point(28, 795);
-            this.captchaPictureBox.Name = "captchaPictureBox";
-            this.captchaPictureBox.Size = new System.Drawing.Size(211, 113);
-            this.captchaPictureBox.TabIndex = 46;
-            this.captchaPictureBox.TabStop = false;
-            this.captchaPictureBox.Visible = false;
+            captchaPictureBox.Location = new System.Drawing.Point(28, 795);
+            captchaPictureBox.Name = "captchaPictureBox";
+            captchaPictureBox.Size = new System.Drawing.Size(211, 113);
+            captchaPictureBox.TabIndex = 46;
+            captchaPictureBox.TabStop = false;
+            captchaPictureBox.Visible = false;
             // 
             // checkThatTheCodesAreTheSameButton
             // 
-            this.checkThatTheCodesAreTheSameButton.AutoSize = true;
-            this.checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.checkThatTheCodesAreTheSameButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
-            this.checkThatTheCodesAreTheSameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.checkThatTheCodesAreTheSameButton.ForeColor = System.Drawing.Color.White;
-            this.checkThatTheCodesAreTheSameButton.Location = new System.Drawing.Point(23, 1012);
-            this.checkThatTheCodesAreTheSameButton.Name = "checkThatTheCodesAreTheSameButton";
-            this.checkThatTheCodesAreTheSameButton.Size = new System.Drawing.Size(216, 35);
-            this.checkThatTheCodesAreTheSameButton.TabIndex = 49;
-            this.checkThatTheCodesAreTheSameButton.Text = "CHECK";
-            this.checkThatTheCodesAreTheSameButton.UseVisualStyleBackColor = false;
-            this.checkThatTheCodesAreTheSameButton.Visible = false;
-            this.checkThatTheCodesAreTheSameButton.Click += new System.EventHandler(this.checkThatTheCodesAreTheSameButton_Click);
+            checkThatTheCodesAreTheSameButton.AutoSize = true;
+            checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            checkThatTheCodesAreTheSameButton.Cursor = Cursors.Hand;
+            checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
+            checkThatTheCodesAreTheSameButton.FlatStyle = FlatStyle.Flat;
+            checkThatTheCodesAreTheSameButton.ForeColor = System.Drawing.Color.White;
+            checkThatTheCodesAreTheSameButton.Location = new System.Drawing.Point(23, 1012);
+            checkThatTheCodesAreTheSameButton.Name = "checkThatTheCodesAreTheSameButton";
+            checkThatTheCodesAreTheSameButton.Size = new System.Drawing.Size(216, 35);
+            checkThatTheCodesAreTheSameButton.TabIndex = 49;
+            checkThatTheCodesAreTheSameButton.Text = "CHECK";
+            checkThatTheCodesAreTheSameButton.UseVisualStyleBackColor = false;
+            checkThatTheCodesAreTheSameButton.Visible = false;
+            checkThatTheCodesAreTheSameButton.Click += checkThatTheCodesAreTheSameButton_Click;
             // 
             // enterTheCodeShownAboveTextBox
             // 
-            this.enterTheCodeShownAboveTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.enterTheCodeShownAboveTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.enterTheCodeShownAboveTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.enterTheCodeShownAboveTextBox.Location = new System.Drawing.Point(23, 968);
-            this.enterTheCodeShownAboveTextBox.Multiline = true;
-            this.enterTheCodeShownAboveTextBox.Name = "enterTheCodeShownAboveTextBox";
-            this.enterTheCodeShownAboveTextBox.Size = new System.Drawing.Size(216, 25);
-            this.enterTheCodeShownAboveTextBox.TabIndex = 48;
-            this.enterTheCodeShownAboveTextBox.Visible = false;
-            this.enterTheCodeShownAboveTextBox.WordWrap = false;
+            enterTheCodeShownAboveTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            enterTheCodeShownAboveTextBox.BorderStyle = BorderStyle.None;
+            enterTheCodeShownAboveTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            enterTheCodeShownAboveTextBox.Location = new System.Drawing.Point(23, 968);
+            enterTheCodeShownAboveTextBox.Multiline = true;
+            enterTheCodeShownAboveTextBox.Name = "enterTheCodeShownAboveTextBox";
+            enterTheCodeShownAboveTextBox.Size = new System.Drawing.Size(216, 25);
+            enterTheCodeShownAboveTextBox.TabIndex = 48;
+            enterTheCodeShownAboveTextBox.Visible = false;
+            enterTheCodeShownAboveTextBox.WordWrap = false;
             // 
             // enterTheCodeShownAboveLabel
             // 
-            this.enterTheCodeShownAboveLabel.AutoSize = true;
-            this.enterTheCodeShownAboveLabel.Location = new System.Drawing.Point(20, 938);
-            this.enterTheCodeShownAboveLabel.Name = "enterTheCodeShownAboveLabel";
-            this.enterTheCodeShownAboveLabel.Size = new System.Drawing.Size(154, 17);
-            this.enterTheCodeShownAboveLabel.TabIndex = 47;
-            this.enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
-            this.enterTheCodeShownAboveLabel.Visible = false;
+            enterTheCodeShownAboveLabel.AutoSize = true;
+            enterTheCodeShownAboveLabel.Location = new System.Drawing.Point(20, 938);
+            enterTheCodeShownAboveLabel.Name = "enterTheCodeShownAboveLabel";
+            enterTheCodeShownAboveLabel.Size = new System.Drawing.Size(154, 17);
+            enterTheCodeShownAboveLabel.TabIndex = 47;
+            enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
+            enterTheCodeShownAboveLabel.Visible = false;
             // 
             // cooldownTimeLabel
             // 
-            this.cooldownTimeLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.cooldownTimeLabel.AutoSize = true;
-            this.cooldownTimeLabel.BackColor = System.Drawing.Color.Silver;
-            this.cooldownTimeLabel.Font = new System.Drawing.Font("Nirmala UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cooldownTimeLabel.ForeColor = System.Drawing.Color.Black;
-            this.cooldownTimeLabel.Location = new System.Drawing.Point(28, 583);
-            this.cooldownTimeLabel.Name = "cooldownTimeLabel";
-            this.cooldownTimeLabel.Size = new System.Drawing.Size(0, 30);
-            this.cooldownTimeLabel.TabIndex = 50;
-            this.cooldownTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.cooldownTimeLabel.Visible = false;
+            cooldownTimeLabel.Anchor = AnchorStyles.Top;
+            cooldownTimeLabel.AutoSize = true;
+            cooldownTimeLabel.BackColor = System.Drawing.Color.Silver;
+            cooldownTimeLabel.Font = new System.Drawing.Font("Nirmala UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            cooldownTimeLabel.ForeColor = System.Drawing.Color.Black;
+            cooldownTimeLabel.Location = new System.Drawing.Point(28, 583);
+            cooldownTimeLabel.Name = "cooldownTimeLabel";
+            cooldownTimeLabel.Size = new System.Drawing.Size(0, 30);
+            cooldownTimeLabel.TabIndex = 50;
+            cooldownTimeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            cooldownTimeLabel.Visible = false;
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(289, 1095);
-            this.Controls.Add(this.cooldownTimeLabel);
-            this.Controls.Add(this.checkThatTheCodesAreTheSameButton);
-            this.Controls.Add(this.enterTheCodeShownAboveTextBox);
-            this.Controls.Add(this.enterTheCodeShownAboveLabel);
-            this.Controls.Add(this.captchaPictureBox);
-            this.Controls.Add(this.submitCodeButton);
-            this.Controls.Add(this.codeRecivedInMailTextBox);
-            this.Controls.Add(this.codeRecivedInMailLabel);
-            this.Controls.Add(this.changePasswordLabel);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.serverIpTextBox);
-            this.Controls.Add(this.serverIpLabel);
-            this.Controls.Add(this.goToRegisterLabel);
-            this.Controls.Add(this.dontHaveAnAccountLabel);
-            this.Controls.Add(this.clearButton);
-            this.Controls.Add(this.loginButton);
-            this.Controls.Add(this.showPasswordCheckBox);
-            this.Controls.Add(this.passwordTextBox);
-            this.Controls.Add(this.passwordLabel);
-            this.Controls.Add(this.usernameTextBox);
-            this.Controls.Add(this.usernameLabel);
-            this.Controls.Add(this.startLabel);
-            this.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(165)))), ((int)(((byte)(169)))));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "LoginForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "LoginForm";
-            this.Load += new System.EventHandler(this.LoginForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(289, 1095);
+            Controls.Add(cooldownTimeLabel);
+            Controls.Add(checkThatTheCodesAreTheSameButton);
+            Controls.Add(enterTheCodeShownAboveTextBox);
+            Controls.Add(enterTheCodeShownAboveLabel);
+            Controls.Add(captchaPictureBox);
+            Controls.Add(submitCodeButton);
+            Controls.Add(codeRecivedInMailTextBox);
+            Controls.Add(codeRecivedInMailLabel);
+            Controls.Add(changePasswordLabel);
+            Controls.Add(label1);
+            Controls.Add(serverIpTextBox);
+            Controls.Add(serverIpLabel);
+            Controls.Add(goToRegisterLabel);
+            Controls.Add(dontHaveAnAccountLabel);
+            Controls.Add(clearButton);
+            Controls.Add(loginButton);
+            Controls.Add(showPasswordCheckBox);
+            Controls.Add(passwordTextBox);
+            Controls.Add(passwordLabel);
+            Controls.Add(usernameTextBox);
+            Controls.Add(usernameLabel);
+            Controls.Add(startLabel);
+            Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            ForeColor = System.Drawing.Color.FromArgb(164, 165, 169);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            Margin = new Padding(4);
+            Name = "LoginForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "LoginForm";
+            Load += LoginForm_Load;
+            ((System.ComponentModel.ISupportInitialize)captchaPictureBox).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

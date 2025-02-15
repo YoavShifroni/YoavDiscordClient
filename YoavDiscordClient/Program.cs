@@ -23,7 +23,7 @@ namespace YoavDiscordClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
     }

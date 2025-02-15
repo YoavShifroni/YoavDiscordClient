@@ -14,6 +14,8 @@ namespace YoavDiscordClient
 {
     public class ConnectionManager
     {
+#pragma warning disable CA1416
+
         /// <summary>
         /// The code that sent to the user when he want to change his password
         /// </summary>
@@ -280,10 +282,41 @@ namespace YoavDiscordClient
 
         public void ProcessConnectToMediaRoom(int mediaRoomId)
         {
+            MediaRoom mediaRoom = new MediaRoom(mediaRoomId);
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Connect_To_Media_Room_Command;
             clientServerProtocol.MediaRoomId = mediaRoomId;
+            clientServerProtocol.MediaPort = mediaRoom.GetPort();
+
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessDisconnectFromMediaRoom(int mediaRoomId)
+        {
+            // TODO: call it!
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Disconnect_From_Media_Room_Command;
+            clientServerProtocol.MediaRoomId = mediaRoomId;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public async void ProcessNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort)
+        {
+            await DiscordApp.VideoStreamConnection.ConnectToParticipant(newParticipantIp, newParticipantPort);
+        }
+
+        public void ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(string allTheConnectedUsersInSomeMediaRoomIpsJson)
+        {
+            Dictionary<string, int> ipsAndPort = JsonConvert.DeserializeObject<Dictionary<string, int>>(allTheConnectedUsersInSomeMediaRoomIpsJson);
+            foreach (var ipAndPort in ipsAndPort)
+            {
+                this.ProcessNewParticipantJoinTheMediaRoom(ipAndPort.Key, ipAndPort.Value);
+            }
+        }
+
+        public void ProcessSomeUserLeftTheMediaRoomCommand(string userIp)
+        {
+            DiscordApp.VideoStreamConnection.DisconnectFromParticipant(userIp);
         }
     }
 }

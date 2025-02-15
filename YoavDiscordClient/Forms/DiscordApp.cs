@@ -12,6 +12,8 @@ using System.Windows.Forms;
 
 namespace YoavDiscordClient
 {
+#pragma warning disable CA1416
+
     public partial class DiscordApp : Form
     {
 
@@ -21,9 +23,57 @@ namespace YoavDiscordClient
 
         private Dictionary<int, Image> usersImages = new Dictionary<int, Image>();
 
+        public static VideoStreamConnection VideoStreamConnection;
 
-        
+        private int _videoRoomId;
 
+        //private VideoPeerConnection videoPeerConnection;
+        //private PictureBox localVideoBox;
+
+
+        //private Dictionary<string, VideoPeerConnection> peerConnections = new Dictionary<string, VideoPeerConnection>();
+
+        //private async Task ConnectToParticipants(Dictionary<string, int> participantsInfo, int mediaRoomId)
+        //{
+        //    string nameOfActivePanel = $"VideoPanel{mediaRoomId}";
+        //    Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+        //    Panel videoPanel = ((Panel)control[0]);
+        //    foreach (var participant in participantsInfo)
+        //    {
+        //        var peerConnection = new VideoPeerConnection(videoPanel);
+        //        peerConnections[participant.Key] = peerConnection;
+        //        await peerConnection.HandleRemoteParticipant(participant.Key, participant.Value);
+        //    }
+        //}
+
+        //private async void InitializeVideoConference(int MediaRoomId)
+        //{
+
+        //    string nameOfActivePanel = $"VideoPanel{MediaRoomId}";
+        //    Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+        //    Panel videoPanel = ((Panel)control[0]);
+
+        //    localVideoBox = new PictureBox
+        //    {
+        //        SizeMode = PictureBoxSizeMode.Zoom,
+        //        Size = new Size(320, 240),
+        //        Dock = DockStyle.Top
+        //    };
+
+        //    videoPanel.Controls.Add(localVideoBox);
+        //    videoPanel.Visible = true;
+        //    videoPeerConnection = new VideoPeerConnection(localVideoBox, videoPanel);
+        //    await videoPeerConnection.InitializeAsync();
+        //}
+
+        //protected override void OnFormClosing(FormClosingEventArgs e)
+        //{
+        //    base.OnFormClosing(e);
+        //    if (videoPeerConnection != null)
+        //    {
+        //        videoPeerConnection.Dispose();
+        //    }
+        //}
 
         public DiscordApp()
         {
@@ -291,19 +341,87 @@ namespace YoavDiscordClient
         //    }
         //}
 
-        private void voiceChannel1Button_Click(object sender, EventArgs e)
+
+        private void HideAllPanels()
         {
+            this.ChangeVisabilityOfAPanel("ChatMessagesPanel1", false);
+            this.ChangeVisabilityOfAPanel("ChatMessagesPanel2", false);
+            this.ChangeVisabilityOfAPanel("ChatMessagesPanel3", false);
+            this.ChangeVisabilityOfAPanel("VideoPanel1", false);
+            this.ChangeVisabilityOfAPanel("VideoPanel2", false);
+            this.ChangeVisabilityOfAPanel("VideoPanel3", false);
+        }
+
+        private void ChangeVisabilityOfAPanel(string panelName, bool visible)
+        {
+            Control[] control = chatAreaPanel.Controls.Find(panelName, true);
+            Panel ChatMessagesPanel1 = ((Panel)control[0]);
+            ChatMessagesPanel1.Visible = visible;
+        }
+
+        private async void voiceChannel1Button_Click(object sender, EventArgs e)
+        {
+            if (VideoStreamConnection != null)
+            {
+                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
+                VideoStreamConnection.Dispose();
+                await Task.Delay(2000); // Increased delay to 2 seconds
+
+            }
+            this._videoRoomId = 1;
+            this.HideAllPanels();
+            string nameOfActivePanel = "VideoPanel1";
+            Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+            Panel videoPanel1 = ((Panel)control[0]);
+            videoPanel1.Visible = true;
+            VideoStreamConnection = new VideoStreamConnection(videoPanel1);
+            await VideoStreamConnection.Initialize();
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(1);
         }
 
-        private void voiceChannel2Button_Click(object sender, EventArgs e)
+        private async void voiceChannel2Button_Click(object sender, EventArgs e)
         {
+            if(VideoStreamConnection != null)
+            {
+                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
+                VideoStreamConnection.Dispose();
+                await Task.Delay(2000); // Increased delay to 2 seconds
+
+            }
+            this._videoRoomId = 2;
+            this.HideAllPanels();
+            string nameOfActivePanel = "VideoPanel2";
+            Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+            Panel videoPanel2 = ((Panel)control[0]);
+            videoPanel2.Visible = true;
+            VideoStreamConnection = new VideoStreamConnection(videoPanel2);
+            await VideoStreamConnection.Initialize();
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(2);
         }
 
-        private void voiceChannel3Button_Click(object sender, EventArgs e)
+        private async void voiceChannel3Button_Click(object sender, EventArgs e)
         {
+            if (VideoStreamConnection != null)
+            {
+                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
+                VideoStreamConnection.Dispose();
+                await Task.Delay(2000); // Increased delay to 2 seconds
+
+            }
+            this._videoRoomId = 3;
+            this.HideAllPanels();
+            string nameOfActivePanel = "VideoPanel3";
+            Control[] control = chatAreaPanel.Controls.Find(nameOfActivePanel, true);
+            Panel videoPanel3 = ((Panel)control[0]);
+            videoPanel3.Visible = true;
+            VideoStreamConnection = new VideoStreamConnection(videoPanel3);
+            await VideoStreamConnection.Initialize();
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(3);
+        }
+
+        public void AddNewParticipantDisplay(Panel panel, PictureBox pictureBox)
+        {
+            panel.Controls.Add(pictureBox);
         }
     }
 }

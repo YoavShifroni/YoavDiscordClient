@@ -1,184 +1,27 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{74CC1BA4-DFA7-4EF9-A63D-895E5814EF21}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>YoavDiscordClient</RootNamespace>
-    <AssemblyName>YoavDiscordClient</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
-      <HintPath>..\packages\BouncyCastle.Cryptography.2.5.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AesFunctions.cs" />
-    <Compile Include="AesKeys.cs" />
-    <Compile Include="CustomControls\ChatMessagePanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\CircleButton.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="CustomControls\CirclePictureBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ClientServerProtocol.cs" />
-    <Compile Include="ConnectionManager.cs" />
-    <Compile Include="ConnectionWithServer.cs" />
-    <Compile Include="CountDownTimer.cs" />
-    <Compile Include="CustomControls\CustomScrollBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Forms\DefaultProfilePicturesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DefaultProfilePicturesForm.Designer.cs">
-      <DependentUpon>DefaultProfilePicturesForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\DiscordApp.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\DiscordApp.Designer.cs">
-      <DependentUpon>DiscordApp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DiscordFormsHolder.cs" />
-    <Compile Include="Forms\ForgotPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ForgotPasswordForm.Designer.cs">
-      <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FormNames.cs" />
-    <Compile Include="HandleCommandFromServer.cs" />
-    <Compile Include="Forms\LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\LoginForm.Designer.cs">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ProfilePictureForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\ProfilePictureForm.Designer.cs">
-      <DependentUpon>ProfilePictureForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\RegistrationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\RegistrationForm.Designer.cs">
-      <DependentUpon>RegistrationForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="RegistrationInfo.cs" />
-    <Compile Include="RsaFunctions.cs" />
-    <Compile Include="TcpConnectionHandler.cs" />
-    <Compile Include="TypeOfCommand.cs" />
-    <Compile Include="UserMessage.cs" />
-    <EmbeddedResource Include="Forms\DefaultProfilePicturesForm.resx">
-      <DependentUpon>DefaultProfilePicturesForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\DiscordApp.resx">
-      <DependentUpon>DiscordApp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ForgotPasswordForm.resx">
-      <DependentUpon>ForgotPasswordForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\LoginForm.resx">
-      <DependentUpon>LoginForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ProfilePictureForm.resx">
-      <DependentUpon>ProfilePictureForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="Forms\RegistrationForm.resx">
-      <DependentUpon>RegistrationForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\horseImage.png" />
-    <None Include="Resources\dogPicture.png" />
-    <None Include="Resources\defaultDiscordImage.png" />
-    <None Include="Resources\cowImage.png" />
-    <None Include="Resources\catImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\monkeyImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\settingsLogo.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\settingsLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\muteLogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\deafenLogo.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows8.0</TargetFramework>
+		<UseWPF>false</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+
+		<!-- Force x64 instead of AnyCPU -->
+		<PlatformTarget>x64</PlatformTarget>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<Prefer32Bit>false</Prefer32Bit>
+		<!-- Prevents forcing 32-bit execution -->
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AForge.Video.DirectShow" Version="2.2.5" />
+		<PackageReference Include="Microsoft.MixedReality.WebRTC" Version="2.0.2" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0" />
+	</ItemGroup>
 </Project>

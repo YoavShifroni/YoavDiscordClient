@@ -67,6 +67,19 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoomJson);
                     break;
 
+                case TypeOfCommand.New_Participant_Join_The_Media_Room_Command:
+                    ConnectionManager.getInstance(null).ProcessNewParticipantJoinTheMediaRoom(clientServerProtocol.NewParticipantIp, clientServerProtocol.MediaPort);
+                    break;
+
+                case TypeOfCommand.Get_All_Ips_Of_Connected_Users_In_Some_Media_Room_Command:
+                    ConnectionManager.getInstance(null).ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(
+                        clientServerProtocol.AllTheConnectedUsersInSomeMediaRoomIpsJson);
+                    break;
+
+                case TypeOfCommand.Some_User_Left_The_Media_Room_Command:
+                    ConnectionManager.getInstance(null).ProcessSomeUserLeftTheMediaRoomCommand(clientServerProtocol.UserIp);
+                    break;
+
 
             }
         }

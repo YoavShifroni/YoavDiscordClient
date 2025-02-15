@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="CustomControls\ChatMessagePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="CustomControls\CirclePictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Forms\DefaultProfilePicturesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\DiscordApp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ForgotPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\ProfilePictureForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\RegistrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

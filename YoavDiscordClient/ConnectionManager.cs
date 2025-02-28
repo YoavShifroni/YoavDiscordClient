@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -171,11 +172,11 @@ namespace YoavDiscordClient
         /// <summary>
         /// The function show the user a message that tell him that he login/ register successesfuly and .....
         /// </summary>
-        public void ProcessSuccessConnctedToTheApplication(byte[] profilePicture, string username)
+        public void ProcessSuccessConnctedToTheApplication(byte[] profilePicture, string username, int userId)
         {
             MessageBox.Show("Login / Registration successesfuly!!");
-            DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().MoveToTheDiscordAppWindow(profilePicture, username)));
-
+            DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().MoveToTheDiscordAppWindow(profilePicture,
+                username, userId)));
         }
 
         /// <summary>
@@ -239,31 +240,18 @@ namespace YoavDiscordClient
                 username, userId, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
         }
 
-        private Image ByteArrayToImage(byte[] byteArray)
-        {
-            using (MemoryStream ms = new MemoryStream(byteArray))
-            {
-                return Image.FromStream(ms);
-            }
-        }
-
-        public void ProcessFetchImageOfUser(int userId, string username, string message, DateTime time, int chatRoomId)
+        public void ProcessFetchImageOfUser(int userId)
         {
             ClientServerProtocol clientServerProtocol= new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_Image_Of_User_Command;
             clientServerProtocol.UserId = userId;
-            clientServerProtocol.Username = username;
-            clientServerProtocol.MessageThatTheUserSent = message;
-            clientServerProtocol.TimeThatTheMessageWasSent= time;
-            clientServerProtocol.ChatRoomId = chatRoomId;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
-        public void ProcessReturnImageOfUser(int userId, byte[] profilePicture, string username, string messageThatTheUserSent,
-            DateTime timeThatTheMessageWasSent, int chatRoomId)
+        public void ProcessReturnImageOfUser(int userId, byte[] profilePicture)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddNewUserImageAndShowItsMessage(
-                userId, profilePicture, username, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.UpdateUserImage(
+                userId, profilePicture)));
         }
 
         public void ProcessGetMessagesHistoryOfChatRoom(int chatRoomId)
@@ -293,30 +281,90 @@ namespace YoavDiscordClient
 
         public void ProcessDisconnectFromMediaRoom(int mediaRoomId)
         {
-            // TODO: call it!
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Disconnect_From_Media_Room_Command;
             clientServerProtocol.MediaRoomId = mediaRoomId;
             this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
         }
 
-        public async void ProcessNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort)
+        public async void ProcessNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort, int userId, string username)
         {
-            await DiscordApp.VideoStreamConnection.ConnectToParticipant(newParticipantIp, newParticipantPort);
+            await DiscordApp.VideoStreamConnection.ConnectToParticipant(newParticipantIp, newParticipantPort, this.ImageToByteArray(DiscordFormsHolder.getInstance().DiscordApp.UsersImages[userId]), username, userId);
         }
 
         public void ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(string allTheConnectedUsersInSomeMediaRoomIpsJson)
         {
-            Dictionary<string, int> ipsAndPort = JsonConvert.DeserializeObject<Dictionary<string, int>>(allTheConnectedUsersInSomeMediaRoomIpsJson);
-            foreach (var ipAndPort in ipsAndPort)
+            Dictionary<string, Tuple<int, int, string>> ipsToPortUserIdAndUsername = JsonConvert.DeserializeObject<Dictionary<string, Tuple<int, int, string>>>(allTheConnectedUsersInSomeMediaRoomIpsJson);
+            foreach (var ipToPortUserIdAndUsername in ipsToPortUserIdAndUsername)
             {
-                this.ProcessNewParticipantJoinTheMediaRoom(ipAndPort.Key, ipAndPort.Value);
+                this.ProcessNewParticipantJoinTheMediaRoom(ipToPortUserIdAndUsername.Key, ipToPortUserIdAndUsername.Value.Item1,
+                    ipToPortUserIdAndUsername.Value.Item2, ipToPortUserIdAndUsername.Value.Item3);
             }
         }
 
         public void ProcessSomeUserLeftTheMediaRoomCommand(string userIp)
         {
             DiscordApp.VideoStreamConnection.DisconnectFromParticipant(userIp);
+        }
+
+        public void ProcessFetchAllUsers()
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_All_Users_Command;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessGetAllUsersDetails(string allUsersDetails)
+        {
+            List<UserDetails> details = JsonConvert.DeserializeObject<List<UserDetails>>(allUsersDetails);
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(details)));
+        }
+
+        public void ProcessUserJoinMediaRoom(int userId, int mediaRoomId, string username, byte[] profilePicture)
+        {
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddUserToMediaChannel
+            (mediaRoomId, new UserDetails(userId, username, profilePicture))));
+        }
+
+        public void ProcessUserLeaveMediaRoom(int userId, int mediaRoomId)
+        {
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.RemoveUserFromMediaChannel
+            (mediaRoomId, userId)));
+        }
+
+       
+
+        private byte[] ImageToByteArray(Image image)
+        {
+            try
+            {
+                // Create a copy of the image to avoid disposal issues
+                using (Bitmap bmp = new Bitmap(image))
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        return ms.ToArray();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error converting image: {ex.Message}");
+                // Return a default/placeholder image bytes if conversion fails
+                using (Bitmap defaultBmp = new Bitmap(40, 40))
+                {
+                    using (Graphics g = Graphics.FromImage(defaultBmp))
+                    {
+                        g.Clear(Color.Gray); // Create a gray placeholder
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            defaultBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            return ms.ToArray();
+                        }
+                    }
+                }
+            }
         }
     }
 }

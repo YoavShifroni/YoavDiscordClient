@@ -1,4 +1,6 @@
-﻿namespace YoavDiscordClient
+﻿using System.Windows.Forms;
+
+namespace YoavDiscordClient
 {
     partial class DiscordApp
     {
@@ -28,39 +30,48 @@
         /// </summary>
         private void InitializeComponent()
         {
-            leftSidePanel = new System.Windows.Forms.Panel();
-            userInfoPanel = new System.Windows.Forms.Panel();
-            muteButton = new System.Windows.Forms.Button();
-            deafenButton = new System.Windows.Forms.Button();
+            leftSidePanel = new Panel();
+            userInfoPanel = new Panel();
+            globalMuteButton = new Button();
+            deafenButton = new Button();
             userProfilePicturePictureBox = new CirclePictureBox();
-            usernameLabel = new System.Windows.Forms.Label();
-            settingsButton = new System.Windows.Forms.Button();
-            voiceChannel3Button = new System.Windows.Forms.Button();
-            voiceChannel2Button = new System.Windows.Forms.Button();
-            voiceChannel1Button = new System.Windows.Forms.Button();
-            voiceChannelsLabel = new System.Windows.Forms.Label();
-            textChannel3Button = new System.Windows.Forms.Button();
-            textChannel2Button = new System.Windows.Forms.Button();
-            textChannel1Button = new System.Windows.Forms.Button();
-            textChannelsLabel = new System.Windows.Forms.Label();
-            rightSidePanel = new System.Windows.Forms.Panel();
-            offlineUsersLabel = new System.Windows.Forms.Label();
-            onlineUsersLabel = new System.Windows.Forms.Label();
-            chatAreaPanel = new System.Windows.Forms.Panel();
-            ChatMessagesPanel1 = new System.Windows.Forms.Panel();
-            ChatMessagesPanel2 = new System.Windows.Forms.Panel();
-            ChatMessagesPanel3 = new System.Windows.Forms.Panel();
-            VideoPanel1 = new System.Windows.Forms.Panel();
-            VideoPanel2 = new System.Windows.Forms.Panel();
-            VideoPanel3 = new System.Windows.Forms.Panel();
-            sendMessageButton = new System.Windows.Forms.Button();
-            messageInputTextBox = new System.Windows.Forms.TextBox();
-            nameOfTheProjectLabel = new System.Windows.Forms.Label();
+            usernameLabel = new Label();
+            settingsButton = new Button();
+            voiceChannel3Button = new Button();
+            voiceChannel2Button = new Button();
+            voiceChannel1Button = new Button();
+            voiceChannelsLabel = new Label();
+            textChannel3Button = new Button();
+            textChannel2Button = new Button();
+            textChannel1Button = new Button();
+            textChannelsLabel = new Label();
+            rightSidePanel = new Panel();
+            offlineUsersLabel = new Label();
+            onlineUsersLabel = new Label();
+            chatAreaPanel = new Panel();
+            ChatMessagesPanel1 = new Panel();
+            ChatMessagesPanel2 = new Panel();
+            ChatMessagesPanel3 = new Panel();
+            VideoPanel1 = new Panel();
+            VideoPanel2 = new Panel();
+            VideoPanel3 = new Panel();
+            sendMessageButton = new Button();
+            messageInputTextBox = new TextBox();
+            nameOfTheProjectLabel = new Label();
+            mediaControlsPanel = new Panel();
+            mediaChannelMuteButton = new Button();
+            mediaChannelVideoMuteButton = new Button();
+            mediaChannelDisconnectButton = new Button();
+            emojiPanel = new Panel();
+            emojiButton = new Button();
+            emojiSelectionPanel = new Panel();
             leftSidePanel.SuspendLayout();
             userInfoPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)userProfilePicturePictureBox).BeginInit();
             rightSidePanel.SuspendLayout();
             chatAreaPanel.SuspendLayout();
+            mediaControlsPanel.SuspendLayout();
+            emojiPanel.SuspendLayout();
             SuspendLayout();
             // 
             // leftSidePanel
@@ -75,45 +86,48 @@
             leftSidePanel.Controls.Add(textChannel2Button);
             leftSidePanel.Controls.Add(textChannel1Button);
             leftSidePanel.Controls.Add(textChannelsLabel);
-            leftSidePanel.Dock = System.Windows.Forms.DockStyle.Left;
+            leftSidePanel.Dock = DockStyle.Left;
             leftSidePanel.Location = new System.Drawing.Point(0, 0);
             leftSidePanel.Name = "leftSidePanel";
             leftSidePanel.Size = new System.Drawing.Size(471, 1209);
             leftSidePanel.TabIndex = 0;
+            leftSidePanel.MouseDown += DiscordApp_MouseDown;
             // 
             // userInfoPanel
             // 
             userInfoPanel.BackColor = System.Drawing.Color.FromArgb(44, 47, 51);
-            userInfoPanel.Controls.Add(muteButton);
+            userInfoPanel.Controls.Add(globalMuteButton);
             userInfoPanel.Controls.Add(deafenButton);
             userInfoPanel.Controls.Add(userProfilePicturePictureBox);
             userInfoPanel.Controls.Add(usernameLabel);
             userInfoPanel.Controls.Add(settingsButton);
-            userInfoPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            userInfoPanel.Dock = DockStyle.Bottom;
             userInfoPanel.Location = new System.Drawing.Point(0, 1068);
             userInfoPanel.Name = "userInfoPanel";
             userInfoPanel.Size = new System.Drawing.Size(471, 141);
             userInfoPanel.TabIndex = 4;
             // 
-            // muteButton
+            // globalMuteButton
             // 
-            muteButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            muteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            muteButton.Location = new System.Drawing.Point(279, 76);
-            muteButton.Name = "muteButton";
-            muteButton.Size = new System.Drawing.Size(47, 47);
-            muteButton.TabIndex = 14;
-            muteButton.UseVisualStyleBackColor = true;
+            globalMuteButton.BackgroundImageLayout = ImageLayout.Stretch;
+            globalMuteButton.FlatStyle = FlatStyle.Flat;
+            globalMuteButton.Location = new System.Drawing.Point(279, 76);
+            globalMuteButton.Name = "globalMuteButton";
+            globalMuteButton.Size = new System.Drawing.Size(47, 47);
+            globalMuteButton.TabIndex = 14;
+            globalMuteButton.UseVisualStyleBackColor = true;
+            globalMuteButton.Click += globalMuteButton_Click;
             // 
             // deafenButton
             // 
-            deafenButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            deafenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            deafenButton.BackgroundImageLayout = ImageLayout.Stretch;
+            deafenButton.FlatStyle = FlatStyle.Flat;
             deafenButton.Location = new System.Drawing.Point(354, 76);
             deafenButton.Name = "deafenButton";
             deafenButton.Size = new System.Drawing.Size(47, 47);
             deafenButton.TabIndex = 13;
             deafenButton.UseVisualStyleBackColor = true;
+            deafenButton.Click += deafenButton_Click;
             // 
             // userProfilePicturePictureBox
             // 
@@ -121,7 +135,7 @@
             userProfilePicturePictureBox.Location = new System.Drawing.Point(12, 37);
             userProfilePicturePictureBox.Name = "userProfilePicturePictureBox";
             userProfilePicturePictureBox.Size = new System.Drawing.Size(105, 86);
-            userProfilePicturePictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            userProfilePicturePictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
             userProfilePicturePictureBox.TabIndex = 12;
             userProfilePicturePictureBox.TabStop = false;
             // 
@@ -138,8 +152,8 @@
             // 
             // settingsButton
             // 
-            settingsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            settingsButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            settingsButton.BackgroundImageLayout = ImageLayout.Stretch;
+            settingsButton.FlatStyle = FlatStyle.Flat;
             settingsButton.Location = new System.Drawing.Point(418, 76);
             settingsButton.Name = "settingsButton";
             settingsButton.Size = new System.Drawing.Size(47, 47);
@@ -153,7 +167,7 @@
             voiceChannel3Button.FlatAppearance.BorderSize = 0;
             voiceChannel3Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             voiceChannel3Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            voiceChannel3Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            voiceChannel3Button.FlatStyle = FlatStyle.Flat;
             voiceChannel3Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             voiceChannel3Button.ForeColor = System.Drawing.Color.White;
             voiceChannel3Button.Location = new System.Drawing.Point(73, 596);
@@ -172,7 +186,7 @@
             voiceChannel2Button.FlatAppearance.BorderSize = 0;
             voiceChannel2Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             voiceChannel2Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            voiceChannel2Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            voiceChannel2Button.FlatStyle = FlatStyle.Flat;
             voiceChannel2Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             voiceChannel2Button.ForeColor = System.Drawing.Color.White;
             voiceChannel2Button.Location = new System.Drawing.Point(73, 512);
@@ -191,7 +205,7 @@
             voiceChannel1Button.FlatAppearance.BorderSize = 0;
             voiceChannel1Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             voiceChannel1Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            voiceChannel1Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            voiceChannel1Button.FlatStyle = FlatStyle.Flat;
             voiceChannel1Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             voiceChannel1Button.ForeColor = System.Drawing.Color.White;
             voiceChannel1Button.Location = new System.Drawing.Point(73, 439);
@@ -221,7 +235,7 @@
             textChannel3Button.FlatAppearance.BorderSize = 0;
             textChannel3Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             textChannel3Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            textChannel3Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            textChannel3Button.FlatStyle = FlatStyle.Flat;
             textChannel3Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             textChannel3Button.ForeColor = System.Drawing.Color.White;
             textChannel3Button.Location = new System.Drawing.Point(73, 295);
@@ -241,7 +255,7 @@
             textChannel2Button.FlatAppearance.BorderSize = 0;
             textChannel2Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             textChannel2Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            textChannel2Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            textChannel2Button.FlatStyle = FlatStyle.Flat;
             textChannel2Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             textChannel2Button.ForeColor = System.Drawing.Color.White;
             textChannel2Button.Location = new System.Drawing.Point(73, 211);
@@ -261,7 +275,7 @@
             textChannel1Button.FlatAppearance.BorderSize = 0;
             textChannel1Button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
             textChannel1Button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            textChannel1Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            textChannel1Button.FlatStyle = FlatStyle.Flat;
             textChannel1Button.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             textChannel1Button.ForeColor = System.Drawing.Color.White;
             textChannel1Button.Location = new System.Drawing.Point(73, 138);
@@ -290,11 +304,12 @@
             rightSidePanel.BackColor = System.Drawing.Color.FromArgb(54, 57, 63);
             rightSidePanel.Controls.Add(offlineUsersLabel);
             rightSidePanel.Controls.Add(onlineUsersLabel);
-            rightSidePanel.Dock = System.Windows.Forms.DockStyle.Right;
+            rightSidePanel.Dock = DockStyle.Right;
             rightSidePanel.Location = new System.Drawing.Point(1771, 0);
             rightSidePanel.Name = "rightSidePanel";
             rightSidePanel.Size = new System.Drawing.Size(388, 1209);
             rightSidePanel.TabIndex = 2;
+            rightSidePanel.MouseDown += DiscordApp_MouseDown;
             // 
             // offlineUsersLabel
             // 
@@ -330,11 +345,15 @@
             chatAreaPanel.Controls.Add(sendMessageButton);
             chatAreaPanel.Controls.Add(messageInputTextBox);
             chatAreaPanel.Controls.Add(nameOfTheProjectLabel);
-            chatAreaPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            chatAreaPanel.Controls.Add(mediaControlsPanel);
+            chatAreaPanel.Controls.Add(emojiPanel);
+            chatAreaPanel.Controls.Add(emojiSelectionPanel);
+            chatAreaPanel.Dock = DockStyle.Fill;
             chatAreaPanel.Location = new System.Drawing.Point(471, 0);
             chatAreaPanel.Name = "chatAreaPanel";
             chatAreaPanel.Size = new System.Drawing.Size(1300, 1209);
             chatAreaPanel.TabIndex = 4;
+            chatAreaPanel.MouseDown += DiscordApp_MouseDown;
             // 
             // ChatMessagesPanel1
             // 
@@ -342,9 +361,10 @@
             ChatMessagesPanel1.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             ChatMessagesPanel1.Location = new System.Drawing.Point(0, 86);
             ChatMessagesPanel1.Name = "ChatMessagesPanel1";
-            ChatMessagesPanel1.Size = new System.Drawing.Size(1300, 1043);
+            ChatMessagesPanel1.Size = new System.Drawing.Size(1274, 1043);
             ChatMessagesPanel1.TabIndex = 15;
             ChatMessagesPanel1.Tag = "0";
+            ChatMessagesPanel1.MouseDown += DiscordApp_MouseDown;
             // 
             // ChatMessagesPanel2
             // 
@@ -352,10 +372,11 @@
             ChatMessagesPanel2.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             ChatMessagesPanel2.Location = new System.Drawing.Point(0, 86);
             ChatMessagesPanel2.Name = "ChatMessagesPanel2";
-            ChatMessagesPanel2.Size = new System.Drawing.Size(1300, 1043);
+            ChatMessagesPanel2.Size = new System.Drawing.Size(1274, 1043);
             ChatMessagesPanel2.TabIndex = 15;
             ChatMessagesPanel2.Tag = "0";
             ChatMessagesPanel2.Visible = false;
+            ChatMessagesPanel2.MouseDown += DiscordApp_MouseDown;
             // 
             // ChatMessagesPanel3
             // 
@@ -363,10 +384,11 @@
             ChatMessagesPanel3.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             ChatMessagesPanel3.Location = new System.Drawing.Point(0, 86);
             ChatMessagesPanel3.Name = "ChatMessagesPanel3";
-            ChatMessagesPanel3.Size = new System.Drawing.Size(1300, 1043);
+            ChatMessagesPanel3.Size = new System.Drawing.Size(1274, 1043);
             ChatMessagesPanel3.TabIndex = 15;
             ChatMessagesPanel3.Tag = "0";
             ChatMessagesPanel3.Visible = false;
+            ChatMessagesPanel3.MouseDown += DiscordApp_MouseDown;
             // 
             // VideoPanel1
             // 
@@ -374,10 +396,11 @@
             VideoPanel1.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             VideoPanel1.Location = new System.Drawing.Point(0, 86);
             VideoPanel1.Name = "VideoPanel1";
-            VideoPanel1.Size = new System.Drawing.Size(1300, 1043);
+            VideoPanel1.Size = new System.Drawing.Size(1274, 1043);
             VideoPanel1.TabIndex = 15;
             VideoPanel1.Tag = "0";
             VideoPanel1.Visible = false;
+            VideoPanel1.MouseDown += DiscordApp_MouseDown;
             // 
             // VideoPanel2
             // 
@@ -385,10 +408,11 @@
             VideoPanel2.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             VideoPanel2.Location = new System.Drawing.Point(0, 86);
             VideoPanel2.Name = "VideoPanel2";
-            VideoPanel2.Size = new System.Drawing.Size(1300, 1043);
+            VideoPanel2.Size = new System.Drawing.Size(1274, 1043);
             VideoPanel2.TabIndex = 15;
             VideoPanel2.Tag = "0";
             VideoPanel2.Visible = false;
+            VideoPanel2.MouseDown += DiscordApp_MouseDown;
             // 
             // VideoPanel3
             // 
@@ -396,19 +420,20 @@
             VideoPanel3.BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             VideoPanel3.Location = new System.Drawing.Point(0, 86);
             VideoPanel3.Name = "VideoPanel3";
-            VideoPanel3.Size = new System.Drawing.Size(1300, 1043);
+            VideoPanel3.Size = new System.Drawing.Size(1274, 1043);
             VideoPanel3.TabIndex = 15;
             VideoPanel3.Tag = "0";
             VideoPanel3.Visible = false;
+            VideoPanel3.MouseDown += DiscordApp_MouseDown;
             // 
             // sendMessageButton
             // 
             sendMessageButton.BackColor = System.Drawing.Color.FromArgb(54, 57, 63);
             sendMessageButton.FlatAppearance.BorderSize = 0;
-            sendMessageButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            sendMessageButton.FlatStyle = FlatStyle.Flat;
             sendMessageButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             sendMessageButton.ForeColor = System.Drawing.Color.White;
-            sendMessageButton.Location = new System.Drawing.Point(1182, 1135);
+            sendMessageButton.Location = new System.Drawing.Point(1161, 1135);
             sendMessageButton.Name = "sendMessageButton";
             sendMessageButton.Size = new System.Drawing.Size(102, 49);
             sendMessageButton.TabIndex = 14;
@@ -419,18 +444,19 @@
             // messageInputTextBox
             // 
             messageInputTextBox.BackColor = System.Drawing.Color.FromArgb(64, 68, 75);
-            messageInputTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            messageInputTextBox.BorderStyle = BorderStyle.FixedSingle;
             messageInputTextBox.Font = new System.Drawing.Font("Arial", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             messageInputTextBox.ForeColor = System.Drawing.Color.White;
             messageInputTextBox.Location = new System.Drawing.Point(6, 1144);
             messageInputTextBox.Multiline = true;
             messageInputTextBox.Name = "messageInputTextBox";
-            messageInputTextBox.Size = new System.Drawing.Size(1155, 40);
+            messageInputTextBox.Size = new System.Drawing.Size(1138, 34);
             messageInputTextBox.TabIndex = 13;
+            messageInputTextBox.KeyDown += messageInputTextBox_KeyDown;
             // 
             // nameOfTheProjectLabel
             // 
-            nameOfTheProjectLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            nameOfTheProjectLabel.Dock = DockStyle.Top;
             nameOfTheProjectLabel.Font = new System.Drawing.Font("Arial Narrow", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             nameOfTheProjectLabel.ForeColor = System.Drawing.Color.White;
             nameOfTheProjectLabel.Location = new System.Drawing.Point(0, 0);
@@ -440,21 +466,108 @@
             nameOfTheProjectLabel.Text = "Yoav Discord";
             nameOfTheProjectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // mediaControlsPanel
+            // 
+            mediaControlsPanel.BackColor = System.Drawing.Color.FromArgb(200, 47, 49, 54);
+            mediaControlsPanel.Controls.Add(mediaChannelMuteButton);
+            mediaControlsPanel.Controls.Add(mediaChannelVideoMuteButton);
+            mediaControlsPanel.Controls.Add(mediaChannelDisconnectButton);
+            mediaControlsPanel.Location = new System.Drawing.Point(0, 0);
+            mediaControlsPanel.Name = "mediaControlsPanel";
+            mediaControlsPanel.Size = new System.Drawing.Size(230, 80);
+            mediaControlsPanel.TabIndex = 16;
+            mediaControlsPanel.Visible = false;
+            // 
+            // mediaChannelMuteButton
+            // 
+            mediaChannelMuteButton.BackColor = System.Drawing.Color.FromArgb(64, 68, 75);
+            mediaChannelMuteButton.FlatAppearance.BorderSize = 0;
+            mediaChannelMuteButton.FlatStyle = FlatStyle.Flat;
+            mediaChannelMuteButton.Location = new System.Drawing.Point(20, 15);
+            mediaChannelMuteButton.Margin = new Padding(10);
+            mediaChannelMuteButton.Name = "mediaChannelMuteButton";
+            mediaChannelMuteButton.Size = new System.Drawing.Size(50, 50);
+            mediaChannelMuteButton.TabIndex = 0;
+            mediaChannelMuteButton.UseVisualStyleBackColor = false;
+            mediaChannelMuteButton.Click += mediaChannelMuteButton_Click;
+            // 
+            // mediaChannelVideoMuteButton
+            // 
+            mediaChannelVideoMuteButton.BackColor = System.Drawing.Color.FromArgb(64, 68, 75);
+            mediaChannelVideoMuteButton.FlatAppearance.BorderSize = 0;
+            mediaChannelVideoMuteButton.FlatStyle = FlatStyle.Flat;
+            mediaChannelVideoMuteButton.Location = new System.Drawing.Point(90, 15);
+            mediaChannelVideoMuteButton.Margin = new Padding(10);
+            mediaChannelVideoMuteButton.Name = "mediaChannelVideoMuteButton";
+            mediaChannelVideoMuteButton.Size = new System.Drawing.Size(50, 50);
+            mediaChannelVideoMuteButton.TabIndex = 1;
+            mediaChannelVideoMuteButton.UseVisualStyleBackColor = false;
+            mediaChannelVideoMuteButton.Click += mediaChannelVideoMuteButton_Click;
+            // 
+            // mediaChannelDisconnectButton
+            // 
+            mediaChannelDisconnectButton.BackColor = System.Drawing.Color.FromArgb(240, 71, 71);
+            mediaChannelDisconnectButton.FlatAppearance.BorderSize = 0;
+            mediaChannelDisconnectButton.FlatStyle = FlatStyle.Flat;
+            mediaChannelDisconnectButton.Location = new System.Drawing.Point(160, 15);
+            mediaChannelDisconnectButton.Margin = new Padding(10);
+            mediaChannelDisconnectButton.Name = "mediaChannelDisconnectButton";
+            mediaChannelDisconnectButton.Size = new System.Drawing.Size(50, 50);
+            mediaChannelDisconnectButton.TabIndex = 2;
+            mediaChannelDisconnectButton.UseVisualStyleBackColor = false;
+            mediaChannelDisconnectButton.Click += mediaChannelDisconnectButton_Click;
+            // 
+            // emojiPanel
+            // 
+            emojiPanel.BackColor = System.Drawing.Color.Transparent;
+            emojiPanel.Controls.Add(emojiButton);
+            emojiPanel.Location = new System.Drawing.Point(1144, 1144);
+            emojiPanel.Name = "emojiPanel";
+            emojiPanel.Size = new System.Drawing.Size(40, 34);
+            emojiPanel.TabIndex = 17;
+            emojiPanel.Visible = false;
+            // 
+            // emojiButton
+            // 
+            emojiButton.BackColor = System.Drawing.Color.FromArgb(64, 68, 75);
+            emojiButton.FlatAppearance.BorderSize = 0;
+            emojiButton.FlatStyle = FlatStyle.Flat;
+            emojiButton.Font = new System.Drawing.Font("Segoe UI Emoji", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            emojiButton.ForeColor = System.Drawing.Color.White;
+            emojiButton.Location = new System.Drawing.Point(0, 0);
+            emojiButton.Name = "emojiButton";
+            emojiButton.Size = new System.Drawing.Size(34, 34);
+            emojiButton.TabIndex = 0;
+            emojiButton.Text = "😀";
+            emojiButton.UseVisualStyleBackColor = false;
+            emojiButton.Click += emojiButton_Click;
+            // 
+            // emojiSelectionPanel
+            // 
+            emojiSelectionPanel.BackColor = System.Drawing.Color.FromArgb(54, 57, 63);
+            emojiSelectionPanel.BorderStyle = BorderStyle.FixedSingle;
+            emojiSelectionPanel.Location = new System.Drawing.Point(0, -205);
+            emojiSelectionPanel.Name = "emojiSelectionPanel";
+            emojiSelectionPanel.Size = new System.Drawing.Size(200, 200);
+            emojiSelectionPanel.TabIndex = 1;
+            emojiSelectionPanel.Visible = false;
+            // 
             // DiscordApp
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            AutoScaleMode = AutoScaleMode.Dpi;
             AutoSize = true;
             BackColor = System.Drawing.Color.FromArgb(47, 49, 54);
             ClientSize = new System.Drawing.Size(2159, 1209);
             Controls.Add(chatAreaPanel);
             Controls.Add(rightSidePanel);
             Controls.Add(leftSidePanel);
-            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             Name = "DiscordApp";
-            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "DiscordApp";
             Load += DiscordApp_Load;
+            MouseDown += DiscordApp_MouseDown;
             leftSidePanel.ResumeLayout(false);
             leftSidePanel.PerformLayout();
             userInfoPanel.ResumeLayout(false);
@@ -462,6 +575,8 @@
             rightSidePanel.ResumeLayout(false);
             chatAreaPanel.ResumeLayout(false);
             chatAreaPanel.PerformLayout();
+            mediaControlsPanel.ResumeLayout(false);
+            emojiPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -487,7 +602,7 @@
         private System.Windows.Forms.TextBox messageInputTextBox;
         private System.Windows.Forms.Button sendMessageButton;
         private CirclePictureBox userProfilePicturePictureBox;
-        private System.Windows.Forms.Button muteButton;
+        private System.Windows.Forms.Button globalMuteButton;
         private System.Windows.Forms.Button deafenButton;
         private System.Windows.Forms.Panel ChatMessagesPanel1;
         private System.Windows.Forms.Panel ChatMessagesPanel2;
@@ -495,6 +610,13 @@
         private System.Windows.Forms.Panel VideoPanel1;
         private System.Windows.Forms.Panel VideoPanel2;
         private System.Windows.Forms.Panel VideoPanel3;
+        private System.Windows.Forms.Button mediaChannelMuteButton;
+        private System.Windows.Forms.Button mediaChannelVideoMuteButton;
+        private System.Windows.Forms.Button mediaChannelDisconnectButton;
+        private System.Windows.Forms.Panel mediaControlsPanel;
+        private System.Windows.Forms.Button emojiButton;
+        private System.Windows.Forms.Panel emojiPanel;
+        private System.Windows.Forms.Panel emojiSelectionPanel;
         //private CustomScrollBar customScrollBar1;
         //private CustomScrollBar customScrollBar2;
         //private CustomScrollBar customScrollBar3;

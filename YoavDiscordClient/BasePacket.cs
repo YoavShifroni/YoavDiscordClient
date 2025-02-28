@@ -36,5 +36,6 @@ namespace YoavDiscordClient
     {
         Video,
         Audio,
+        Empty_Video,
     }
 }

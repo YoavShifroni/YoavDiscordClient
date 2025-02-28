@@ -149,5 +149,29 @@ namespace YoavDiscordClient.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap videoMuteLogo
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("videoMuteLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap disconnectMediaChannelLogo
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("disconnectMediaChannelLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

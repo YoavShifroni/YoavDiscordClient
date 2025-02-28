@@ -130,6 +130,9 @@
   <data name="defaultDiscordImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\defaultDiscordImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="disconnectMediaChannelLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\disconnectMediaChannelLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="dogPicture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dogPicture.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -144,5 +147,8 @@
   </data>
   <data name="settingsLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settingsLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="videoMuteLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\videoMuteLogo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

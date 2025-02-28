@@ -74,7 +74,7 @@ namespace YoavDiscordClient
         /// <summary>
         /// Private constructor, create instance for each form
         /// </summary>
-        private DiscordFormsHolder() 
+        private DiscordFormsHolder()
         {
             this.LoginForm = new LoginForm();
             this.RegistrationForm = new RegistrationForm();
@@ -83,7 +83,7 @@ namespace YoavDiscordClient
             this.DefaultProfilePictureForm = new DefaultProfilePicturesForm();
             this.DiscordApp = new DiscordApp();
         }
-        
+
         /// <summary>
         /// The function return the active form
         /// </summary>
@@ -98,7 +98,7 @@ namespace YoavDiscordClient
         /// The function set the active form according to the enum value
         /// </summary>
         /// <param name="formName"></param>
-        public void SetActiveForm(FormNames formName) 
+        public void SetActiveForm(FormNames formName)
         {
             switch (formName)
             {
@@ -134,9 +134,9 @@ namespace YoavDiscordClient
             this._activeForm.Enabled = active;
         }
 
-        public void MoveToTheDiscordAppWindow(byte[] profilePicture, string username)
+        public void MoveToTheDiscordAppWindow(byte[] profilePicture, string username, int userId)
         {
-            this.DiscordApp.SetUsernameAndProfilePicture(profilePicture, username);
+            this.DiscordApp.SetUsernameAndProfilePicture(profilePicture, username, userId);
             this._activeForm.Visible = false;
             this.DiscordApp.Visible = true;
             this.SetActiveForm(FormNames.DiscordApp);
@@ -151,7 +151,7 @@ namespace YoavDiscordClient
             // Check if the form's size exceeds the screen's resolution
             if (DiscordFormsHolder.optimizedScreenWidth > screenWidth || DiscordFormsHolder.optimizedScreenHeight > screenHeight)
             {
-                
+
 
                 // Preserve aspect ratio while resizing
 

@@ -41,7 +41,7 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.Success_Connected_To_The_Application_Command:
                     ConnectionManager.getInstance(null).ProcessSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
-                        clientServerProtocol.Username);
+                        clientServerProtocol.Username, clientServerProtocol.UserId);
                     break;
 
                 case TypeOfCommand.Success_Forgot_Password_Command:
@@ -58,9 +58,7 @@ namespace YoavDiscordClient
                     break;
 
                 case TypeOfCommand.Return_Image_Of_User_Command:
-                    ConnectionManager.getInstance(null).ProcessReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture,
-                        clientServerProtocol.Username, clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent,
-                        clientServerProtocol.ChatRoomId);
+                    ConnectionManager.getInstance(null).ProcessReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture);
                     break;
 
                 case TypeOfCommand.Return_Messages_History_Of_Chat_Room_Command:
@@ -68,7 +66,7 @@ namespace YoavDiscordClient
                     break;
 
                 case TypeOfCommand.New_Participant_Join_The_Media_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessNewParticipantJoinTheMediaRoom(clientServerProtocol.NewParticipantIp, clientServerProtocol.MediaPort);
+                    ConnectionManager.getInstance(null).ProcessNewParticipantJoinTheMediaRoom(clientServerProtocol.NewParticipantIp, clientServerProtocol.MediaPort, clientServerProtocol.UserId, clientServerProtocol.Username);
                     break;
 
                 case TypeOfCommand.Get_All_Ips_Of_Connected_Users_In_Some_Media_Room_Command:
@@ -78,6 +76,19 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.Some_User_Left_The_Media_Room_Command:
                     ConnectionManager.getInstance(null).ProcessSomeUserLeftTheMediaRoomCommand(clientServerProtocol.UserIp);
+                    break;
+
+                case TypeOfCommand.Get_All_Users_Details_Command:
+                    ConnectionManager.getInstance(null).ProcessGetAllUsersDetails(clientServerProtocol.AllUsersDetails);
+                    break;
+
+                case TypeOfCommand.User_Join_Media_Channel_Command:
+                    ConnectionManager.getInstance(null).ProcessUserJoinMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId,
+                        clientServerProtocol.Username, clientServerProtocol.ProfilePicture);
+                    break;
+
+                case TypeOfCommand.User_Leave_Media_Channel_Command:
+                    ConnectionManager.getInstance(null).ProcessUserLeaveMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
                     break;
 
 

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -44,6 +46,8 @@ namespace YoavDiscordClient
 
         private bool _isEmojiSelectionVisible = false;
 
+        private ContextMenuStrip userContextMenu;
+
         public DiscordApp()
         {
             InitializeComponent();
@@ -55,6 +59,8 @@ namespace YoavDiscordClient
             DiscordFormsHolder.ResizeFormBasedOnResolution(this, 2175f, 1248f);
 
             InitializeMediaChannelPanels();
+
+            this.InitializeUserContextMenu();
 
             this.AddPicturesToTheWindow();
 
@@ -80,6 +86,7 @@ namespace YoavDiscordClient
                 }
             }
         }
+
 
         public void SetUsernameAndProfilePicture(byte[] profilePicture, string username, int userId)
         {
@@ -653,7 +660,8 @@ namespace YoavDiscordClient
                 {
                     Width = channelPanel.Width,
                     Height = 40,
-                    Location = new Point(5, currentY)
+                    Location = new Point(5, currentY),
+                    Tag = user // Store the user details in the panel's Tag
                 };
 
                 // Create circle picture box for user avatar
@@ -662,7 +670,20 @@ namespace YoavDiscordClient
                     Size = new Size(30, 30),
                     Location = new Point(5, 5),
                     Image = UsersImages[user.UserId],
-                    SizeMode = PictureBoxSizeMode.StretchImage
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    Tag = user // Store the user details in the picture box's Tag
+                };
+
+                avatarPicture.MouseDown += (sender, e) =>
+                {
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        CirclePictureBox pictureBox = (CirclePictureBox)sender;
+                        UserDetails userData = (UserDetails)pictureBox.Tag;
+
+                        // Use the centralized method instead of directly showing the menu
+                        ShowUserContextMenu(pictureBox, e.Location, userData);
+                    }
                 };
 
                 // Create label for username
@@ -672,12 +693,37 @@ namespace YoavDiscordClient
                     Location = new Point(45, 10),
                     AutoSize = true,
                     ForeColor = Color.White,
-                    Font = new Font("Arial", 10, FontStyle.Regular)
+                    Font = new Font("Arial", 10, FontStyle.Regular),
+                    Tag = user // Store the user details in the label's Tag
+                };
+
+                usernameLabel.MouseDown += (sender, e) =>
+                {
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        Label label = (Label)sender;
+                        UserDetails userData = (UserDetails)label.Tag;
+
+                        // Use the centralized method
+                        ShowUserContextMenu(label, e.Location, userData);
+                    }
                 };
 
                 // Add controls to user panel
                 userPanel.Controls.Add(avatarPicture);
                 userPanel.Controls.Add(usernameLabel);
+
+                userPanel.MouseDown += (sender, e) =>
+                {
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        Panel panel = (Panel)sender;
+                        UserDetails userData = (UserDetails)panel.Tag;
+
+                        // Use the centralized method
+                        ShowUserContextMenu(panel, e.Location, userData);
+                    }
+                };
 
                 // Add user panel to channel panel
                 channelPanel.Controls.Add(userPanel);
@@ -1063,6 +1109,705 @@ namespace YoavDiscordClient
         {
             this._isEmojiSelectionVisible = false;
             this.emojiSelectionPanel.Visible = false;
+        }
+
+        private void InitializeUserContextMenu()
+        {
+            userContextMenu = new ContextMenuStrip();
+
+            // Add menu items with checkboxes
+            ToolStripMenuItem muteUserItem = new ToolStripMenuItem("Mute User");
+            muteUserItem.CheckOnClick = true;
+            muteUserItem.Click += MuteUserItem_Click;
+
+            ToolStripMenuItem deafenUserItem = new ToolStripMenuItem("Deafen User");
+            deafenUserItem.CheckOnClick = true;
+            deafenUserItem.Click += DeafenUserItem_Click;
+
+            // Add disconnect option (not a checkbox)
+            ToolStripMenuItem disconnectUserItem = new ToolStripMenuItem("Disconnect User");
+            disconnectUserItem.Click += DisconnectUserItem_Click;
+
+            ToolStripMenuItem blockUserItem = new ToolStripMenuItem("Block User");
+            blockUserItem.CheckOnClick = true;
+            blockUserItem.Click += BlockUserItem_Click;
+
+            // Add a separator
+            ToolStripSeparator separator = new ToolStripSeparator();
+
+            // View Profile option
+            ToolStripMenuItem viewProfileItem = new ToolStripMenuItem("View Profile");
+            viewProfileItem.Click += ViewProfileItem_Click;
+
+            // Add items to the context menu
+            userContextMenu.Items.Add(muteUserItem);
+            userContextMenu.Items.Add(deafenUserItem);
+            userContextMenu.Items.Add(disconnectUserItem);
+            userContextMenu.Items.Add(blockUserItem);
+            userContextMenu.Items.Add(separator);
+            userContextMenu.Items.Add(viewProfileItem);
+
+            // Apply styling to match your application
+            userContextMenu.BackColor = Color.FromArgb(47, 49, 54);
+            userContextMenu.ForeColor = Color.White;
+            userContextMenu.RenderMode = ToolStripRenderMode.System;
+            userContextMenu.Renderer = new DarkContextMenuRenderer();
+        }
+
+        private void MuteUserItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Update the user settings in our manager
+            UserContextMenuSettings.GetInstance().SetUserMuted(targetUser.UserId, item.Checked);
+
+            // You can also implement visual indicators for muted users
+            // For example, adding a mute icon overlay on their avatar
+            UpdateUserMuteVisualIndicator(targetUser.UserId, item.Checked);
+
+            // Send the mute command to the server to propagate to all clients
+            ConnectionManager.getInstance(null).ProcessSetUserMuted(targetUser.UserId, item.Checked);
+
+            // If this is the current user being muted, apply audio muting locally as well
+            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
+            {
+                VideoStreamConnection.ToggleAudioMute();
+                mediaChannelMuteButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+            }
+        }
+
+        private void DeafenUserItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Update the user settings
+            UserContextMenuSettings.GetInstance().SetUserDeafened(targetUser.UserId, item.Checked);
+
+            // Update visual indicators
+            UpdateUserDeafenVisualIndicator(targetUser.UserId, item.Checked);
+
+            // Send the deafen command to the server to propagate to all clients
+            ConnectionManager.getInstance(null).ProcessSetUserDeafened(targetUser.UserId, item.Checked);
+
+            // If this is the current user being deafened, apply audio deafening locally
+            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
+            {
+                VideoStreamConnection.SetGlobalDeafenState(item.Checked);
+                deafenButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+                _isGloballyDeafened = item.Checked;
+            }
+        }
+
+        private void DisconnectUserItem_Click(object sender, EventArgs e)
+        {
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Find which media channel the user is in
+            int userMediaChannelId = -1;
+            foreach (var entry in usersInMediaChannels)
+            {
+                int channelId = entry.Key;
+                List<UserDetails> users = entry.Value;
+
+                if (users.Any(u => u.UserId == targetUser.UserId))
+                {
+                    userMediaChannelId = channelId;
+                    break;
+                }
+            }
+
+            // If user is found in a media channel, remove them
+            if (userMediaChannelId != -1)
+            {
+                // Ask for confirmation before disconnecting
+                DialogResult result = MessageBox.Show(
+                    $"Are you sure you want to disconnect {targetUser.Username} from the voice channel?",
+                    "Disconnect User",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    // Remove user from the media channel locally
+                    RemoveUserFromMediaChannel(userMediaChannelId, targetUser.UserId);
+
+                    // Send disconnect command to the server to propagate to all clients including the target
+                    ConnectionManager.getInstance(null).ProcessDisconnectUserFromMediaRoom(targetUser.UserId, userMediaChannelId);
+                }
+            }
+            else
+            {
+                // This shouldn't normally happen since the context menu is only available for users in media channels
+                // But just in case, handle the situation
+                MessageBox.Show(
+                    $"{targetUser.Username} is not currently in a voice channel.",
+                    "Cannot Disconnect",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+        }
+
+        private void BlockUserItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Ask for confirmation before blocking
+            if (item.Checked)
+            {
+                DialogResult result = MessageBox.Show(
+                    $"Are you sure you want to block {targetUser.Username}?",
+                    "Block User",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.No)
+                {
+                    // User canceled, uncheck the item
+                    item.Checked = false;
+                    return;
+                }
+            }
+
+            // Update the user settings
+            UserContextMenuSettings.GetInstance().SetUserBlocked(targetUser.UserId, item.Checked);
+
+            // Apply blocking across the application
+            ApplyUserBlocking(targetUser.UserId, item.Checked);
+        }
+
+        private void ViewProfileItem_Click(object sender, EventArgs e)
+        {
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Check if user is in any media channel - if so, they should be shown as online
+            bool isInAnyMediaChannel = false;
+            foreach (var channelUsers in usersInMediaChannels.Values)
+            {
+                if (channelUsers.Any(u => u.UserId == targetUser.UserId))
+                {
+                    isInAnyMediaChannel = true;
+                    break;
+                }
+            }
+
+            // User should be online if either their Status is true or they are in a media channel
+            bool isUserOnline = targetUser.Status || isInAnyMediaChannel;
+
+            // Create a simple profile dialog
+            using (var profileForm = new Form())
+            {
+                profileForm.Text = $"{targetUser.Username}'s Profile";
+                profileForm.Size = new Size(400, 300);
+                profileForm.StartPosition = FormStartPosition.CenterParent;
+                profileForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+                profileForm.MaximizeBox = false;
+                profileForm.MinimizeBox = false;
+                profileForm.BackColor = Color.FromArgb(47, 49, 54); // Discord dark theme
+
+                // Add profile picture
+                CirclePictureBox profilePic = new CirclePictureBox
+                {
+                    Size = new Size(100, 100),
+                    Location = new Point(150, 20),
+                    Image = UsersImages[targetUser.UserId],
+                    SizeMode = PictureBoxSizeMode.StretchImage
+                };
+
+                // Add username label
+                Label usernameLabel = new Label
+                {
+                    Text = targetUser.Username,
+                    Location = new Point(150, 130),
+                    AutoSize = true,
+                    ForeColor = Color.White,
+                    Font = new Font("Arial", 16, FontStyle.Bold)
+                };
+
+                // Center the username label
+                usernameLabel.Location = new Point(
+                    profileForm.ClientSize.Width / 2 - usernameLabel.PreferredWidth / 2,
+                    130);
+
+                // Add status (online/offline) - using our modified isUserOnline value
+                Label statusLabel = new Label
+                {
+                    Text = isUserOnline ? "Online" : "Offline",
+                    Location = new Point(150, 160),
+                    AutoSize = true,
+                    ForeColor = isUserOnline ? Color.LightGreen : Color.Gray,
+                    Font = new Font("Arial", 12)
+                };
+
+                // Center the status label
+                statusLabel.Location = new Point(
+                    profileForm.ClientSize.Width / 2 - statusLabel.PreferredWidth / 2,
+                    160);
+
+                // Add user settings indicators
+                var settings = UserContextMenuSettings.GetInstance().GetUserSettings(targetUser.UserId);
+
+                FlowLayoutPanel settingsPanel = new FlowLayoutPanel
+                {
+                    FlowDirection = FlowDirection.TopDown,
+                    WrapContents = false,
+                    AutoSize = true,
+                    Location = new Point(20, 190),
+                    Width = profileForm.ClientSize.Width - 40
+                };
+
+                if (settings.IsMuted)
+                {
+                    Label mutedLabel = new Label
+                    {
+                        Text = "🔇 Muted",
+                        ForeColor = Color.Red,
+                        Font = new Font("Arial", 10),
+                        AutoSize = true
+                    };
+                    settingsPanel.Controls.Add(mutedLabel);
+                }
+
+                if (settings.IsDeafened)
+                {
+                    Label deafenedLabel = new Label
+                    {
+                        Text = "🔈 Deafened",
+                        ForeColor = Color.Red,
+                        Font = new Font("Arial", 10),
+                        AutoSize = true
+                    };
+                    settingsPanel.Controls.Add(deafenedLabel);
+                }
+
+                if (settings.IsBlocked)
+                {
+                    Label blockedLabel = new Label
+                    {
+                        Text = "⛔ Blocked",
+                        ForeColor = Color.Red,
+                        Font = new Font("Arial", 10),
+                        AutoSize = true
+                    };
+                    settingsPanel.Controls.Add(blockedLabel);
+                }
+
+                // Add close button
+                Button closeButton = new Button
+                {
+                    Text = "Close",
+                    Size = new Size(100, 30),
+                    Location = new Point(150, 230),
+                    BackColor = Color.FromArgb(64, 68, 75),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat
+                };
+
+                // Center the close button
+                closeButton.Location = new Point(
+                    profileForm.ClientSize.Width / 2 - closeButton.Width / 2,
+                    230);
+
+                closeButton.Click += (s, args) => profileForm.Close();
+
+                // Adjust settings panel position to center it
+                settingsPanel.Location = new Point(
+                    profileForm.ClientSize.Width / 2 - settingsPanel.Width / 2,
+                    190);
+
+                // Add controls to form
+                profileForm.Controls.Add(profilePic);
+                profileForm.Controls.Add(usernameLabel);
+                profileForm.Controls.Add(statusLabel);
+                profileForm.Controls.Add(settingsPanel);
+                profileForm.Controls.Add(closeButton);
+
+                // Show the profile dialog
+                profileForm.ShowDialog();
+            }
+        }
+
+        private void UpdateUserMuteVisualIndicator(int userId, bool isMuted)
+        {
+            // This method updates visual indicators for muted users
+            // Adding a mute icon next to the username instead of on the avatar
+
+            foreach (var channelId in mediaChannelPanels.Keys)
+            {
+                if (usersInMediaChannels.ContainsKey(channelId))
+                {
+                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    if (userInChannel != null)
+                    {
+                        Panel channelPanel = mediaChannelPanels[channelId];
+
+                        // Find the user's panel
+                        foreach (Control control in channelPanel.Controls)
+                        {
+                            if (control is Panel userPanel && userPanel.Tag is UserDetails userData && userData.UserId == userId)
+                            {
+                                // Find the username label
+                                Label usernameLabel = null;
+                                foreach (Control childControl in userPanel.Controls)
+                                {
+                                    if (childControl is Label label)
+                                    {
+                                        usernameLabel = label;
+                                        break;
+                                    }
+                                }
+
+                                if (usernameLabel != null)
+                                {
+                                    // Check if mute indicator already exists
+                                    Control existingIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
+                                    // Check if deafen indicator exists
+                                    Control deafenIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
+
+                                    if (isMuted)
+                                    {
+                                        if (existingIndicator == null)
+                                        {
+                                            // Create mute indicator with light red color
+                                            PictureBox muteIndicator = new PictureBox
+                                            {
+                                                Name = "muteIndicator_" + userId,
+                                                Size = new Size(16, 16),
+                                                // Position it to the right of the username with some space
+                                                Location = new Point(usernameLabel.Right + 8, usernameLabel.Top),
+                                                Image = Properties.Resources.muteLogo, // You should have this resource
+                                                SizeMode = PictureBoxSizeMode.StretchImage,
+                                                BackColor = Color.Transparent,
+                                                Tag = "StatusIcon" // Tag to identify status icons
+                                            };
+
+                                            // Apply a light red tint to the icon
+                                            Bitmap originalImage = new Bitmap(Properties.Resources.muteLogo);
+                                            Bitmap redTintedImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+                                            using (Graphics g = Graphics.FromImage(redTintedImage))
+                                            {
+                                                // Create a lighter red colorization matrix
+                                                ColorMatrix colorMatrix = new ColorMatrix(
+                                                    new float[][]
+                                                    {
+                                                new float[] {1, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 1, 0},
+                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                    });
+
+                                                using (ImageAttributes attributes = new ImageAttributes())
+                                                {
+                                                    attributes.SetColorMatrix(colorMatrix);
+                                                    g.DrawImage(originalImage, new Rectangle(0, 0, originalImage.Width, originalImage.Height),
+                                                        0, 0, originalImage.Width, originalImage.Height, GraphicsUnit.Pixel, attributes);
+                                                }
+                                            }
+
+                                            muteIndicator.Image = redTintedImage;
+                                            userPanel.Controls.Add(muteIndicator);
+                                            muteIndicator.BringToFront();
+
+                                            // If deafen indicator exists, reposition it after mute indicator
+                                            if (deafenIndicator != null)
+                                            {
+                                                deafenIndicator.Location = new Point(muteIndicator.Right + 4, usernameLabel.Top);
+                                                deafenIndicator.BringToFront();
+                                            }
+                                        }
+                                    }
+                                    else if (existingIndicator != null)
+                                    {
+                                        userPanel.Controls.Remove(existingIndicator);
+                                        existingIndicator.Dispose();
+
+                                        // Reposition deafen indicator if it exists
+                                        if (deafenIndicator != null)
+                                        {
+                                            deafenIndicator.Location = new Point(usernameLabel.Right + 8, usernameLabel.Top);
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdateUserDeafenVisualIndicator(int userId, bool isDeafened)
+        {
+            // Similar implementation as the mute indicator, but with a deafen icon
+            // Positioned next to the username or after the mute icon if present
+
+            foreach (var channelId in mediaChannelPanels.Keys)
+            {
+                if (usersInMediaChannels.ContainsKey(channelId))
+                {
+                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    if (userInChannel != null)
+                    {
+                        Panel channelPanel = mediaChannelPanels[channelId];
+
+                        foreach (Control control in channelPanel.Controls)
+                        {
+                            if (control is Panel userPanel && userPanel.Tag is UserDetails userData && userData.UserId == userId)
+                            {
+                                // Find the username label
+                                Label usernameLabel = null;
+                                foreach (Control childControl in userPanel.Controls)
+                                {
+                                    if (childControl is Label label)
+                                    {
+                                        usernameLabel = label;
+                                        break;
+                                    }
+                                }
+
+                                if (usernameLabel != null)
+                                {
+                                    // Check if deafen indicator already exists
+                                    Control existingIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
+                                    // Check if there's a mute indicator to position after it
+                                    Control muteIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
+
+                                    if (isDeafened)
+                                    {
+                                        if (existingIndicator == null)
+                                        {
+                                            // Determine position - after mute icon if it exists, otherwise after username
+                                            int xPosition = muteIndicator != null ?
+                                                muteIndicator.Right + 4 :
+                                                usernameLabel.Right + 8;
+
+                                            PictureBox deafenIndicator = new PictureBox
+                                            {
+                                                Name = "deafenIndicator_" + userId,
+                                                Size = new Size(16, 16),
+                                                Location = new Point(xPosition, usernameLabel.Top),
+                                                Image = Properties.Resources.deafenLogo, // You should have this resource
+                                                SizeMode = PictureBoxSizeMode.StretchImage,
+                                                BackColor = Color.Transparent,
+                                                Tag = "StatusIcon" // Tag to identify status icons
+                                            };
+
+                                            // Apply a light red tint to the icon
+                                            Bitmap originalImage = new Bitmap(Properties.Resources.deafenLogo);
+                                            Bitmap redTintedImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+                                            using (Graphics g = Graphics.FromImage(redTintedImage))
+                                            {
+                                                // Create a lighter red colorization matrix
+                                                ColorMatrix colorMatrix = new ColorMatrix(
+                                                    new float[][]
+                                                    {
+                                                new float[] {1, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 1, 0},
+                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                    });
+
+                                                using (ImageAttributes attributes = new ImageAttributes())
+                                                {
+                                                    attributes.SetColorMatrix(colorMatrix);
+                                                    g.DrawImage(originalImage, new Rectangle(0, 0, originalImage.Width, originalImage.Height),
+                                                        0, 0, originalImage.Width, originalImage.Height, GraphicsUnit.Pixel, attributes);
+                                                }
+                                            }
+
+                                            deafenIndicator.Image = redTintedImage;
+                                            userPanel.Controls.Add(deafenIndicator);
+                                            deafenIndicator.BringToFront();
+                                        }
+                                    }
+                                    else if (existingIndicator != null)
+                                    {
+                                        userPanel.Controls.Remove(existingIndicator);
+                                        existingIndicator.Dispose();
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ApplyUserBlocking(int userId, bool isBlocked)
+        {
+            // Apply blocking across the application
+            // This might include:
+            // 1. Hiding messages from the blocked user
+            // 2. Preventing them from seeing your video/audio
+            // 3. Preventing direct messages
+
+            // Hide all messages from this user in chat panels
+            if (isBlocked)
+            {
+                foreach (var panel in new[] { ChatMessagesPanel1, ChatMessagesPanel2, ChatMessagesPanel3 })
+                {
+                    foreach (Control control in panel.Controls)
+                    {
+                        // Now we can directly access the UserId property
+                        if (control is ChatMessagePanel messagePanel && messagePanel.UserId == userId)
+                        {
+                            messagePanel.Visible = false;
+                        }
+                    }
+                }
+
+                // You might also want to notify your server about the block
+                // ConnectionManager.getInstance(null).ProcessBlockUser(userId);
+            }
+            else
+            {
+                // Show previously hidden messages
+                foreach (var panel in new[] { ChatMessagesPanel1, ChatMessagesPanel2, ChatMessagesPanel3 })
+                {
+                    foreach (Control control in panel.Controls)
+                    {
+                        // Now we can directly access the UserId property
+                        if (control is ChatMessagePanel messagePanel && messagePanel.UserId == userId)
+                        {
+                            messagePanel.Visible = true;
+                        }
+                    }
+                }
+
+                // Notify server about unblock
+                // ConnectionManager.getInstance(null).ProcessUnblockUser(userId);
+            }
+        }
+
+        private void UpdateContextMenuCheckStates(UserDetails user)
+        {
+            // Get current settings for the user
+            var settings = UserContextMenuSettings.GetInstance().GetUserSettings(user.UserId);
+
+            // Update check states to match current settings
+            foreach (ToolStripItem item in userContextMenu.Items)
+            {
+                if (item is ToolStripMenuItem menuItem)
+                {
+                    switch (menuItem.Text)
+                    {
+                        case "Mute User":
+                            menuItem.Checked = settings.IsMuted;
+                            break;
+
+                        case "Deafen User":
+                            menuItem.Checked = settings.IsDeafened;
+                            break;
+
+                        case "Block User":
+                            menuItem.Checked = settings.IsBlocked;
+                            break;
+                    }
+                }
+            }
+        }
+
+        // Add this method to show the context menu for a user
+        public void ShowUserContextMenu(Control control, Point location, UserDetails user)
+        {
+            userContextMenu.Tag = user;
+
+            // Update the check states before showing
+            UpdateContextMenuCheckStates(user);
+
+            userContextMenu.Show(control, location);
+        }
+
+        public void HandleUserMuteStatusChanged(int userId, bool isMuted)
+        {
+            // Update the user settings in our manager
+            UserContextMenuSettings.GetInstance().SetUserMuted(userId, isMuted);
+
+            // Update visual indicators
+            UpdateUserMuteVisualIndicator(userId, isMuted);
+
+            // If this is about the current user, apply audio muting
+            if (userId == _currentUserId && VideoStreamConnection != null)
+            {
+                // Only toggle if the current state doesn't match the desired state
+                bool isCurrentlyMuted = mediaChannelMuteButton.BackColor == Color.Red;
+                if (isCurrentlyMuted != isMuted)
+                {
+                    VideoStreamConnection.ToggleAudioMute();
+                    mediaChannelMuteButton.BackColor = isMuted ? Color.Red : Color.FromArgb(64, 68, 75);
+                }
+            }
+        }
+
+        public void HandleUserDeafenStatusChanged(int userId, bool isDeafened)
+        {
+            // Update the user settings in our manager
+            UserContextMenuSettings.GetInstance().SetUserDeafened(userId, isDeafened);
+
+            // Update visual indicators
+            UpdateUserDeafenVisualIndicator(userId, isDeafened);
+
+            // If this is about the current user, apply audio deafening
+            if (userId == _currentUserId && VideoStreamConnection != null)
+            {
+                // Only update if the current state doesn't match the desired state
+                if (_isGloballyDeafened != isDeafened)
+                {
+                    VideoStreamConnection.SetGlobalDeafenState(isDeafened);
+                    deafenButton.BackColor = isDeafened ? Color.Red : Color.FromArgb(64, 68, 75);
+                    _isGloballyDeafened = isDeafened;
+                }
+            }
+        }
+
+        public async void HandleUserDisconnect(int userId, int mediaRoomId)
+        {
+            // If this is about the current user, perform full disconnect
+            if (userId == _currentUserId && VideoStreamConnection != null)
+            {
+                // Disconnect user from the current media channel
+                RemoveUserFromMediaChannel(mediaRoomId, _currentUserId);
+
+                // Dispose video connection
+                VideoStreamConnection.Dispose();
+                VideoStreamConnection = null;
+
+                // Small delay to ensure proper cleanup
+                await Task.Delay(1000);
+
+                // Reset media control buttons to original state
+                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75);
+                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75);
+
+                // Switch to text channel 1 (default)
+                this.HideAllPanels();
+                this.ChatMessagesPanel1.Visible = true;
+                this.messageInputTextBox.Visible = true;
+                this.sendMessageButton.Visible = true;
+
+                // Make sure to update emoji panel visibility
+                this.UpdateEmojiPanelVisibility();
+
+                // If chat history isn't loaded yet, load it
+                if (((string)this.ChatMessagesPanel1.Tag) == "0")
+                {
+                    ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+                }
+            }
+            else
+            {
+                // If it's another user, just update the UI
+                RemoveUserFromMediaChannel(mediaRoomId, userId);
+            }
         }
     }
 }

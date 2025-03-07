@@ -462,7 +462,7 @@ namespace YoavDiscordClient
                 BackColor = Color.FromArgb(47, 49, 54),
                 Dock = DockStyle.None,
                 Size = new Size(VIDEO_WIDTH, VIDEO_HEIGHT),  // Add initial size
-                Tag = new { ProfilePicture = profilePicture, Username = username } // Store user info here
+                Tag = new { ProfilePicture = profilePicture, Username = username, UserId = userId} // Store user info here
             };
 
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>

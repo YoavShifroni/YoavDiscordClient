@@ -197,37 +197,104 @@ namespace YoavDiscordClient
 
 
         /// <summary>
-        /// The function display the captcha - the code that the user need to enter to confirm that he isn't a bot
+        /// Creates and displays an improved captcha with distorted text, random colors, noise, and ambiguity-free characters
         /// </summary>
         private void DisplayCaptcha()
         {
             this.enterTheCodeShownAboveTextBox.Text = "";
             string captchaCode = this.GetRandomCodeForCaptcha();
-            Font font = new Font("Arial", 12, FontStyle.Bold);
-            Brush brush = new SolidBrush(Color.Black);
+
+            // Create bitmap with slightly larger dimensions to accommodate character transformations
             Bitmap bitmap = new Bitmap(this.captchaPictureBox.Width, this.captchaPictureBox.Height);
+
             using (Graphics graphics = Graphics.FromImage(bitmap))
             {
-                graphics.Clear(Color.White);
-                float x = (this.captchaPictureBox.Width - graphics.MeasureString(captchaCode, font).Width) / 2;
-                float y = (this.captchaPictureBox.Height - graphics.MeasureString(captchaCode, font).Height) / 2;
-                graphics.DrawString(captchaCode, font, brush, x, y);
+                // Set high quality rendering for smoother transformations
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+                // Fill background with random light color
+                Random random = new Random();
+                Color bgColor = Color.FromArgb(random.Next(220, 255), random.Next(220, 255), random.Next(220, 255));
+                graphics.Clear(bgColor);
+
+                // Add background noise (random dots)
+                for (int i = 0; i < 100; i++)
+                {
+                    int x = random.Next(0, bitmap.Width);
+                    int y = random.Next(0, bitmap.Height);
+                    Color noiseColor = Color.FromArgb(random.Next(150, 200), random.Next(150, 200), random.Next(150, 200));
+                    bitmap.SetPixel(x, y, noiseColor);
+                }
+
+                // Add random lines for additional noise
+                for (int i = 0; i < 5; i++)
+                {
+                    int x1 = random.Next(0, bitmap.Width);
+                    int y1 = random.Next(0, bitmap.Height);
+                    int x2 = random.Next(0, bitmap.Width);
+                    int y2 = random.Next(0, bitmap.Height);
+                    Color lineColor = Color.FromArgb(random.Next(100, 180), random.Next(100, 180), random.Next(100, 180));
+                    Pen pen = new Pen(lineColor, 1);
+                    graphics.DrawLine(pen, x1, y1, x2, y2);
+                }
+
+                // Calculate positions for each character
+                int charWidth = bitmap.Width / captchaCode.Length;
+
+                // Draw each character with random transformations
+                for (int i = 0; i < captchaCode.Length; i++)
+                {
+                    // Random font size variation
+                    int fontSize = random.Next(14, 18);
+
+                    // Random font style from available options
+                    FontStyle[] styles = { FontStyle.Bold, FontStyle.Italic, FontStyle.Regular, FontStyle.Bold | FontStyle.Italic };
+                    FontStyle style = styles[random.Next(styles.Length)];
+
+                    // Create font with random style
+                    Font font = new Font("Arial", fontSize, style);
+
+                    // Random foreground color (dark shades for better visibility)
+                    Color textColor = Color.FromArgb(random.Next(10, 80), random.Next(10, 80), random.Next(10, 80));
+                    Brush brush = new SolidBrush(textColor);
+
+                    // Base position for the character with some randomization
+                    float x = i * charWidth + random.Next(-5, 5) + charWidth / 4;
+                    float y = random.Next(5, bitmap.Height / 4);
+
+                    // Create rotation transformation
+                    graphics.TranslateTransform(x, y);
+                    float angle = random.Next(-15, 15); // Random rotation angle
+                    graphics.RotateTransform(angle);
+
+                    // Draw the character
+                    graphics.DrawString(captchaCode[i].ToString(), font, brush, 0, 0);
+
+                    // Reset transformation for the next character
+                    graphics.ResetTransform();
+                }
             }
+
             this.captchaPictureBox.Image = bitmap;
             this.captchaPictureBox.Tag = captchaCode;
         }
 
         /// <summary>
-        /// The function create a random code with a length of 6 characters and return it
+        /// Creates a random code with a length of 6 characters, only excluding the easily confused characters 'I' and 'l'
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A 6-character captcha code without 'I' and 'l'</returns>
         public string GetRandomCodeForCaptcha()
         {
-            var charsALL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-            var randomIns = new Random();
+            // Only exclude capital I and lowercase l as specifically requested
+            // All other characters are included
+            var charsALL = "ABCDEFGHJKLMNOPQRSTUVWXYZ0123456789abcdefghijkmnopqrstuvwxyz";
+            var random = new Random();
+
             var rndChars = Enumerable.Range(0, 6)
-                            .Select(_ => charsALL[randomIns.Next(charsALL.Length)])
+                            .Select(_ => charsALL[random.Next(charsALL.Length)])
                             .ToArray();
+
             return new string(rndChars);
         }
 

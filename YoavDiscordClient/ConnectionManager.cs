@@ -316,20 +316,32 @@ namespace YoavDiscordClient
 
         public void ProcessGetAllUsersDetails(string allUsersDetails)
         {
-            List<UserDetails> details = JsonConvert.DeserializeObject<List<UserDetails>>(allUsersDetails);
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(details)));
+            if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
+            {
+                List<UserDetails> details = JsonConvert.DeserializeObject<List<UserDetails>>(allUsersDetails);
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(details)));
+            }
+            
         }
 
         public void ProcessUserJoinMediaRoom(int userId, int mediaRoomId, string username, byte[] profilePicture)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddUserToMediaChannel
-            (mediaRoomId, new UserDetails(userId, username, profilePicture))));
+            if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
+            {
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddUserToMediaChannel
+                    (mediaRoomId, new UserDetails(userId, username, profilePicture))));
+            }
+            
         }
 
         public void ProcessUserLeaveMediaRoom(int userId, int mediaRoomId)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.RemoveUserFromMediaChannel
-            (mediaRoomId, userId)));
+            if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
+            {
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.RemoveUserFromMediaChannel
+                    (mediaRoomId, userId)));
+            }
+            
         }
 
        
@@ -365,6 +377,54 @@ namespace YoavDiscordClient
                     }
                 }
             }
+        }
+
+        public void ProcessSetUserMuted(int userId, bool isMuted)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Set_Mute_User_Command;
+            clientServerProtocol.UserId = userId;
+            clientServerProtocol.IsMuted = isMuted;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessSetUserDeafened(int userId, bool isDeafened)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Set_Deafen_User_Command;
+            clientServerProtocol.UserId = userId;
+            clientServerProtocol.IsDeafened = isDeafened;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessDisconnectUserFromMediaRoom(int userId, int mediaRoomId)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Disconnect_User_From_Media_Room_Command;
+            clientServerProtocol.UserId = userId;
+            clientServerProtocol.MediaRoomId = mediaRoomId;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessUserMuted(int userId, bool isMuted)
+        {
+            // Forward the mute status change to the Discord app
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
+                DiscordFormsHolder.getInstance().DiscordApp.HandleUserMuteStatusChanged(userId, isMuted)));
+        }
+
+        public void ProcessUserDeafened(int userId, bool isDeafened)
+        {
+            // Forward the deafen status change to the Discord app
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
+                DiscordFormsHolder.getInstance().DiscordApp.HandleUserDeafenStatusChanged(userId, isDeafened)));
+        }
+
+        public void ProcessUserDisconnected(int userId, int mediaRoomId)
+        {
+            // Forward the disconnect command to the Discord app
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
+                DiscordFormsHolder.getInstance().DiscordApp.HandleUserDisconnect(userId, mediaRoomId)));
         }
     }
 }

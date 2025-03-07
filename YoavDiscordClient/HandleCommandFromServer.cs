@@ -91,6 +91,18 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessUserLeaveMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
                     break;
 
+                case TypeOfCommand.User_Muted_Command:
+                    ConnectionManager.getInstance(null).ProcessUserMuted(clientServerProtocol.UserId, clientServerProtocol.IsMuted);
+                    break;
+
+                case TypeOfCommand.User_Deafened_Command:
+                    ConnectionManager.getInstance(null).ProcessUserDeafened(clientServerProtocol.UserId, clientServerProtocol.IsDeafened);
+                    break;
+
+                case TypeOfCommand.User_Disconnected_Command:
+                    ConnectionManager.getInstance(null).ProcessUserDisconnected(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
+                    break;
+
 
             }
         }

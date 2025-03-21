@@ -27,6 +27,7 @@ namespace YoavDiscordClient
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
+
         }
     }
 }

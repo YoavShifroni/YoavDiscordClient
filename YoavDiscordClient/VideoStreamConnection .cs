@@ -105,43 +105,53 @@ namespace YoavDiscordClient
             foreach (var kvp in displays)
             {
                 var display = kvp.Value;
+                if (display.IsDisposed || !display.IsHandleCreated)
+                    continue;
+
                 display.Invoke(new Action(() =>
                 {
-                    // Set exact same size for all displays
-                    display.Size = displaySize;
-                    display.Dock = DockStyle.None;
-
-                    if (positions.ContainsKey(kvp.Key))
+                    try
                     {
-                        display.Location = positions[kvp.Key];
+                        // Set exact same size for all displays
+                        display.Size = displaySize;
+                        display.Dock = DockStyle.None;
+
+                        if (positions.ContainsKey(kvp.Key))
+                        {
+                            display.Location = positions[kvp.Key];
+                        }
+
+                        // If this has a background panel (no-camera display), make it exactly the same size
+                        var backgroundPanel = display.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "backgroundPanel");
+                        if (backgroundPanel != null)
+                        {
+                            backgroundPanel.Size = displaySize;
+                            backgroundPanel.Dock = DockStyle.None;
+
+                            // Center the profile picture
+                            var profilePicture = backgroundPanel.Controls.OfType<CirclePictureBox>().FirstOrDefault();
+                            if (profilePicture != null)
+                            {
+                                profilePicture.Location = new Point(
+                                    (displaySize.Width - profilePicture.Width) / 2,
+                                    (displaySize.Height - profilePicture.Height) / 2
+                                );
+                            }
+
+                            // Keep username at bottom-right
+                            var usernameLabel = backgroundPanel.Controls.OfType<Label>().FirstOrDefault();
+                            if (usernameLabel != null)
+                            {
+                                usernameLabel.Location = new Point(
+                                    displaySize.Width - usernameLabel.Width - 10,
+                                    displaySize.Height - usernameLabel.Height - 10
+                                );
+                            }
+                        }
                     }
-
-                    // If this has a background panel (no-camera display), make it exactly the same size
-                    var backgroundPanel = display.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "backgroundPanel");
-                    if (backgroundPanel != null)
+                    catch (Exception ex)
                     {
-                        backgroundPanel.Size = displaySize;
-                        backgroundPanel.Dock = DockStyle.None;
-
-                        // Center the profile picture
-                        var profilePicture = backgroundPanel.Controls.OfType<CirclePictureBox>().FirstOrDefault();
-                        if (profilePicture != null)
-                        {
-                            profilePicture.Location = new Point(
-                                (displaySize.Width - profilePicture.Width) / 2,
-                                (displaySize.Height - profilePicture.Height) / 2
-                            );
-                        }
-
-                        // Keep username at bottom-right
-                        var usernameLabel = backgroundPanel.Controls.OfType<Label>().FirstOrDefault();
-                        if (usernameLabel != null)
-                        {
-                            usernameLabel.Location = new Point(
-                                displaySize.Width - usernameLabel.Width - 10,
-                                displaySize.Height - usernameLabel.Height - 10
-                            );
-                        }
+                        System.Diagnostics.Debug.WriteLine($"Error updating video layout: {ex.Message}");
                     }
                 }));
             }
@@ -258,7 +268,7 @@ namespace YoavDiscordClient
         private void SendEmptyVideoIfNeeded(object sender, EventArgs e)
         {
             // Your code here - this will run every 5 seconds
-            if ((DateTime.Now - this.timeOfLastVideoSend).Seconds > 1)
+            if ((DateTime.Now - this.timeOfLastVideoSend).Seconds > VideoMuteTimeOut)
             {
                 var packet = new EmptyVideoPacket();
                 var packetBytes = packet.ToBytes();
@@ -330,6 +340,7 @@ namespace YoavDiscordClient
                                 // Create background panel with visible border
                                 Panel backgroundPanel = new Panel
                                 {
+                                    Name = "backgroundPanel",
                                     Size = displays["local"].Size,
                                     BackColor = Color.FromArgb(47, 49, 54),
                                     BorderStyle = BorderStyle.FixedSingle
@@ -388,6 +399,7 @@ namespace YoavDiscordClient
 
                                 Panel backgroundPanel = new Panel
                                 {
+                                    Name = "backgroundPanel",
                                     Size = displays["local"].Size,
                                     BackColor = Color.FromArgb(47, 49, 54),
                                     BorderStyle = BorderStyle.FixedSingle
@@ -455,6 +467,19 @@ namespace YoavDiscordClient
             videoClient.Connect(ip, port);
             connections[ip] = videoClient;
 
+            // Get user role from UsersImages dictionary
+            var user = DiscordFormsHolder.getInstance().DiscordApp.UsersImages.Keys
+                .Select(id => DiscordFormsHolder.getInstance().DiscordApp
+                    .usersInMediaChannels.Values
+                    .SelectMany(list => list)
+                    .FirstOrDefault(u => u.UserId == id))
+                .FirstOrDefault(u => u != null && u.UserId == userId);
+
+            // Default to Member role if user is not found
+            int userRole = (user != null) ? user.role : 2;
+
+            // Get the appropriate color for the user based on their role using our helper method
+            Color userColor = DiscordFormsHolder.getInstance().DiscordApp.GetRoleColor(userRole);
 
             var display = new PictureBox
             {
@@ -462,7 +487,7 @@ namespace YoavDiscordClient
                 BackColor = Color.FromArgb(47, 49, 54),
                 Dock = DockStyle.None,
                 Size = new Size(VIDEO_WIDTH, VIDEO_HEIGHT),  // Add initial size
-                Tag = new { ProfilePicture = profilePicture, Username = username, UserId = userId} // Store user info here
+                Tag = new { ProfilePicture = profilePicture, Username = username, UserId = userId, RoleColor = userColor } // Store user info and role color
             };
 
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
@@ -474,8 +499,8 @@ namespace YoavDiscordClient
 
             var waveProvider = new BufferedWaveProvider(this.waveFormat)
             {
-                BufferLength = 44100,
-                DiscardOnBufferOverflow = true
+                BufferLength = this.waveFormat.AverageBytesPerSecond,
+                DiscardOnBufferOverflow = false
             };
 
             try
@@ -495,61 +520,87 @@ namespace YoavDiscordClient
 
         private void LocalVideoFrame_Ready(Argb32VideoFrame frame)
         {
-            var bitmap = new Bitmap(VIDEO_WIDTH, VIDEO_HEIGHT, PixelFormat.Format32bppArgb);
-            var rect = new Rectangle(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
-            var bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-
-            int size = VIDEO_WIDTH * VIDEO_HEIGHT * 4;  // 4 bytes per pixel (ARGB)
-            byte[] frameData = new byte[size];
-            Marshal.Copy(frame.data, frameData, 0, size);
-            Marshal.Copy(frameData, 0, bmpData.Scan0, size);
-
-            this.timeOfLastVideoSend = DateTime.Now;
-
-            bitmap.UnlockBits(bmpData);
-            var bitmapData = BitmapToByteArray(bitmap);
-
-            var frameId = Guid.NewGuid();
-            var totalPackets = (int)Math.Ceiling(bitmapData.Length / (double)VideoPacket.MAX_PACKET_SIZE);
-
-            for (int i = 0; i < totalPackets; i++)
+            try
             {
-                int startIndex = i * VideoPacket.MAX_PACKET_SIZE;
-                int length = Math.Min(VideoPacket.MAX_PACKET_SIZE, bitmapData.Length - startIndex);
-                byte[] packetData = new byte[length];
-                Array.Copy(bitmapData, startIndex, packetData, 0, length);
+                var bitmap = new Bitmap(VIDEO_WIDTH, VIDEO_HEIGHT, PixelFormat.Format32bppArgb);
+                var rect = new Rectangle(0, 0, VIDEO_WIDTH, VIDEO_HEIGHT);
+                var bmpData = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
 
-                var packet = new VideoPacket
+                int size = VIDEO_WIDTH * VIDEO_HEIGHT * 4;  // 4 bytes per pixel (ARGB)
+                byte[] frameData = new byte[size];
+                Marshal.Copy(frame.data, frameData, 0, size);
+                Marshal.Copy(frameData, 0, bmpData.Scan0, size);
+
+                this.timeOfLastVideoSend = DateTime.Now;
+
+                bitmap.UnlockBits(bmpData);
+                var bitmapData = BitmapToByteArray(bitmap);
+
+                var frameId = Guid.NewGuid();
+                var totalPackets = (int)Math.Ceiling(bitmapData.Length / (double)VideoPacket.MAX_PACKET_SIZE);
+
+                for (int i = 0; i < totalPackets; i++)
                 {
-                    FrameId = frameId,
-                    PacketIndex = i,
-                    TotalPackets = totalPackets,
-                    Data = packetData
-                };
+                    int startIndex = i * VideoPacket.MAX_PACKET_SIZE;
+                    int length = Math.Min(VideoPacket.MAX_PACKET_SIZE, bitmapData.Length - startIndex);
+                    byte[] packetData = new byte[length];
+                    Array.Copy(bitmapData, startIndex, packetData, 0, length);
 
+                    var packet = new VideoPacket
+                    {
+                        FrameId = frameId,
+                        PacketIndex = i,
+                        TotalPackets = totalPackets,
+                        Data = packetData
+                    };
+
+                    var packetBytes = packet.ToBytes();
+                    foreach (var client in connections.Values)
+                    {
+                        client.Send(packetBytes, packetBytes.Length);
+                    }
+                }
+
+                if (displays.ContainsKey("local") && !displays["local"].IsDisposed && displays["local"].IsHandleCreated)
+                {
+                    displays["local"].Invoke(new Action(() => {
+                        try
+                        {
+                            var oldImage = displays["local"].Image;
+                            displays["local"].Image = bitmap;
+                            oldImage?.Dispose();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error updating local display: {ex.Message}");
+                        }
+                    }));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error processing video frame: {ex.Message}");
+            }
+        }
+
+        private void AudioInput_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            try
+            {
+                // Don't send audio if muted
+                if (isAudioMuted || _isGloballyMuted)
+                    return;
+
+                var packet = new AudioPacket(e.Buffer);
                 var packetBytes = packet.ToBytes();
                 foreach (var client in connections.Values)
                 {
                     client.Send(packetBytes, packetBytes.Length);
                 }
             }
-
-            displays["local"].Invoke(new Action(() => {
-                displays["local"].Image?.Dispose();
-                displays["local"].Image = bitmap;
-            }));
-
-
-
-        }
-
-        private void AudioInput_DataAvailable(object sender, WaveInEventArgs e)
-        {
-            var packet = new AudioPacket(e.Buffer);
-            var packetBytes = packet.ToBytes();
-            foreach (var client in connections.Values)
+            catch (Exception ex)
             {
-                client.Send(packetBytes, packetBytes.Length);
+                System.Diagnostics.Debug.WriteLine($"Error sending audio: {ex.Message}");
             }
         }
 
@@ -563,9 +614,17 @@ namespace YoavDiscordClient
                     var result = await client.ReceiveAsync();
                     ProcessDataFromOtherUser(ip, result.Buffer);
                 }
+                catch (ObjectDisposedException)
+                {
+                    // Client was disposed, exit gracefully
+                    System.Diagnostics.Debug.WriteLine($"UdpClient for {ip} was disposed");
+                    break;
+                }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Receive error: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Receive error from {ip}: {ex.Message}");
+                    // Don't break the loop for transient errors
+                    await Task.Delay(100);
                 }
             }
         }
@@ -579,6 +638,7 @@ namespace YoavDiscordClient
                 switch (packetType)
                 {
                     case PacketType.Video:
+                        System.Diagnostics.Debug.WriteLine("Got video packet");
                         var packet = VideoPacket.FromBytes(bytes);
 
                         if (!frameAssemblers.ContainsKey(ip))
@@ -591,31 +651,43 @@ namespace YoavDiscordClient
                         {
                             using (var ms = new MemoryStream(frameData))
                             {
-                                var bitmap = new Bitmap(ms);
-                                if (displays.ContainsKey(ip))
+                                try
                                 {
-                                    displays[ip].Invoke(new Action(() =>
+                                    var bitmap = new Bitmap(ms);
+                                    if (displays.ContainsKey(ip) && !displays[ip].IsDisposed && displays[ip].IsHandleCreated)
                                     {
-                                        // First clear any existing background panel
-                                        displays[ip].Controls.Clear();
+                                        displays[ip].Invoke(new Action(() =>
+                                        {
+                                            try
+                                            {
+                                                // First clear any existing background panel
+                                                displays[ip].Controls.Clear();
 
-                                        if (displays[ip].Image != null)
-                                        {
-                                            var oldImage = displays[ip].Image;
-                                            displays[ip].Image = bitmap;
-                                            oldImage.Dispose();
-                                        }
-                                        else
-                                        {
-                                            displays[ip].Image = bitmap;
-                                        }
-                                    }));
+                                                var oldImage = displays[ip].Image;
+                                                displays[ip].Image = bitmap;
+                                                oldImage?.Dispose();
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                System.Diagnostics.Debug.WriteLine($"Error updating display for {ip}: {ex.Message}");
+                                            }
+                                        }));
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Error creating bitmap from video data: {ex.Message}");
                                 }
                             }
                         }
                         break;
 
                     case PacketType.Audio:
+                        // If we're deafened, ignore incoming audio
+                        if (_isGloballyDeafened)
+                            break;
+
+                        System.Diagnostics.Debug.WriteLine("Got audio packet");
 
                         var audioPacket = AudioPacket.FromBytes(bytes);
                         if (audioInputs.ContainsKey(ip))
@@ -625,11 +697,12 @@ namespace YoavDiscordClient
                             float bufferUsagePercent = (float)waveProvider.BufferedBytes / waveProvider.BufferLength * 100;
                             System.Diagnostics.Debug.WriteLine($"Buffer usage: {bufferUsagePercent:F1}%");
 
-                            if (bufferUsagePercent > 80)
+                            if (bufferUsagePercent > 95)
                             {
-                                System.Diagnostics.Debug.WriteLine("Buffer getting full, clearing half...");
-                                byte[] remainingData = new byte[waveProvider.BufferedBytes / 2];
-                                waveProvider.Read(remainingData, 0, remainingData.Length);
+                                System.Diagnostics.Debug.WriteLine("Buffer getting full, clearing...");
+                                // Instead of clearing half the buffer, implement a sliding window
+                                byte[] remainingData = new byte[waveProvider.BufferedBytes - 8820]; // Keep all but one packet
+                                waveProvider.Read(new byte[8820], 0, 8820); // Remove oldest packet
                             }
 
                             try
@@ -642,70 +715,95 @@ namespace YoavDiscordClient
                                 System.Diagnostics.Debug.WriteLine($"Error adding samples: {ex.Message}");
                                 waveProvider.ClearBuffer();
                             }
+                        } else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Got audio packet of unknown IP: {ip}");
+
                         }
                         break;
 
                     case PacketType.Empty_Video:
-                        displays[ip].Invoke(new Action(() =>
+                        System.Diagnostics.Debug.WriteLine("Got empty video packet");
+
+                        if (displays.ContainsKey(ip) && !displays[ip].IsDisposed && displays[ip].IsHandleCreated)
                         {
-
-                            displays[ip].Controls.Clear();
-                            if (displays[ip].Image != null)
+                            displays[ip].Invoke(new Action(() =>
                             {
-                                displays[ip].Image.Dispose();
-                                displays[ip].Image = null;
-                            }
+                                try
+                                {
+                                    displays[ip].Controls.Clear();
+                                    if (displays[ip].Image != null)
+                                    {
+                                        displays[ip].Image.Dispose();
+                                        displays[ip].Image = null;
+                                    }
 
-                            var userInfo = (dynamic)displays[ip].Tag;
+                                    var userInfo = (dynamic)displays[ip].Tag;
 
-                            // Set fixed size for display
-                            displays[ip].Size = new Size(VIDEO_WIDTH, VIDEO_HEIGHT);
+                                    // Set fixed size for display
+                                    displays[ip].Size = new Size(VIDEO_WIDTH, VIDEO_HEIGHT);
 
-                            Panel backgroundPanel = new Panel
-                            {
-                                Name = "backgroundPanel",
-                                Size = displays[ip].Size,
-                                BackColor = Color.FromArgb(47, 49, 54),
-                                BorderStyle = BorderStyle.FixedSingle,
-                                Location = new Point(0, 0)
-                            };
+                                    Panel backgroundPanel = new Panel
+                                    {
+                                        Name = "backgroundPanel",
+                                        Size = displays[ip].Size,
+                                        BackColor = Color.FromArgb(47, 49, 54),
+                                        BorderStyle = BorderStyle.FixedSingle,
+                                        Location = new Point(0, 0)
+                                    };
 
-                            CirclePictureBox profilePicture = new CirclePictureBox
-                            {
-                                Size = new Size(100, 100),
-                                SizeMode = PictureBoxSizeMode.StretchImage,
-                                Image = ByteArrayToImage((byte[])userInfo.ProfilePicture),
-                                Location = new Point(
-                                    (displays[ip].Width - 100) / 2,
-                                    (displays[ip].Height - 100) / 2
-                                )
-                            };
+                                    CirclePictureBox profilePicture = new CirclePictureBox
+                                    {
+                                        Size = new Size(100, 100),
+                                        SizeMode = PictureBoxSizeMode.StretchImage,
+                                        Image = ByteArrayToImage((byte[])userInfo.ProfilePicture),
+                                        Location = new Point(
+                                            (displays[ip].Width - 100) / 2,
+                                            (displays[ip].Height - 100) / 2
+                                        )
+                                    };
 
-                            Label usernameLabel = new Label
-                            {
-                                Text = (string)userInfo.Username,
-                                ForeColor = Color.White,
-                                Font = new Font("Arial", 12, FontStyle.Regular),
-                                AutoSize = true,
-                                BackColor = Color.Transparent
-                            };
+                                    // Get the appropriate color for the user based on their role
+                                    Color userColor = Color.White; // Default color
+                                    if (userInfo.RoleColor != null)
+                                    {
+                                        userColor = (Color)userInfo.RoleColor;
+                                    }
 
-                            // Calculate label position after AutoSize has determined its dimensions
-                            usernameLabel.Location = new Point(
-                                displays[ip].Width - usernameLabel.PreferredWidth - 10,
-                                displays[ip].Height - usernameLabel.PreferredHeight - 10
-                            );
+                                    Label usernameLabel = new Label
+                                    {
+                                        Text = (string)userInfo.Username,
+                                        ForeColor = userColor, // Use the role-specific color
+                                        Font = new Font("Arial", 12, FontStyle.Regular),
+                                        AutoSize = true,
+                                        BackColor = Color.Transparent
+                                    };
 
-                            backgroundPanel.Controls.Add(profilePicture);
-                            backgroundPanel.Controls.Add(usernameLabel);
-                            displays[ip].Controls.Add(backgroundPanel);
+                                    // Calculate label position after AutoSize has determined its dimensions
+                                    usernameLabel.Location = new Point(
+                                        displays[ip].Width - usernameLabel.PreferredWidth - 10,
+                                        displays[ip].Height - usernameLabel.PreferredHeight - 10
+                                    );
 
-                            // Force a layout update after everything is set up
-                            displays[ip].Refresh();
-                            this.UpdateVideoLayout();
+                                    backgroundPanel.Controls.Add(profilePicture);
+                                    backgroundPanel.Controls.Add(usernameLabel);
+                                    displays[ip].Controls.Add(backgroundPanel);
 
-                        }));
+                                    // Force a layout update after everything is set up
+                                    displays[ip].Refresh();
+                                    this.UpdateVideoLayout();
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Error processing empty video: {ex.Message}");
+                                }
+                            }));
+                        }
                         break;
+                    default:
+                        System.Diagnostics.Debug.WriteLine($"Got unknown packet: {packetType}");
+                        break;
+
                 }
 
             }
@@ -833,33 +931,43 @@ namespace YoavDiscordClient
                     if (displays.ContainsKey(ip))
                     {
                         var displayToRemove = displays[ip];
-                        remotePanel.Invoke(new Action(() =>
+                        if (!remotePanel.IsDisposed && remotePanel.IsHandleCreated)
                         {
-                            // Clear all controls and images
-                            displayToRemove.Controls.Clear();
-                            if (displayToRemove.Image != null)
+                            remotePanel.Invoke(new Action(() =>
+                        {
+                            try
                             {
-                                displayToRemove.Image.Dispose();
-                                displayToRemove.Image = null;
+                                // Clear all controls and images
+                                displayToRemove.Controls.Clear();
+                                if (displayToRemove.Image != null)
+                                {
+                                    displayToRemove.Image.Dispose();
+                                    displayToRemove.Image = null;
+                                }
+
+                                // Remove from parent panel
+                                remotePanel.Controls.Remove(displayToRemove);
+                                displayToRemove.Dispose();
+
+                                // Clear the displays dictionary for this channel
+                                displays.Remove(ip);
+
+                                // Reset display layout if we're the only one left
+                                if (displays.Count == 1) // Only local display remains
+                                {
+                                    ResetChannelDisplay();
+                                }
+                                else
+                                {
+                                    UpdateVideoLayout();
+                                }
                             }
-
-                            // Remove from parent panel
-                            remotePanel.Controls.Remove(displayToRemove);
-                            displayToRemove.Dispose();
-
-                            // Clear the displays dictionary for this channel
-                            displays.Remove(ip);
-
-                            // Reset display layout if we're the only one left
-                            if (displays.Count == 1) // Only local display remains
+                            catch (Exception ex)
                             {
-                                ResetChannelDisplay();
-                            }
-                            else
-                            {
-                                UpdateVideoLayout();
+                                System.Diagnostics.Debug.WriteLine($"Error removing display for {ip}: {ex.Message}");
                             }
                         }));
+                        }
                     }
 
                     // Remove their audio provider
@@ -886,6 +994,9 @@ namespace YoavDiscordClient
             // Reset all displays
             foreach (var display in displays.Values)
             {
+                if (display.IsDisposed)
+                    continue;
+
                 display.Controls.Clear();
                 if (display.Image != null)
                 {
@@ -895,7 +1006,7 @@ namespace YoavDiscordClient
             }
 
             // Clear and reinitialize the local display
-            if (displays.ContainsKey("local"))
+            if (displays.ContainsKey("local") && !displays["local"].IsDisposed)
             {
                 var localDisplay = displays["local"];
                 localDisplay.Size = new Size(VIDEO_WIDTH, VIDEO_HEIGHT);
@@ -906,7 +1017,8 @@ namespace YoavDiscordClient
             }
 
             UpdateVideoLayout();
-            remotePanel.Refresh();
+            if (!remotePanel.IsDisposed)
+                remotePanel.Refresh();
         }
 
 
@@ -984,7 +1096,7 @@ namespace YoavDiscordClient
                     }
 
                     // Update UI first
-                    if (displays.ContainsKey("local"))
+                    if (displays.ContainsKey("local") && !displays["local"].IsDisposed && displays["local"].IsHandleCreated)
                     {
                         DiscordFormsHolder.getInstance().DiscordApp.BeginInvoke(new Action(() =>
                         {
@@ -1063,7 +1175,7 @@ namespace YoavDiscordClient
                 else
                 {
                     // Clear UI first
-                    if (displays.ContainsKey("local"))
+                    if (displays.ContainsKey("local") && !displays["local"].IsDisposed && displays["local"].IsHandleCreated)
                     {
                         DiscordFormsHolder.getInstance().DiscordApp.BeginInvoke(new Action(() =>
                         {
@@ -1208,7 +1320,8 @@ namespace YoavDiscordClient
                         // Cleanup displays
                         foreach (var display in displays.Values)
                         {
-                            display.Dispose();
+                            if (!display.IsDisposed)
+                                display.Dispose();
                         }
 
                         displays.Clear();

@@ -31,7 +31,7 @@ namespace YoavDiscordClient
 
         private Dictionary<int, Panel> mediaChannelPanels = new Dictionary<int, Panel>();
 
-        private Dictionary<int, List<UserDetails>> usersInMediaChannels = new Dictionary<int, List<UserDetails>>();
+        public Dictionary<int, List<UserDetails>> usersInMediaChannels = new Dictionary<int, List<UserDetails>>();
 
 
         private List<int> _alreadyAskedForImage = new List<int>();
@@ -45,6 +45,13 @@ namespace YoavDiscordClient
         private bool _isGloballyDeafened = false;
 
         private bool _isEmojiSelectionVisible = false;
+
+        private bool _isMutedByHigherRole = false;
+
+        private bool _isVideoMutedByHigherRole = false;
+
+
+        private int role;
 
         private ContextMenuStrip userContextMenu;
 
@@ -88,13 +95,14 @@ namespace YoavDiscordClient
         }
 
 
-        public void SetUsernameAndProfilePicture(byte[] profilePicture, string username, int userId)
+        public void SetUsernameAndProfilePicture(byte[] profilePicture, string username, int userId, int role)
         {
             this.UserProfilePicture = this.ByteArrayToImage(profilePicture);
             this.Username = username;
             this._currentUserId = userId;
             this.userProfilePicturePictureBox.Image = this.UserProfilePicture;
             this.usernameLabel.Text = username;
+            this.role = role;
         }
 
         private Image ByteArrayToImage(byte[] byteArray)
@@ -345,13 +353,29 @@ namespace YoavDiscordClient
                 await Task.Delay(2000);
 
                 // Reset buttons to normal state when switching channels
-                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
-                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                if (this._isMutedByHigherRole)
+                {
+                    this.mediaChannelMuteButton.Enabled = false;
+                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
+                if (this._isVideoMutedByHigherRole)
+                {
+                    this.mediaChannelVideoMuteButton.Enabled = false;
+                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
             }
 
             this._videoRoomId = 1;
             // Add the current user to the new channel
-            AddUserToMediaChannel(1, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture)));
+            AddUserToMediaChannel(1, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
             this.HideAllPanels();
             this.VideoPanel1.Visible = true;
 
@@ -376,6 +400,16 @@ namespace YoavDiscordClient
             if (this._isGloballyDeafened)
             {
                 VideoStreamConnection.SetGlobalDeafenState(true);
+            }
+
+            // Apply video mute state to the new connection
+            if (this._isVideoMutedByHigherRole)
+            {
+                // Ensure the video is muted in the new connection
+                await Task.Delay(500); // Small delay to ensure connection is ready
+                VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
+                mediaChannelVideoMuteButton.BackColor = Color.Red;
+                mediaChannelVideoMuteButton.Enabled = false;
             }
 
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(1);
@@ -408,11 +442,27 @@ namespace YoavDiscordClient
                 await Task.Delay(2000);
 
                 // Reset buttons to normal state when switching channels
-                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
-                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                if (this._isMutedByHigherRole)
+                {
+                    this.mediaChannelMuteButton.Enabled = false;
+                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
+                if (this._isVideoMutedByHigherRole)
+                {
+                    this.mediaChannelVideoMuteButton.Enabled = false;
+                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
             }
             this._videoRoomId = 2;
-            AddUserToMediaChannel(2, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture)));
+            AddUserToMediaChannel(2, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
             this.HideAllPanels();
             this.VideoPanel2.Visible = true;
 
@@ -469,11 +519,27 @@ namespace YoavDiscordClient
                 await Task.Delay(2000);
 
                 // Reset buttons to normal state when switching channels
-                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
-                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                if (this._isMutedByHigherRole)
+                {
+                    this.mediaChannelMuteButton.Enabled = false;
+                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
+                if (this._isVideoMutedByHigherRole)
+                {
+                    this.mediaChannelVideoMuteButton.Enabled = false;
+                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                }
+                else
+                {
+                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                }
             }
             this._videoRoomId = 3;
-            AddUserToMediaChannel(3, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture)));
+            AddUserToMediaChannel(3, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
             this.HideAllPanels();
             this.VideoPanel3.Visible = true;
 
@@ -510,43 +576,89 @@ namespace YoavDiscordClient
 
         public void ShowAllUsersDetails(List<UserDetails> details)
         {
-            // Clear existing controls in rightSidePanel except labels
+            // Clear existing controls in rightSidePanel except essential controls
             rightSidePanel.Controls.Clear();
-            rightSidePanel.Controls.Add(onlineUsersLabel);
-            rightSidePanel.Controls.Add(offlineUsersLabel);
+
+            // Create dictionary to map role number to descriptive name and color
+            Dictionary<int, Tuple<string, Color>> roleMapping = new Dictionary<int, Tuple<string, Color>>
+            {
+                { 0, new Tuple<string, Color>("Admin", GetRoleColor(0)) },
+                { 1, new Tuple<string, Color>("Moderator", GetRoleColor(1)) },
+                { 2, new Tuple<string, Color>("Member", GetRoleColor(2)) }
+            };
 
             // Separate online and offline users
             var onlineUsers = details.Where(d => d.Status).ToList();
             var offlineUsers = details.Where(d => !d.Status).ToList();
 
-            // Update online label with count
-            onlineUsersLabel.Text = $"Online - {onlineUsers.Count}";
-            onlineUsersLabel.Location = new Point(6, 56); // Original position
+            // Group online users by role
+            var onlineUsersByRole = onlineUsers.GroupBy(u => u.role)
+                                             .OrderBy(g => g.Key) // Sort by role number (lower = higher rank)
+                                             .ToDictionary(g => g.Key, g => g.ToList());
 
-            // Starting Y position for online users
-            int currentY = onlineUsersLabel.Bottom + 20;
-
-            // Add online users
-            foreach (var user in onlineUsers)
+            // Update and add the online label at the top
+            Label onlineLabel = new Label
             {
-                if (!UsersImages.ContainsKey(user.UserId))
+                Text = $"Online - {onlineUsers.Count}",
+                Location = new Point(6, 56),
+                Font = new Font("Arial Narrow", 14.25f, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true
+            };
+            rightSidePanel.Controls.Add(onlineLabel);
+
+            int currentY = onlineLabel.Bottom + 10;
+
+            // Add role headers and users for each role that has online users
+            foreach (var roleKey in onlineUsersByRole.Keys.OrderBy(k => k)) // Ensure Admin appears first, then Moderator, then Member
+            {
+                var roleName = roleMapping[roleKey].Item1;
+                var roleColor = roleMapping[roleKey].Item2;
+                var usersInRole = onlineUsersByRole[roleKey];
+
+                // Add role header
+                Label roleHeader = new Label
                 {
-                    UsersImages[user.UserId] = ByteArrayToImage(user.Picture);
-                }
-                if (user.MediaChannelId != -1)
+                    Text = roleName + "s",
+                    Location = new Point(20, currentY),
+                    Font = new Font("Arial", 12, FontStyle.Bold),
+                    ForeColor = roleColor,
+                    AutoSize = true
+                };
+                rightSidePanel.Controls.Add(roleHeader);
+                currentY = roleHeader.Bottom + 5;
+
+                // Add users for this role
+                foreach (var user in usersInRole)
                 {
-                    this.AddUserToMediaChannel(user.MediaChannelId, user);
+                    if (!UsersImages.ContainsKey(user.UserId))
+                    {
+                        UsersImages[user.UserId] = ByteArrayToImage(user.Picture);
+                    }
+
+                    if (user.MediaChannelId != -1)
+                    {
+                        this.AddUserToMediaChannel(user.MediaChannelId, user);
+                    }
+
+                    AddUserEntry(user, currentY, true, roleMapping[user.role].Item2);
+                    currentY += 60;
                 }
-                AddUserEntry(user, currentY, true);
-                currentY += 60;
+
+                currentY += 10; // Add spacing between role groups
             }
 
-            // Position offline label closer to the last online user
-            offlineUsersLabel.Text = $"Offline - {offlineUsers.Count}";
-            offlineUsersLabel.Location = new Point(6, currentY + 20); // Reduced gap to 20 pixels
-
-            // Start offline users below the label
-            currentY = offlineUsersLabel.Bottom + 20;
+            // Position offline label
+            Label offlineLabel = new Label
+            {
+                Text = $"Offline - {offlineUsers.Count}",
+                Location = new Point(6, currentY + 10),
+                Font = new Font("Arial Narrow", 14.25f, FontStyle.Bold),
+                ForeColor = Color.White,
+                AutoSize = true
+            };
+            rightSidePanel.Controls.Add(offlineLabel);
+            currentY = offlineLabel.Bottom + 20;
 
             // Add offline users
             foreach (var user in offlineUsers)
@@ -555,19 +667,23 @@ namespace YoavDiscordClient
                 {
                     UsersImages[user.UserId] = ByteArrayToImage(user.Picture);
                 }
-                AddUserEntry(user, currentY, false);
+
+                // Use the appropriate color for the offline user based on their role
+                Color userColor = GetRoleColor(user.role, false); // false means offline
+
+                AddUserEntry(user, currentY, false, userColor);
                 currentY += 60;
             }
         }
-
-        private void AddUserEntry(UserDetails user, int yPosition, bool isOnline)
+        private void AddUserEntry(UserDetails user, int yPosition, bool isOnline, Color roleColor)
         {
             // Create panel for user entry
             Panel userPanel = new Panel
             {
                 Width = rightSidePanel.Width - 20,
                 Height = 50,
-                Location = new Point(10, yPosition)
+                Location = new Point(10, yPosition),
+                Tag = user.role
             };
 
             // Create circle picture box for user avatar
@@ -579,13 +695,13 @@ namespace YoavDiscordClient
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 
-            // Create label for username
+            // Create label for username with role-specific color
             Label usernameLabel = new Label
             {
                 Text = user.Username,
                 Location = new Point(55, 15),
                 AutoSize = true,
-                ForeColor = Color.White,
+                ForeColor = roleColor, // Use the role-specific color
                 Font = new Font(
                     "Arial",
                     12,
@@ -593,12 +709,6 @@ namespace YoavDiscordClient
                     GraphicsUnit.Point
                 )
             };
-
-            // If user is offline, make the text color slightly darker
-            if (!isOnline)
-            {
-                usernameLabel.ForeColor = Color.FromArgb(180, 180, 180);
-            }
 
             // Add controls to user panel
             userPanel.Controls.Add(avatarPicture);
@@ -647,6 +757,14 @@ namespace YoavDiscordClient
             if (!mediaChannelPanels.ContainsKey(channelId))
                 return;
 
+            // Create dictionary to map role number to color using our helper method
+            Dictionary<int, Color> roleColorMapping = new Dictionary<int, Color>
+    {
+        { 0, GetRoleColor(0) },
+        { 1, GetRoleColor(1) },
+        { 2, GetRoleColor(2) }
+    };
+
             Panel channelPanel = mediaChannelPanels[channelId];
             channelPanel.Controls.Clear();
             usersInMediaChannels[channelId] = users;
@@ -655,6 +773,9 @@ namespace YoavDiscordClient
 
             foreach (var user in users)
             {
+                // Get the appropriate color for the user based on their role
+                Color userColor = roleColorMapping[user.role];
+
                 // Create user entry panel
                 Panel userPanel = new Panel
                 {
@@ -686,13 +807,13 @@ namespace YoavDiscordClient
                     }
                 };
 
-                // Create label for username
+                // Create label for username with role-specific color
                 Label usernameLabel = new Label
                 {
                     Text = user.Username,
                     Location = new Point(45, 10),
                     AutoSize = true,
-                    ForeColor = Color.White,
+                    ForeColor = userColor, // Use the role-specific color
                     Font = new Font("Arial", 10, FontStyle.Regular),
                     Tag = user // Store the user details in the label's Tag
                 };
@@ -801,6 +922,7 @@ namespace YoavDiscordClient
             {
                 VideoStreamConnection.DisconnectFromParticipant(userId);
             }
+
         }
 
 
@@ -1120,6 +1242,10 @@ namespace YoavDiscordClient
             muteUserItem.CheckOnClick = true;
             muteUserItem.Click += MuteUserItem_Click;
 
+            ToolStripMenuItem muteVideoItem = new ToolStripMenuItem("Mute Video");
+            muteVideoItem.CheckOnClick = true;
+            muteVideoItem.Click += MuteVideoItem_Click;
+
             ToolStripMenuItem deafenUserItem = new ToolStripMenuItem("Deafen User");
             deafenUserItem.CheckOnClick = true;
             deafenUserItem.Click += DeafenUserItem_Click;
@@ -1127,10 +1253,6 @@ namespace YoavDiscordClient
             // Add disconnect option (not a checkbox)
             ToolStripMenuItem disconnectUserItem = new ToolStripMenuItem("Disconnect User");
             disconnectUserItem.Click += DisconnectUserItem_Click;
-
-            ToolStripMenuItem blockUserItem = new ToolStripMenuItem("Block User");
-            blockUserItem.CheckOnClick = true;
-            blockUserItem.Click += BlockUserItem_Click;
 
             // Add a separator
             ToolStripSeparator separator = new ToolStripSeparator();
@@ -1141,9 +1263,9 @@ namespace YoavDiscordClient
 
             // Add items to the context menu
             userContextMenu.Items.Add(muteUserItem);
+            userContextMenu.Items.Add(muteVideoItem);
             userContextMenu.Items.Add(deafenUserItem);
             userContextMenu.Items.Add(disconnectUserItem);
-            userContextMenu.Items.Add(blockUserItem);
             userContextMenu.Items.Add(separator);
             userContextMenu.Items.Add(viewProfileItem);
 
@@ -1174,6 +1296,29 @@ namespace YoavDiscordClient
             {
                 VideoStreamConnection.ToggleAudioMute();
                 mediaChannelMuteButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+            }
+        }
+
+        private void MuteVideoItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+
+            // Update the user settings in our manager
+            UserContextMenuSettings.GetInstance().SetUserVideoMuted(targetUser.UserId, item.Checked);
+
+            // You can also implement visual indicators for video muted users
+            // For example, adding a video mute icon overlay on their avatar
+            UpdateUserVideoMuteVisualIndicator(targetUser.UserId, item.Checked);
+
+            // Send the video mute command to the server to propagate to all clients
+            ConnectionManager.getInstance(null).ProcessSetUserVideoMuted(targetUser.UserId, item.Checked);
+
+            // If this is the current user being video muted, apply video muting locally as well
+            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
+            {
+                VideoStreamConnection.ToggleVideoMute();
+                mediaChannelVideoMuteButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
             }
         }
 
@@ -1249,35 +1394,6 @@ namespace YoavDiscordClient
             }
         }
 
-        private void BlockUserItem_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
-
-            // Ask for confirmation before blocking
-            if (item.Checked)
-            {
-                DialogResult result = MessageBox.Show(
-                    $"Are you sure you want to block {targetUser.Username}?",
-                    "Block User",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                if (result == DialogResult.No)
-                {
-                    // User canceled, uncheck the item
-                    item.Checked = false;
-                    return;
-                }
-            }
-
-            // Update the user settings
-            UserContextMenuSettings.GetInstance().SetUserBlocked(targetUser.UserId, item.Checked);
-
-            // Apply blocking across the application
-            ApplyUserBlocking(targetUser.UserId, item.Checked);
-        }
-
         private void ViewProfileItem_Click(object sender, EventArgs e)
         {
             UserDetails targetUser = (UserDetails)userContextMenu.Tag;
@@ -1296,11 +1412,23 @@ namespace YoavDiscordClient
             // User should be online if either their Status is true or they are in a media channel
             bool isUserOnline = targetUser.Status || isInAnyMediaChannel;
 
-            // Create a simple profile dialog
+            // Create dictionary to map role number to descriptive name and color using our helper method
+            Dictionary<int, Tuple<string, Color>> roleMapping = new Dictionary<int, Tuple<string, Color>>
+            {
+                { 0, new Tuple<string, Color>("Admin", GetRoleColor(0)) },
+                { 1, new Tuple<string, Color>("Moderator", GetRoleColor(1)) },
+                { 2, new Tuple<string, Color>("Member", GetRoleColor(2)) }
+            };
+
+            // Get role information for the target user
+            string roleName = roleMapping[targetUser.role].Item1;
+            Color roleColor = roleMapping[targetUser.role].Item2;
+
+            // Create a profile dialog
             using (var profileForm = new Form())
             {
                 profileForm.Text = $"{targetUser.Username}'s Profile";
-                profileForm.Size = new Size(400, 300);
+                profileForm.Size = new Size(400, 350); // Make it a bit taller for the role info
                 profileForm.StartPosition = FormStartPosition.CenterParent;
                 profileForm.FormBorderStyle = FormBorderStyle.FixedDialog;
                 profileForm.MaximizeBox = false;
@@ -1322,7 +1450,7 @@ namespace YoavDiscordClient
                     Text = targetUser.Username,
                     Location = new Point(150, 130),
                     AutoSize = true,
-                    ForeColor = Color.White,
+                    ForeColor = roleColor, // Use role color for username
                     Font = new Font("Arial", 16, FontStyle.Bold)
                 };
 
@@ -1331,11 +1459,26 @@ namespace YoavDiscordClient
                     profileForm.ClientSize.Width / 2 - usernameLabel.PreferredWidth / 2,
                     130);
 
-                // Add status (online/offline) - using our modified isUserOnline value
+                // Add role label
+                Label roleLabel = new Label
+                {
+                    Text = roleName,
+                    Location = new Point(150, 160),
+                    AutoSize = true,
+                    ForeColor = roleColor,
+                    Font = new Font("Arial", 14, FontStyle.Regular)
+                };
+
+                // Center the role label
+                roleLabel.Location = new Point(
+                    profileForm.ClientSize.Width / 2 - roleLabel.PreferredWidth / 2,
+                    160);
+
+                // Add status (online/offline)
                 Label statusLabel = new Label
                 {
                     Text = isUserOnline ? "Online" : "Offline",
-                    Location = new Point(150, 160),
+                    Location = new Point(150, 190),
                     AutoSize = true,
                     ForeColor = isUserOnline ? Color.LightGreen : Color.Gray,
                     Font = new Font("Arial", 12)
@@ -1344,7 +1487,7 @@ namespace YoavDiscordClient
                 // Center the status label
                 statusLabel.Location = new Point(
                     profileForm.ClientSize.Width / 2 - statusLabel.PreferredWidth / 2,
-                    160);
+                    190);
 
                 // Add user settings indicators
                 var settings = UserContextMenuSettings.GetInstance().GetUserSettings(targetUser.UserId);
@@ -1354,7 +1497,7 @@ namespace YoavDiscordClient
                     FlowDirection = FlowDirection.TopDown,
                     WrapContents = false,
                     AutoSize = true,
-                    Location = new Point(20, 190),
+                    Location = new Point(20, 220),
                     Width = profileForm.ClientSize.Width - 40
                 };
 
@@ -1370,6 +1513,18 @@ namespace YoavDiscordClient
                     settingsPanel.Controls.Add(mutedLabel);
                 }
 
+                if (settings.IsVideoMuted)
+                {
+                    Label videoMutedLabel = new Label
+                    {
+                        Text = "🎥 Video Muted",
+                        ForeColor = Color.Red,
+                        Font = new Font("Arial", 10),
+                        AutoSize = true
+                    };
+                    settingsPanel.Controls.Add(videoMutedLabel);
+                }
+
                 if (settings.IsDeafened)
                 {
                     Label deafenedLabel = new Label
@@ -1382,24 +1537,12 @@ namespace YoavDiscordClient
                     settingsPanel.Controls.Add(deafenedLabel);
                 }
 
-                if (settings.IsBlocked)
-                {
-                    Label blockedLabel = new Label
-                    {
-                        Text = "⛔ Blocked",
-                        ForeColor = Color.Red,
-                        Font = new Font("Arial", 10),
-                        AutoSize = true
-                    };
-                    settingsPanel.Controls.Add(blockedLabel);
-                }
-
                 // Add close button
                 Button closeButton = new Button
                 {
                     Text = "Close",
                     Size = new Size(100, 30),
-                    Location = new Point(150, 230),
+                    Location = new Point(150, 280),
                     BackColor = Color.FromArgb(64, 68, 75),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat
@@ -1408,18 +1551,19 @@ namespace YoavDiscordClient
                 // Center the close button
                 closeButton.Location = new Point(
                     profileForm.ClientSize.Width / 2 - closeButton.Width / 2,
-                    230);
+                    280);
 
                 closeButton.Click += (s, args) => profileForm.Close();
 
                 // Adjust settings panel position to center it
                 settingsPanel.Location = new Point(
                     profileForm.ClientSize.Width / 2 - settingsPanel.Width / 2,
-                    190);
+                    220);
 
                 // Add controls to form
                 profileForm.Controls.Add(profilePic);
                 profileForm.Controls.Add(usernameLabel);
+                profileForm.Controls.Add(roleLabel);
                 profileForm.Controls.Add(statusLabel);
                 profileForm.Controls.Add(settingsPanel);
                 profileForm.Controls.Add(closeButton);
@@ -1541,6 +1685,125 @@ namespace YoavDiscordClient
             }
         }
 
+        private void UpdateUserVideoMuteVisualIndicator(int userId, bool isVideoMuted)
+        {
+            // Similar implementation as the mute indicator, but with a video mute icon
+            // Positioned next to the username or after the mute icon if present
+
+            foreach (var channelId in mediaChannelPanels.Keys)
+            {
+                if (usersInMediaChannels.ContainsKey(channelId))
+                {
+                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    if (userInChannel != null)
+                    {
+                        Panel channelPanel = mediaChannelPanels[channelId];
+
+                        foreach (Control control in channelPanel.Controls)
+                        {
+                            if (control is Panel userPanel && userPanel.Tag is UserDetails userData && userData.UserId == userId)
+                            {
+                                // Find the username label
+                                Label usernameLabel = null;
+                                foreach (Control childControl in userPanel.Controls)
+                                {
+                                    if (childControl is Label label)
+                                    {
+                                        usernameLabel = label;
+                                        break;
+                                    }
+                                }
+
+                                if (usernameLabel != null)
+                                {
+                                    // Check if video mute indicator already exists
+                                    Control existingVideoIndicator = userPanel.Controls.Find("videoMuteIndicator_" + userId, true).FirstOrDefault();
+                                    // Check if mute indicator exists
+                                    Control muteIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
+                                    // Check if deafen indicator exists
+                                    Control deafenIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
+
+                                    if (isVideoMuted)
+                                    {
+                                        if (existingVideoIndicator == null)
+                                        {
+                                            // Determine position - after mute icon if it exists, otherwise after username
+                                            int xPosition = muteIndicator != null ?
+                                                muteIndicator.Right + 4 :
+                                                usernameLabel.Right + 8;
+
+                                            PictureBox videoMuteIndicator = new PictureBox
+                                            {
+                                                Name = "videoMuteIndicator_" + userId,
+                                                Size = new Size(16, 16),
+                                                Location = new Point(xPosition, usernameLabel.Top),
+                                                Image = Properties.Resources.videoMuteLogo, // You should have this resource
+                                                SizeMode = PictureBoxSizeMode.StretchImage,
+                                                BackColor = Color.Transparent,
+                                                Tag = "StatusIcon" // Tag to identify status icons
+                                            };
+
+                                            // Apply a light red tint to the icon
+                                            Bitmap originalImage = new Bitmap(Properties.Resources.videoMuteLogo);
+                                            Bitmap redTintedImage = new Bitmap(originalImage.Width, originalImage.Height);
+
+                                            using (Graphics g = Graphics.FromImage(redTintedImage))
+                                            {
+                                                // Create a lighter red colorization matrix
+                                                ColorMatrix colorMatrix = new ColorMatrix(
+                                                    new float[][]
+                                                    {
+                                                new float[] {1, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 0, 0},
+                                                new float[] {0, 0, 0, 1, 0},
+                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                    });
+
+                                                using (ImageAttributes attributes = new ImageAttributes())
+                                                {
+                                                    attributes.SetColorMatrix(colorMatrix);
+                                                    g.DrawImage(originalImage, new Rectangle(0, 0, originalImage.Width, originalImage.Height),
+                                                        0, 0, originalImage.Width, originalImage.Height, GraphicsUnit.Pixel, attributes);
+                                                }
+                                            }
+
+                                            videoMuteIndicator.Image = redTintedImage;
+                                            userPanel.Controls.Add(videoMuteIndicator);
+                                            videoMuteIndicator.BringToFront();
+
+                                            // If deafen indicator exists, reposition it after video mute indicator
+                                            if (deafenIndicator != null)
+                                            {
+                                                deafenIndicator.Location = new Point(videoMuteIndicator.Right + 4, usernameLabel.Top);
+                                                deafenIndicator.BringToFront();
+                                            }
+                                        }
+                                    }
+                                    else if (existingVideoIndicator != null)
+                                    {
+                                        userPanel.Controls.Remove(existingVideoIndicator);
+                                        existingVideoIndicator.Dispose();
+
+                                        // Reposition deafen indicator if it exists
+                                        if (deafenIndicator != null)
+                                        {
+                                            int xPosition = muteIndicator != null ?
+                                                muteIndicator.Right + 4 :
+                                                usernameLabel.Right + 8;
+                                            deafenIndicator.Location = new Point(xPosition, usernameLabel.Top);
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void UpdateUserDeafenVisualIndicator(int userId, bool isDeafened)
         {
             // Similar implementation as the mute indicator, but with a deafen icon
@@ -1642,51 +1905,6 @@ namespace YoavDiscordClient
             }
         }
 
-        private void ApplyUserBlocking(int userId, bool isBlocked)
-        {
-            // Apply blocking across the application
-            // This might include:
-            // 1. Hiding messages from the blocked user
-            // 2. Preventing them from seeing your video/audio
-            // 3. Preventing direct messages
-
-            // Hide all messages from this user in chat panels
-            if (isBlocked)
-            {
-                foreach (var panel in new[] { ChatMessagesPanel1, ChatMessagesPanel2, ChatMessagesPanel3 })
-                {
-                    foreach (Control control in panel.Controls)
-                    {
-                        // Now we can directly access the UserId property
-                        if (control is ChatMessagePanel messagePanel && messagePanel.UserId == userId)
-                        {
-                            messagePanel.Visible = false;
-                        }
-                    }
-                }
-
-                // You might also want to notify your server about the block
-                // ConnectionManager.getInstance(null).ProcessBlockUser(userId);
-            }
-            else
-            {
-                // Show previously hidden messages
-                foreach (var panel in new[] { ChatMessagesPanel1, ChatMessagesPanel2, ChatMessagesPanel3 })
-                {
-                    foreach (Control control in panel.Controls)
-                    {
-                        // Now we can directly access the UserId property
-                        if (control is ChatMessagePanel messagePanel && messagePanel.UserId == userId)
-                        {
-                            messagePanel.Visible = true;
-                        }
-                    }
-                }
-
-                // Notify server about unblock
-                // ConnectionManager.getInstance(null).ProcessUnblockUser(userId);
-            }
-        }
 
         private void UpdateContextMenuCheckStates(UserDetails user)
         {
@@ -1694,6 +1912,11 @@ namespace YoavDiscordClient
             var settings = UserContextMenuSettings.GetInstance().GetUserSettings(user.UserId);
 
             // Update check states to match current settings
+            bool isMyRoleStronger = false;
+            if (user.role > this.role)
+            {
+                isMyRoleStronger = true;
+            }
             foreach (ToolStripItem item in userContextMenu.Items)
             {
                 if (item is ToolStripMenuItem menuItem)
@@ -1702,14 +1925,21 @@ namespace YoavDiscordClient
                     {
                         case "Mute User":
                             menuItem.Checked = settings.IsMuted;
+                            menuItem.Enabled = isMyRoleStronger;
+                            break;
+
+                        case "Mute Video":
+                            menuItem.Checked = settings.IsVideoMuted;
+                            menuItem.Enabled = isMyRoleStronger;
                             break;
 
                         case "Deafen User":
                             menuItem.Checked = settings.IsDeafened;
+                            menuItem.Enabled = isMyRoleStronger;
                             break;
 
-                        case "Block User":
-                            menuItem.Checked = settings.IsBlocked;
+                        case "Disconnect User":
+                            menuItem.Enabled = isMyRoleStronger;
                             break;
                     }
                 }
@@ -1740,10 +1970,39 @@ namespace YoavDiscordClient
             {
                 // Only toggle if the current state doesn't match the desired state
                 bool isCurrentlyMuted = mediaChannelMuteButton.BackColor == Color.Red;
+                mediaChannelMuteButton.Enabled = !isMuted;
+                this.globalMuteButton.Enabled = !isMuted;
+                this._isMutedByHigherRole = isMuted;
                 if (isCurrentlyMuted != isMuted)
                 {
                     VideoStreamConnection.ToggleAudioMute();
                     mediaChannelMuteButton.BackColor = isMuted ? Color.Red : Color.FromArgb(64, 68, 75);
+                }
+
+            }
+        }
+
+        public void HandleUserVideoMuteStatusChanged(int userId, bool isVideoMuted)
+        {
+            // Update the user settings in our manager
+            UserContextMenuSettings.GetInstance().SetUserVideoMuted(userId, isVideoMuted);
+
+            // Update visual indicators
+            UpdateUserVideoMuteVisualIndicator(userId, isVideoMuted);
+
+            // If this is about the current user, apply video muting
+            if (userId == _currentUserId && VideoStreamConnection != null)
+            {
+                // Update button state and track that this was done by a higher role
+                mediaChannelVideoMuteButton.Enabled = !isVideoMuted;
+                this._isVideoMutedByHigherRole = isVideoMuted;
+
+                // Only toggle if the current state doesn't match the desired state
+                bool isCurrentlyVideoMuted = mediaChannelVideoMuteButton.BackColor == Color.Red;
+                if (isCurrentlyVideoMuted != isVideoMuted)
+                {
+                    VideoStreamConnection.ToggleVideoMute();
+                    mediaChannelVideoMuteButton.BackColor = isVideoMuted ? Color.Red : Color.FromArgb(64, 68, 75);
                 }
             }
         }
@@ -1760,6 +2019,7 @@ namespace YoavDiscordClient
             if (userId == _currentUserId && VideoStreamConnection != null)
             {
                 // Only update if the current state doesn't match the desired state
+                this.deafenButton.Enabled = !isDeafened;
                 if (_isGloballyDeafened != isDeafened)
                 {
                     VideoStreamConnection.SetGlobalDeafenState(isDeafened);
@@ -1808,6 +2068,52 @@ namespace YoavDiscordClient
                 // If it's another user, just update the UI
                 RemoveUserFromMediaChannel(mediaRoomId, userId);
             }
+        }
+
+        public Color GetRoleColor(int roleNumber, bool isOnline = true)
+        {
+            // Define standard role colors
+            Color adminColor = Color.FromArgb(255, 75, 75);       // Red color for Admins
+            Color moderatorColor = Color.FromArgb(75, 165, 255);  // Blue color for Moderators
+            Color memberColor = Color.White;                      // White color for regular Members
+
+            // Select the base color based on role
+            Color baseColor;
+            switch (roleNumber)
+            {
+                case 0: // Admin
+                    baseColor = adminColor;
+                    break;
+                case 1: // Moderator
+                    baseColor = moderatorColor;
+                    break;
+                case 2: // Member
+                    baseColor = memberColor;
+                    break;
+                default: // Default to Member color
+                    baseColor = memberColor;
+                    break;
+            }
+
+            // If user is offline, reduce brightness of the color
+            if (!isOnline)
+            {
+                // If the color is already white (for Members), use a standard gray
+                if (baseColor.R == 255 && baseColor.G == 255 && baseColor.B == 255)
+                {
+                    return Color.FromArgb(180, 180, 180);
+                }
+
+                // Otherwise, darken the color
+                float factor = 0.6f;
+                int r = (int)(baseColor.R * factor);
+                int g = (int)(baseColor.G * factor);
+                int b = (int)(baseColor.B * factor);
+
+                return Color.FromArgb(r, g, b);
+            }
+
+            return baseColor;
         }
     }
 }

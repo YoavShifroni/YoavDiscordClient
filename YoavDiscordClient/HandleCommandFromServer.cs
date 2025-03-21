@@ -41,7 +41,7 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.Success_Connected_To_The_Application_Command:
                     ConnectionManager.getInstance(null).ProcessSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
-                        clientServerProtocol.Username, clientServerProtocol.UserId);
+                        clientServerProtocol.Username, clientServerProtocol.UserId, clientServerProtocol.Role);
                     break;
 
                 case TypeOfCommand.Success_Forgot_Password_Command:
@@ -84,7 +84,8 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.User_Join_Media_Channel_Command:
                     ConnectionManager.getInstance(null).ProcessUserJoinMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId,
-                        clientServerProtocol.Username, clientServerProtocol.ProfilePicture);
+                        clientServerProtocol.Username, clientServerProtocol.ProfilePicture, clientServerProtocol.Role,
+                        clientServerProtocol.IsMuted, clientServerProtocol.IsDeafened, clientServerProtocol.IsVideoMuted);
                     break;
 
                 case TypeOfCommand.User_Leave_Media_Channel_Command:
@@ -101,6 +102,10 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.User_Disconnected_Command:
                     ConnectionManager.getInstance(null).ProcessUserDisconnected(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
+                    break;
+
+                case TypeOfCommand.User_Video_Muted_Command:
+                    ConnectionManager.getInstance(null).ProcessUserVideoMuted(clientServerProtocol.UserId, clientServerProtocol.IsVideoMuted);
                     break;
 
 

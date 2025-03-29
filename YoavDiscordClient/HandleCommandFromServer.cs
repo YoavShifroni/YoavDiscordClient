@@ -108,6 +108,13 @@ namespace YoavDiscordClient
                     ConnectionManager.getInstance(null).ProcessUserVideoMuted(clientServerProtocol.UserId, clientServerProtocol.IsVideoMuted);
                     break;
 
+                case TypeOfCommand.User_Role_Has_Been_Updated_Command:
+                    ConnectionManager.getInstance(null).ProcessUserRoleHasBeenUpdated(clientServerProtocol.UserId, clientServerProtocol.Role);
+                    break;
+
+                
+
+
 
             }
         }

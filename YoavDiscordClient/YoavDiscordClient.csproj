@@ -38,4 +38,7 @@
 	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	  </None>
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy &quot;%25USERPROFILE%25\.nuget\packages\microsoft.mixedreality.webrtc\2.0.2\runtimes\win10-x64\native\mrwebrtc.dll&quot; &quot;$(TargetDir)&quot; /Y&#xD;&#xA;" />
+	</Target>
 </Project>

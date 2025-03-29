@@ -1254,6 +1254,24 @@ namespace YoavDiscordClient
             ToolStripMenuItem disconnectUserItem = new ToolStripMenuItem("Disconnect User");
             disconnectUserItem.Click += DisconnectUserItem_Click;
 
+            // Add the Update Role submenu
+            ToolStripMenuItem updateRoleItem = new ToolStripMenuItem("Update Role");
+
+            // Create submenu items for roles
+            ToolStripMenuItem setAdminRoleItem = new ToolStripMenuItem("Admin");
+            setAdminRoleItem.Click += SetAdminRoleItem_Click;
+
+            ToolStripMenuItem setModeratorRoleItem = new ToolStripMenuItem("Moderator");
+            setModeratorRoleItem.Click += SetModeratorRoleItem_Click;
+
+            ToolStripMenuItem setMemberRoleItem = new ToolStripMenuItem("Member");
+            setMemberRoleItem.Click += SetMemberRoleItem_Click;
+
+            // Add submenu items to update role item
+            updateRoleItem.DropDownItems.Add(setAdminRoleItem);
+            updateRoleItem.DropDownItems.Add(setModeratorRoleItem);
+            updateRoleItem.DropDownItems.Add(setMemberRoleItem);
+
             // Add a separator
             ToolStripSeparator separator = new ToolStripSeparator();
 
@@ -1266,6 +1284,7 @@ namespace YoavDiscordClient
             userContextMenu.Items.Add(muteVideoItem);
             userContextMenu.Items.Add(deafenUserItem);
             userContextMenu.Items.Add(disconnectUserItem);
+            userContextMenu.Items.Add(updateRoleItem); // Add the Update Role option
             userContextMenu.Items.Add(separator);
             userContextMenu.Items.Add(viewProfileItem);
 
@@ -1391,6 +1410,99 @@ namespace YoavDiscordClient
                     "Cannot Disconnect",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
+            }
+        }
+
+        private void SetAdminRoleItem_Click(object sender, EventArgs e)
+        {
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 0); // 0 is Admin role
+        }
+
+        private void SetModeratorRoleItem_Click(object sender, EventArgs e)
+        {
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 1); // 1 is Moderator role
+        }
+
+        private void SetMemberRoleItem_Click(object sender, EventArgs e)
+        {
+            UserDetails targetUser = (UserDetails)userContextMenu.Tag;
+            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 2); // 2 is Member role
+        }
+
+        private void UpdateContextMenuCheckStates(UserDetails user)
+        {
+            // Get current settings for the user
+            var settings = UserContextMenuSettings.GetInstance().GetUserSettings(user.UserId);
+
+            // Determine if the current user has permission to modify this user based on roles
+            bool isMyRoleStronger = false;
+            if (user.role > this.role)
+            {
+                isMyRoleStronger = true;
+            }
+
+            foreach (ToolStripItem item in userContextMenu.Items)
+            {
+                if (item is ToolStripMenuItem menuItem)
+                {
+                    switch (menuItem.Text)
+                    {
+                        case "Mute User":
+                            menuItem.Checked = settings.IsMuted;
+                            menuItem.Enabled = isMyRoleStronger;
+                            break;
+
+                        case "Mute Video":
+                            menuItem.Checked = settings.IsVideoMuted;
+                            menuItem.Enabled = isMyRoleStronger;
+                            break;
+
+                        case "Deafen User":
+                            menuItem.Checked = settings.IsDeafened;
+                            menuItem.Enabled = isMyRoleStronger;
+                            break;
+
+                        case "Disconnect User":
+                            menuItem.Enabled = isMyRoleStronger;
+                            break;
+
+                        case "Update Role":
+                            // Apply role update permissions according to requirements
+                            menuItem.Enabled = this.role <= 1; // Only Admin (0) and Moderator (1) can update roles
+
+                            // Check each submenu item and set its enabled state
+                            foreach (ToolStripItem subItem in menuItem.DropDownItems)
+                            {
+                                if (subItem is ToolStripMenuItem roleItem)
+                                {
+                                    switch (roleItem.Text)
+                                    {
+                                        case "Admin":
+                                            // Nobody can set Admin role (as you mentioned there is always only one admin)
+                                            roleItem.Enabled = false;
+                                            break;
+
+                                        case "Moderator":
+                                            // Admin can set anyone to Moderator, Moderator can set Member to Moderator
+                                            roleItem.Enabled = (this.role == 0) || (this.role == 1 && user.role == 2);
+                                            // Highlight the current role
+                                            roleItem.Checked = user.role == 1;
+                                            break;
+
+                                        case "Member":
+                                            // Admin can demote Moderator to Member, others can't change roles
+                                            roleItem.Enabled = (this.role == 0 && user.role == 1);
+                                            // Highlight the current role
+                                            roleItem.Checked = user.role == 2;
+                                            break;
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
             }
         }
 
@@ -1905,47 +2017,6 @@ namespace YoavDiscordClient
             }
         }
 
-
-        private void UpdateContextMenuCheckStates(UserDetails user)
-        {
-            // Get current settings for the user
-            var settings = UserContextMenuSettings.GetInstance().GetUserSettings(user.UserId);
-
-            // Update check states to match current settings
-            bool isMyRoleStronger = false;
-            if (user.role > this.role)
-            {
-                isMyRoleStronger = true;
-            }
-            foreach (ToolStripItem item in userContextMenu.Items)
-            {
-                if (item is ToolStripMenuItem menuItem)
-                {
-                    switch (menuItem.Text)
-                    {
-                        case "Mute User":
-                            menuItem.Checked = settings.IsMuted;
-                            menuItem.Enabled = isMyRoleStronger;
-                            break;
-
-                        case "Mute Video":
-                            menuItem.Checked = settings.IsVideoMuted;
-                            menuItem.Enabled = isMyRoleStronger;
-                            break;
-
-                        case "Deafen User":
-                            menuItem.Checked = settings.IsDeafened;
-                            menuItem.Enabled = isMyRoleStronger;
-                            break;
-
-                        case "Disconnect User":
-                            menuItem.Enabled = isMyRoleStronger;
-                            break;
-                    }
-                }
-            }
-        }
-
         // Add this method to show the context menu for a user
         public void ShowUserContextMenu(Control control, Point location, UserDetails user)
         {
@@ -2115,5 +2186,63 @@ namespace YoavDiscordClient
 
             return baseColor;
         }
+
+        public void HandleUserRoleUpdated(int userId, int newRole)
+        {
+
+            // Check if this is the current user's role being updated
+            if (userId == this._currentUserId)
+            {
+                // Update the current user's role
+                this.role = newRole;
+
+                // Update any UI elements that are role-dependent
+                // For example, refresh the context menu permissions
+            }
+
+            // Find the user's username from existing data
+            string username = "Unknown";
+
+            // Check in all media channels
+            foreach (var channelUsers in usersInMediaChannels.Values)
+            {
+                var user = channelUsers.FirstOrDefault(u => u.UserId == userId);
+                if (user != null)
+                {
+                    username = user.Username;
+                    // Update the user's role
+                    user.role = newRole;
+                }
+            }
+
+            // Update all media channel displays
+            foreach (var channelEntry in usersInMediaChannels)
+            {
+                UpdateMediaChannelUsers(channelEntry.Key, channelEntry.Value);
+            }
+
+            // Request a refresh of the users list to update their display in the sidebar
+            ConnectionManager.getInstance(null).ProcessFetchAllUsers();
+
+            // Show a notification to the user
+            MessageBox.Show($"{username}'s role has been updated to {GetRoleNameFromId(newRole)}");
+        }
+
+        private string GetRoleNameFromId(int roleId)
+        {
+            switch (roleId)
+            {
+                case 0:
+                    return "Admin";
+                case 1:
+                    return "Moderator";
+                case 2:
+                    return "Member";
+                default:
+                    return "Unknown";
+            }
+        }
+
+        
     }
 }

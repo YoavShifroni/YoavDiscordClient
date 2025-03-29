@@ -31,6 +31,12 @@ namespace YoavDiscordClient
             InitializeComponent();
         }
 
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+
+            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 305f, 1134f);
+        }
+
         /// <summary>
         /// The function check if the server ip id valid if it is it will check if the username
         /// and password length are ok and if they are it will start the process to login the user into the project
@@ -367,10 +373,6 @@ namespace YoavDiscordClient
         }
 
 
-        private void LoginForm_Load(object sender, EventArgs e)
-        {
-
-            DiscordFormsHolder.ResizeFormBasedOnResolution(this, 305f, 1134f);
-        }
+        
     }
 }

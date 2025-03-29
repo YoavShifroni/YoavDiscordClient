@@ -259,15 +259,15 @@ namespace YoavDiscordClient
 
         private void InitializeTimer()
         {
-            timer = new System.Windows.Forms.Timer();
-            timer.Interval = VideoMuteTimeOut; // 5000 milliseconds = 5 seconds
+            timer = new Timer();
+            timer.Interval = VideoMuteTimeOut; // 2000 milliseconds = 2 seconds
             timer.Tick += SendEmptyVideoIfNeeded;
             timer.Start();
         }
 
         private void SendEmptyVideoIfNeeded(object sender, EventArgs e)
         {
-            // Your code here - this will run every 5 seconds
+            // this will run every 2 seconds
             if ((DateTime.Now - this.timeOfLastVideoSend).Seconds > VideoMuteTimeOut)
             {
                 var packet = new EmptyVideoPacket();
@@ -289,25 +289,6 @@ namespace YoavDiscordClient
                 try
                 {
                     await CleanupVideo();
-                    string username = Environment.UserName;
-
-                    string nugetPath = $@"C:\Users\{username}\.nuget\packages\microsoft.mixedreality.webrtc\2.0.2\runtimes\win10-x64\native";
-
-                    // Check if the directory exists
-                    if (Directory.Exists(nugetPath))
-                    {
-                        Environment.SetEnvironmentVariable("PATH",
-                            nugetPath + ";" + Environment.GetEnvironmentVariable("PATH"));
-                    }
-                    else
-                    {
-                        System.Diagnostics.Debug.WriteLine($"NuGet package path not found: {nugetPath}");
-                    }
-
-                    //Environment.SetEnvironmentVariable("PATH",
-                    //    @"C:\Users\royud\.nuget\packages\microsoft.mixedreality.webrtc\2.0.2\runtimes\win10-x64\native"
-                    //    + ";" + Environment.GetEnvironmentVariable("PATH"));
-
                     var devices = await DeviceVideoTrackSource.GetCaptureDevicesAsync();
                     if (devices.Count > 0)
                     {

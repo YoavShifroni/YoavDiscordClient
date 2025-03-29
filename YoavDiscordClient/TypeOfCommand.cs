@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace YoavDiscordClient
 {
     /// <summary>
-    /// Enum that represent the type of command that will be sent to the server using the protocol
+    /// Enum that represent the type of command that will be sent to the client using the protocol
     /// </summary>
     public enum TypeOfCommand
     {
@@ -31,21 +31,27 @@ namespace YoavDiscordClient
         Get_Messages_History_Of_Chat_Room_Command,
         Return_Messages_History_Of_Chat_Room_Command,
         Connect_To_Media_Room_Command,
-        Disconnect_From_Media_Room_Command,
         New_Participant_Join_The_Media_Room_Command,
         Get_All_Ips_Of_Connected_Users_In_Some_Media_Room_Command,
+        Disconnect_From_Media_Room_Command,
         Some_User_Left_The_Media_Room_Command,
         Fetch_All_Users_Command,
         Get_All_Users_Details_Command,
-        User_Leave_Media_Channel_Command,
         User_Join_Media_Channel_Command,
+        User_Leave_Media_Channel_Command,
         Set_Mute_User_Command,
         Set_Deafen_User_Command,
         Disconnect_User_From_Media_Room_Command,
-        User_Disconnected_Command,
-        User_Deafened_Command,
         User_Muted_Command,
+        User_Deafened_Command,
+        User_Disconnected_Command,
         Set_Video_Mute_User_Command,
         User_Video_Muted_Command,
+        Update_User_Role_Command,
+        User_Role_Has_Been_Updated_Command,
+
+        
+
+
     }
 }

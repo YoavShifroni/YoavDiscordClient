@@ -39,6 +39,7 @@ namespace YoavDiscordClient
 
 
 
+
         /// <summary>
         /// Static getInstance method, as in Singleton patterns. Protected with mutex
         /// </summary>
@@ -489,5 +490,28 @@ namespace YoavDiscordClient
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
                 DiscordFormsHolder.getInstance().DiscordApp.HandleUserVideoMuteStatusChanged(userId, isVideoMuted)));
         }
+
+        public void ProcessUpdateUserRole(int userId, int newRole)
+        {
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
+            clientServerProtocol.TypeOfCommand = TypeOfCommand.Update_User_Role_Command;
+            clientServerProtocol.UserId = userId;
+            clientServerProtocol.Role = newRole;
+            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+        }
+
+        public void ProcessUserRoleHasBeenUpdated(int userId, int newRole)
+        {
+            // Update the user's role in the UI
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
+                DiscordFormsHolder.getInstance().DiscordApp.HandleUserRoleUpdated(userId, newRole)));
+
+        }
+
+
+
+        
+
+
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YoavDiscordClient
+namespace YoavDiscordClient.Enums
 {
     /// <summary>
     /// Enum that represent the Forms names

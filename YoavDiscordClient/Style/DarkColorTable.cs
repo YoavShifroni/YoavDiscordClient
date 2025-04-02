@@ -6,8 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace YoavDiscordClient
+namespace YoavDiscordClient.Style
 {
+    /// <summary>
+    /// Provides color settings for dark-themed context menus
+    /// </summary>
     public class DarkColorTable : ProfessionalColorTable
     {
         public override Color MenuItemSelected => Color.FromArgb(64, 68, 75);

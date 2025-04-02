@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿    using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +98,7 @@ namespace YoavDiscordClient
             else
             {
                 textFromServer = AesFunctions.Decrypt(textFromServer);
-                string[] stringSeparators = new string[] { "\r\n" };
+                string[] stringSeparators = new string[] { ClientServerProtocolParser.MessageTrailingDelimiter };
                 System.Diagnostics.Debug.WriteLine("Recived from server: " + textFromServer);
                 string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)

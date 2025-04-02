@@ -1,33 +1,10 @@
 ﻿using System;
 using System.IO;
+using YoavDiscordClient.Enums;
 
 namespace YoavDiscordClient
 {
-    /// <summary>
-    /// Enumeration of packet types for the protocol
-    /// </summary>
-    public enum PacketType
-    {
-        /// <summary>
-        /// Video data packet
-        /// </summary>
-        Video = 1,
 
-        /// <summary>
-        /// Audio data packet
-        /// </summary>
-        Audio = 2,
-
-        /// <summary>
-        /// Empty video packet (camera off/muted)
-        /// </summary>
-        Empty_Video = 3,
-
-        /// <summary>
-        /// Control packet for signaling
-        /// </summary>
-        Control = 4
-    }
 
     /// <summary>
     /// Base class for all packet types in the network protocol

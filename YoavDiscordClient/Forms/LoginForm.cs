@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoavDiscordClient.Enums;
 
 namespace YoavDiscordClient
 {

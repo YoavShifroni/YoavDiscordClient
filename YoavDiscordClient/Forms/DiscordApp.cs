@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoavDiscordClient.Style;
 
 namespace YoavDiscordClient
 {
@@ -63,6 +64,7 @@ namespace YoavDiscordClient
 
         private void DiscordApp_Load(object sender, EventArgs e)
         {
+
             DiscordFormsHolder.ResizeFormBasedOnResolution(this, 2175f, 1248f);
 
             InitializeMediaChannelPanels();
@@ -331,6 +333,7 @@ namespace YoavDiscordClient
             // If we're already connected to this channel, just show the video panel
             if (VideoStreamConnection != null && this._videoRoomId == 1)
             {
+
                 this.HideAllPanels();
                 this.VideoPanel1.Visible = true;
 
@@ -348,28 +351,37 @@ namespace YoavDiscordClient
             {
                 RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
                 ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                VideoStreamConnection.Dispose();
+                // Properly dispose the old connection
+                var oldConnection = VideoStreamConnection;
                 VideoStreamConnection = null;
-                await Task.Delay(2000);
+
+                // Use a more robust cleanup approach
+                await Task.Run(async () => {
+                    oldConnection.Dispose();
+                    // Force garbage collection to release camera resources
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    await Task.Delay(2000); // Longer delay to ensure device is released
+                });
 
                 // Reset buttons to normal state when switching channels
                 if (this._isMutedByHigherRole)
                 {
                     this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
                 if (this._isVideoMutedByHigherRole)
                 {
                     this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
             }
 
@@ -387,6 +399,7 @@ namespace YoavDiscordClient
                 (chatAreaPanel.Width - mediaControlsPanel.Width) / 2,
                 chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
             this.mediaControlsPanel.BringToFront();
+
             VideoStreamConnection = new VideoStreamConnection(this.VideoPanel1);
             await VideoStreamConnection.Initialize();
 
@@ -408,7 +421,7 @@ namespace YoavDiscordClient
                 // Ensure the video is muted in the new connection
                 await Task.Delay(500); // Small delay to ensure connection is ready
                 VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
-                mediaChannelVideoMuteButton.BackColor = Color.Red;
+                mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 mediaChannelVideoMuteButton.Enabled = false;
             }
 
@@ -420,6 +433,19 @@ namespace YoavDiscordClient
             // If we're already connected to this channel, just show the video panel
             if (VideoStreamConnection != null && this._videoRoomId == 2)
             {
+
+                try
+                {
+                    await Task.Run(async () => {
+                        // Force a video reinit 
+                        await VideoStreamConnection.ReInitializeVideo();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error reinitializing video: {ex.Message}");
+                }
+
                 this.HideAllPanels();
                 this.VideoPanel2.Visible = true;
 
@@ -437,28 +463,37 @@ namespace YoavDiscordClient
             {
                 RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
                 ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                VideoStreamConnection.Dispose();
+                // Properly dispose the old connection
+                var oldConnection = VideoStreamConnection;
                 VideoStreamConnection = null;
-                await Task.Delay(2000);
+
+                // Use a more robust cleanup approach
+                await Task.Run(async () => {
+                    oldConnection.Dispose();
+                    // Force garbage collection to release camera resources
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    await Task.Delay(2000); // Longer delay to ensure device is released
+                });
 
                 // Reset buttons to normal state when switching channels
                 if (this._isMutedByHigherRole)
                 {
                     this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
                 if (this._isVideoMutedByHigherRole)
                 {
                     this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
             }
             this._videoRoomId = 2;
@@ -489,6 +524,16 @@ namespace YoavDiscordClient
                 VideoStreamConnection.SetGlobalDeafenState(true);
             }
 
+            // Apply video mute state to the new connection
+            if (this._isVideoMutedByHigherRole)
+            {
+                // Ensure the video is muted in the new connection
+                await Task.Delay(500); // Small delay to ensure connection is ready
+                VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
+                mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
+                mediaChannelVideoMuteButton.Enabled = false;
+            }
+
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(2);
         }
 
@@ -497,6 +542,19 @@ namespace YoavDiscordClient
             // If we're already connected to this channel, just show the video panel
             if (VideoStreamConnection != null && this._videoRoomId == 3)
             {
+
+                try
+                {
+                    await Task.Run(async () => {
+                        // Force a video reinit 
+                        await VideoStreamConnection.ReInitializeVideo();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error reinitializing video: {ex.Message}");
+                }
+
                 this.HideAllPanels();
                 this.VideoPanel3.Visible = true;
 
@@ -514,28 +572,37 @@ namespace YoavDiscordClient
             {
                 RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
                 ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                VideoStreamConnection.Dispose();
+                // Properly dispose the old connection
+                var oldConnection = VideoStreamConnection;
                 VideoStreamConnection = null;
-                await Task.Delay(2000);
+
+                // Use a more robust cleanup approach
+                await Task.Run(async () => {
+                    oldConnection.Dispose();
+                    // Force garbage collection to release camera resources
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    await Task.Delay(2000); // Longer delay to ensure device is released
+                });
 
                 // Reset buttons to normal state when switching channels
                 if (this._isMutedByHigherRole)
                 {
                     this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = Color.Red;
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
                 if (this._isVideoMutedByHigherRole)
                 {
                     this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = Color.Red;
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 }
                 else
                 {
-                    this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75); // Original color
+                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
                 }
             }
             this._videoRoomId = 3;
@@ -564,6 +631,16 @@ namespace YoavDiscordClient
             if (this._isGloballyDeafened)
             {
                 VideoStreamConnection.SetGlobalDeafenState(true);
+            }
+
+            // Apply video mute state to the new connection
+            if (this._isVideoMutedByHigherRole)
+            {
+                // Ensure the video is muted in the new connection
+                await Task.Delay(500); // Small delay to ensure connection is ready
+                VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
+                mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
+                mediaChannelVideoMuteButton.Enabled = false;
             }
 
             ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(3);
@@ -966,8 +1043,8 @@ namespace YoavDiscordClient
             {
                 VideoStreamConnection.ToggleAudioMute();
                 // Update button appearance to show muted state
-                mediaChannelMuteButton.BackColor = mediaChannelMuteButton.BackColor == Color.Red ?
-                    Color.FromArgb(64, 68, 75) : Color.Red;
+                mediaChannelMuteButton.BackColor = mediaChannelMuteButton.BackColor == ThemeManager.GetColor("MutedColor") ?
+                    ThemeManager.GetColor("ButtonBackground") : ThemeManager.GetColor("MutedColor");
             }
         }
 
@@ -977,8 +1054,8 @@ namespace YoavDiscordClient
             {
                 VideoStreamConnection.ToggleVideoMute();
                 // Update button appearance to show muted state
-                mediaChannelVideoMuteButton.BackColor = mediaChannelVideoMuteButton.BackColor == Color.Red ?
-                    Color.FromArgb(64, 68, 75) : Color.Red;
+                mediaChannelVideoMuteButton.BackColor = mediaChannelVideoMuteButton.BackColor == ThemeManager.GetColor("MutedColor") ?
+                    ThemeManager.GetColor("ButtonBackground") : ThemeManager.GetColor("MutedColor");
             }
         }
 
@@ -999,8 +1076,8 @@ namespace YoavDiscordClient
                 await Task.Delay(1000);
 
                 // Reset media control buttons to original state
-                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75);
-                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75);
+                this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground");
+                this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground");
 
                 // Switch to text channel 1
                 this.HideAllPanels();
@@ -1056,7 +1133,7 @@ namespace YoavDiscordClient
         private void globalMuteButton_Click(object sender, EventArgs e)
         {
             this._isGloballyMuted = !this._isGloballyMuted;
-            this.globalMuteButton.BackColor = this._isGloballyMuted ? Color.Red : Color.FromArgb(64, 68, 75);
+            this.globalMuteButton.BackColor = this._isGloballyMuted ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
 
             // Apply mute setting to current connection if it exists
             if (VideoStreamConnection != null)
@@ -1069,7 +1146,7 @@ namespace YoavDiscordClient
         private void deafenButton_Click(object sender, EventArgs e)
         {
             this._isGloballyDeafened = !this._isGloballyDeafened;
-            this.deafenButton.BackColor = this._isGloballyDeafened ? Color.Red : Color.FromArgb(64, 68, 75);
+            this.deafenButton.BackColor = this._isGloballyDeafened ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
             // Apply deafen setting to current connection if it exists
             if (VideoStreamConnection != null)
             {
@@ -1162,7 +1239,7 @@ namespace YoavDiscordClient
                     Size = new Size(buttonSize, buttonSize),
                     Location = new Point(xPos, yPos),
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = System.Drawing.Color.FromArgb(64, 68, 75),
+                    BackColor = ThemeManager.GetColor("ButtonBackground"),
                     ForeColor = Color.White,
                     Font = new Font("Segoe UI Emoji", 12)
                 };
@@ -1314,7 +1391,7 @@ namespace YoavDiscordClient
             if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
             {
                 VideoStreamConnection.ToggleAudioMute();
-                mediaChannelMuteButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+                mediaChannelMuteButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
             }
         }
 
@@ -1337,7 +1414,7 @@ namespace YoavDiscordClient
             if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
             {
                 VideoStreamConnection.ToggleVideoMute();
-                mediaChannelVideoMuteButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+                mediaChannelVideoMuteButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
             }
         }
 
@@ -1359,7 +1436,7 @@ namespace YoavDiscordClient
             if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
             {
                 VideoStreamConnection.SetGlobalDeafenState(item.Checked);
-                deafenButton.BackColor = item.Checked ? Color.Red : Color.FromArgb(64, 68, 75);
+                deafenButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
                 _isGloballyDeafened = item.Checked;
             }
         }
@@ -1618,7 +1695,7 @@ namespace YoavDiscordClient
                     Label mutedLabel = new Label
                     {
                         Text = "🔇 Muted",
-                        ForeColor = Color.Red,
+                        ForeColor = ThemeManager.GetColor("MutedColor"),
                         Font = new Font("Arial", 10),
                         AutoSize = true
                     };
@@ -1630,7 +1707,7 @@ namespace YoavDiscordClient
                     Label videoMutedLabel = new Label
                     {
                         Text = "🎥 Video Muted",
-                        ForeColor = Color.Red,
+                        ForeColor = ThemeManager.GetColor("MutedColor"),
                         Font = new Font("Arial", 10),
                         AutoSize = true
                     };
@@ -1642,7 +1719,7 @@ namespace YoavDiscordClient
                     Label deafenedLabel = new Label
                     {
                         Text = "🔈 Deafened",
-                        ForeColor = Color.Red,
+                        ForeColor = ThemeManager.GetColor("MutedColor"),
                         Font = new Font("Arial", 10),
                         AutoSize = true
                     };
@@ -1655,7 +1732,7 @@ namespace YoavDiscordClient
                     Text = "Close",
                     Size = new Size(100, 30),
                     Location = new Point(150, 280),
-                    BackColor = Color.FromArgb(64, 68, 75),
+                    BackColor = ThemeManager.GetColor("ButtonBackground"),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat
                 };
@@ -2040,14 +2117,14 @@ namespace YoavDiscordClient
             if (userId == _currentUserId && VideoStreamConnection != null)
             {
                 // Only toggle if the current state doesn't match the desired state
-                bool isCurrentlyMuted = mediaChannelMuteButton.BackColor == Color.Red;
+                bool isCurrentlyMuted = mediaChannelMuteButton.BackColor == ThemeManager.GetColor("MutedColor");
                 mediaChannelMuteButton.Enabled = !isMuted;
                 this.globalMuteButton.Enabled = !isMuted;
                 this._isMutedByHigherRole = isMuted;
                 if (isCurrentlyMuted != isMuted)
                 {
                     VideoStreamConnection.ToggleAudioMute();
-                    mediaChannelMuteButton.BackColor = isMuted ? Color.Red : Color.FromArgb(64, 68, 75);
+                    mediaChannelMuteButton.BackColor = isMuted ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
                 }
 
             }
@@ -2069,11 +2146,11 @@ namespace YoavDiscordClient
                 this._isVideoMutedByHigherRole = isVideoMuted;
 
                 // Only toggle if the current state doesn't match the desired state
-                bool isCurrentlyVideoMuted = mediaChannelVideoMuteButton.BackColor == Color.Red;
+                bool isCurrentlyVideoMuted = mediaChannelVideoMuteButton.BackColor == ThemeManager.GetColor("MutedColor");
                 if (isCurrentlyVideoMuted != isVideoMuted)
                 {
                     VideoStreamConnection.ToggleVideoMute();
-                    mediaChannelVideoMuteButton.BackColor = isVideoMuted ? Color.Red : Color.FromArgb(64, 68, 75);
+                    mediaChannelVideoMuteButton.BackColor = isVideoMuted ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
                 }
             }
         }
@@ -2094,7 +2171,7 @@ namespace YoavDiscordClient
                 if (_isGloballyDeafened != isDeafened)
                 {
                     VideoStreamConnection.SetGlobalDeafenState(isDeafened);
-                    deafenButton.BackColor = isDeafened ? Color.Red : Color.FromArgb(64, 68, 75);
+                    deafenButton.BackColor = isDeafened ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
                     _isGloballyDeafened = isDeafened;
                 }
             }
@@ -2116,8 +2193,8 @@ namespace YoavDiscordClient
                 await Task.Delay(1000);
 
                 // Reset media control buttons to original state
-                this.mediaChannelMuteButton.BackColor = Color.FromArgb(64, 68, 75);
-                this.mediaChannelVideoMuteButton.BackColor = Color.FromArgb(64, 68, 75);
+                this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground");
+                this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground");
 
                 // Switch to text channel 1 (default)
                 this.HideAllPanels();
@@ -2143,48 +2220,7 @@ namespace YoavDiscordClient
 
         public Color GetRoleColor(int roleNumber, bool isOnline = true)
         {
-            // Define standard role colors
-            Color adminColor = Color.FromArgb(255, 75, 75);       // Red color for Admins
-            Color moderatorColor = Color.FromArgb(75, 165, 255);  // Blue color for Moderators
-            Color memberColor = Color.White;                      // White color for regular Members
-
-            // Select the base color based on role
-            Color baseColor;
-            switch (roleNumber)
-            {
-                case 0: // Admin
-                    baseColor = adminColor;
-                    break;
-                case 1: // Moderator
-                    baseColor = moderatorColor;
-                    break;
-                case 2: // Member
-                    baseColor = memberColor;
-                    break;
-                default: // Default to Member color
-                    baseColor = memberColor;
-                    break;
-            }
-
-            // If user is offline, reduce brightness of the color
-            if (!isOnline)
-            {
-                // If the color is already white (for Members), use a standard gray
-                if (baseColor.R == 255 && baseColor.G == 255 && baseColor.B == 255)
-                {
-                    return Color.FromArgb(180, 180, 180);
-                }
-
-                // Otherwise, darken the color
-                float factor = 0.6f;
-                int r = (int)(baseColor.R * factor);
-                int g = (int)(baseColor.G * factor);
-                int b = (int)(baseColor.B * factor);
-
-                return Color.FromArgb(r, g, b);
-            }
-
-            return baseColor;
+            return ThemeManager.GetRoleColor(roleNumber, isOnline);
         }
 
         public void HandleUserRoleUpdated(int userId, int newRole)

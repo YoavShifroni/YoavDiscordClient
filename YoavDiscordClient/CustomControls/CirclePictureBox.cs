@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 namespace YoavDiscordClient
 {
     public class CirclePictureBox : PictureBox
@@ -30,3 +29,4 @@ namespace YoavDiscordClient
         }
     }
 }
+

@@ -52,6 +52,9 @@ namespace YoavDiscordClient
             this._messageLabel.ForeColor = Color.White;
             this._messageLabel.AutoSize = true;
 
+            // Set maximum width to enable proper text wrapping
+            this._messageLabel.MaximumSize = new Size(330, 0); // Set max width, 0 height means no height limit
+
             // Set the size of the panel based on the message
             this.Width = 400;  // Adjust width to fit the content
             this.Height = 60 + _messageLabel.Height;  // Adjust height based on the message text
@@ -61,6 +64,19 @@ namespace YoavDiscordClient
             this.Controls.Add(_usernameLabel);
             this.Controls.Add(_dateTimeLabel);
             this.Controls.Add(_messageLabel);
+
+            this.ResizePanel();
+        }
+
+        private void ResizePanel()
+        {
+            // Width is fixed
+            this.Width = 400;
+
+            // Calculate dynamic height based on message content
+            // Add padding below the message
+            const int bottomPadding = 15;
+            this.Height = _messageLabel.Bottom + bottomPadding;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoavDiscordClient.Enums;
 
 namespace YoavDiscordClient
 {
@@ -24,7 +25,7 @@ namespace YoavDiscordClient
         public void HandleCommand(string command)
         {
             DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(true)));
-            ClientServerProtocol clientServerProtocol = new ClientServerProtocol(command);
+            ClientServerProtocol clientServerProtocol = ClientServerProtocolParser.Parse(command);
             switch(clientServerProtocol.TypeOfCommand)
             {
                 case TypeOfCommand.Error_Command:
@@ -62,7 +63,7 @@ namespace YoavDiscordClient
                     break;
 
                 case TypeOfCommand.Return_Messages_History_Of_Chat_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoomJson);
+                    ConnectionManager.getInstance(null).ProcessReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoom);
                     break;
 
                 case TypeOfCommand.New_Participant_Join_The_Media_Room_Command:
@@ -71,7 +72,7 @@ namespace YoavDiscordClient
 
                 case TypeOfCommand.Get_All_Ips_Of_Connected_Users_In_Some_Media_Room_Command:
                     ConnectionManager.getInstance(null).ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(
-                        clientServerProtocol.AllTheConnectedUsersInSomeMediaRoomIpsJson);
+                        clientServerProtocol.UsersMediaConnectionDetails);
                     break;
 
                 case TypeOfCommand.Some_User_Left_The_Media_Room_Command:

@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoavDiscordClient.Enums;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace YoavDiscordClient
@@ -81,7 +82,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Login_Command;
             clientServerProtocol.Username = username;
             clientServerProtocol.Password = password;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace YoavDiscordClient
             clientServerProtocol.City = registrationInfo.City;
             clientServerProtocol.Gender = registrationInfo.Gender;
             clientServerProtocol.ProfilePicture = imageToByteArray;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
 
         }
 
@@ -119,7 +120,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Forgot_Password_Command;
             clientServerProtocol.Username = username;
             clientServerProtocol.Code = this.Code;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         /// <summary>
@@ -147,7 +148,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Update_Password_Command;
             clientServerProtocol.Username = username;
             clientServerProtocol.Password = newPassword;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         /// <summary>
@@ -189,7 +190,7 @@ namespace YoavDiscordClient
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Check_If_Username_Already_Exist_Command;
             clientServerProtocol.Username = username;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         /// <summary>
@@ -222,7 +223,7 @@ namespace YoavDiscordClient
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Username_And_Profile_Picture_Command;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessSendMessage(string text, int chatRoomId)
@@ -231,7 +232,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Send_Message_Command;
             clientServerProtocol.MessageThatTheUserSent = text;
             clientServerProtocol.ChatRoomId = chatRoomId;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent,
@@ -246,7 +247,7 @@ namespace YoavDiscordClient
             ClientServerProtocol clientServerProtocol= new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_Image_Of_User_Command;
             clientServerProtocol.UserId = userId;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessReturnImageOfUser(int userId, byte[] profilePicture)
@@ -260,13 +261,12 @@ namespace YoavDiscordClient
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Messages_History_Of_Chat_Room_Command;
             clientServerProtocol.ChatRoomId= chatRoomId;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
-        public void ProcessReturnMessagesHistoryOfChatRoom(string messagesOfAChatRoomJson)
+        public void ProcessReturnMessagesHistoryOfChatRoom(List<UserMessage> messagesOfAChatRoom)
         {
-            List<UserMessage> messages = JsonConvert.DeserializeObject<List<UserMessage>>(messagesOfAChatRoomJson);
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.SetMessagesHistoryOfAChatRoom(messages)));
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.SetMessagesHistoryOfAChatRoom(messagesOfAChatRoom)));
         }
 
         public void ProcessConnectToMediaRoom(int mediaRoomId)
@@ -277,7 +277,7 @@ namespace YoavDiscordClient
             clientServerProtocol.MediaRoomId = mediaRoomId;
             clientServerProtocol.MediaPort = mediaRoom.GetPort();
 
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessDisconnectFromMediaRoom(int mediaRoomId)
@@ -285,7 +285,7 @@ namespace YoavDiscordClient
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Disconnect_From_Media_Room_Command;
             clientServerProtocol.MediaRoomId = mediaRoomId;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public async void ProcessNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort, int userId, string username)
@@ -293,21 +293,20 @@ namespace YoavDiscordClient
             await DiscordApp.VideoStreamConnection.ConnectToParticipant(newParticipantIp, newParticipantPort, this.ImageToByteArray(DiscordFormsHolder.getInstance().DiscordApp.UsersImages[userId]), username, userId);
         }
 
-        public void ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(string allTheConnectedUsersInSomeMediaRoomIpsJson)
+        public void ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(List<UserMediaConnectionDetails> UsersMediaConnectionDetails)
         {
-            Dictionary<string, Tuple<int, int, string, bool, bool, bool>> ipsToPortUserIdUsernameAndState = JsonConvert.DeserializeObject
-                <Dictionary<string, Tuple<int, int, string, bool, bool, bool>>>(allTheConnectedUsersInSomeMediaRoomIpsJson);
-            foreach (var ipToPortUserIdUsernameAndState in ipsToPortUserIdUsernameAndState)
+
+            foreach (UserMediaConnectionDetails userMediaConnectionDetail in UsersMediaConnectionDetails)
             {
-                this.ProcessNewParticipantJoinTheMediaRoom(ipToPortUserIdUsernameAndState.Key, ipToPortUserIdUsernameAndState.Value.Item1,
-                    ipToPortUserIdUsernameAndState.Value.Item2, ipToPortUserIdUsernameAndState.Value.Item3);
+                this.ProcessNewParticipantJoinTheMediaRoom(userMediaConnectionDetail.Ip, userMediaConnectionDetail.Port,
+                    userMediaConnectionDetail.UserId, userMediaConnectionDetail.Username);
 
                 // Apply status effects if they exist
-                bool isMuted = ipToPortUserIdUsernameAndState.Value.Item4;
-                bool isDeafened = ipToPortUserIdUsernameAndState.Value.Item5;
-                bool isVideoMuted = ipToPortUserIdUsernameAndState.Value.Item6;
+                bool isMuted = userMediaConnectionDetail.IsAudioMuted;
+                bool isDeafened = userMediaConnectionDetail.IsDeafened;
+                bool isVideoMuted = userMediaConnectionDetail.IsVideoMuted;
 
-                int userId = ipToPortUserIdUsernameAndState.Value.Item2;
+                int userId = userMediaConnectionDetail.UserId;
 
                 if (isMuted)
                 {
@@ -338,15 +337,14 @@ namespace YoavDiscordClient
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_All_Users_Command;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
-        public void ProcessGetAllUsersDetails(string allUsersDetails)
+        public void ProcessGetAllUsersDetails(List<UserDetails> allUsersDetails)
         {
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
             {
-                List<UserDetails> details = JsonConvert.DeserializeObject<List<UserDetails>>(allUsersDetails);
-                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(details)));
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(allUsersDetails)));
             }
             
         }
@@ -433,7 +431,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Set_Mute_User_Command;
             clientServerProtocol.UserId = userId;
             clientServerProtocol.IsMuted = isMuted;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessSetUserDeafened(int userId, bool isDeafened)
@@ -442,7 +440,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Set_Deafen_User_Command;
             clientServerProtocol.UserId = userId;
             clientServerProtocol.IsDeafened = isDeafened;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessDisconnectUserFromMediaRoom(int userId, int mediaRoomId)
@@ -451,7 +449,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Disconnect_User_From_Media_Room_Command;
             clientServerProtocol.UserId = userId;
             clientServerProtocol.MediaRoomId = mediaRoomId;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessUserMuted(int userId, bool isMuted)
@@ -481,7 +479,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Set_Video_Mute_User_Command;
             clientServerProtocol.UserId = userId;
             clientServerProtocol.IsVideoMuted = isVideoMuted;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessUserVideoMuted(int userId, bool isVideoMuted)
@@ -497,7 +495,7 @@ namespace YoavDiscordClient
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Update_User_Role_Command;
             clientServerProtocol.UserId = userId;
             clientServerProtocol.Role = newRole;
-            this.ConnectionWithServer.SendMessage(clientServerProtocol.Generate());
+            this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
         public void ProcessUserRoleHasBeenUpdated(int userId, int newRole)

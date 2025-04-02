@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YoavDiscordClient
+namespace YoavDiscordClient.Enums
 {
     /// <summary>
     /// Enum that represent the type of command that will be sent to the client using the protocol
@@ -50,7 +50,7 @@ namespace YoavDiscordClient
         Update_User_Role_Command,
         User_Role_Has_Been_Updated_Command,
 
-        
+
 
 
     }

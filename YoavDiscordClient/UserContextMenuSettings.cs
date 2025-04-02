@@ -35,37 +35,94 @@ namespace YoavDiscordClient
             if (!_userSettings.ContainsKey(userId))
             {
                 _userSettings[userId] = new UserSettings();
+                System.Diagnostics.Debug.WriteLine($"Created new settings for user {userId}");
             }
             return _userSettings[userId];
         }
 
-        // Update user mute status
+        /// <summary>
+        /// Sets the mute state for a user
+        /// </summary>
+        /// <param name="userId">The user ID</param>
+        /// <param name="isMuted">Whether the user is muted</param>
         public void SetUserMuted(int userId, bool isMuted)
         {
-            GetUserSettings(userId).IsMuted = isMuted;
-            // Raise an event or notify other parts of the application
-            OnUserSettingsChanged(userId);
+            try
+            {
+                var settings = GetUserSettings(userId);
+                if (settings.IsMuted != isMuted)
+                {
+                    settings.IsMuted = isMuted;
+                    System.Diagnostics.Debug.WriteLine($"User {userId} mute state set to {isMuted}");
+                    OnUserSettingsChanged(userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting mute state for user {userId} : {ex.Message}");
+            }
         }
 
-        // Update user video mute status
+        /// <summary>
+        /// Sets the video mute state for a user
+        /// </summary>
+        /// <param name="userId">The user ID</param>
+        /// <param name="isVideoMuted">Whether the user's video is muted</param>
         public void SetUserVideoMuted(int userId, bool isVideoMuted)
         {
-            GetUserSettings(userId).IsVideoMuted = isVideoMuted;
-            // Raise an event or notify other parts of the application
-            OnUserSettingsChanged(userId);
+            try
+            {
+                var settings = GetUserSettings(userId);
+                if (settings.IsVideoMuted != isVideoMuted)
+                {
+                    settings.IsVideoMuted = isVideoMuted;
+                    System.Diagnostics.Debug.WriteLine($"User {userId} video mute state set to {isVideoMuted}");
+                    OnUserSettingsChanged(userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting video mute state for user {userId} : { ex.Message}");
+            }
         }
 
-        // Update user deafen status
+        /// <summary>
+        /// Sets the deafen state for a user
+        /// </summary>
+        /// <param name="userId">The user ID</param>
+        /// <param name="isDeafened">Whether the user is deafened</param>
         public void SetUserDeafened(int userId, bool isDeafened)
         {
-            GetUserSettings(userId).IsDeafened = isDeafened;
-            // Raise an event or notify other parts of the application
-            OnUserSettingsChanged(userId);
+            try
+            {
+                var settings = GetUserSettings(userId);
+                if (settings.IsDeafened != isDeafened)
+                {
+                    settings.IsDeafened = isDeafened;
+                    System.Diagnostics.Debug.WriteLine($"User {userId} deafen state set to {isDeafened}");
+                    OnUserSettingsChanged(userId);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting deafen state for user {userId} : {ex.Message}");
+            }
         }
 
+        /// <summary>
+        /// Raises the UserSettingsChanged event
+        /// </summary>
+        /// <param name="userId">The user ID whose settings have changed</param>
         protected virtual void OnUserSettingsChanged(int userId)
         {
-            UserSettingsChanged?.Invoke(this, new UserSettingsChangedEventArgs(userId));
+            try
+            {
+                UserSettingsChanged?.Invoke(this, new UserSettingsChangedEventArgs(userId));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error raising UserSettingsChanged event for user {userId} : {ex.Message}");
+            }
         }
     }
 

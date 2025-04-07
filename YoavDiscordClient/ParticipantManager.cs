@@ -13,14 +13,8 @@ namespace YoavDiscordClient
 {
     public class ParticipantManager : IDisposable
     {
-        #region Events
 
-        /// <summary>
-        /// Occurs when a participant's status changes
-        /// </summary>
-        public event EventHandler<ParticipantStatusEventArgs> ParticipantStatusChanged;
-
-        #endregion
+       
 
         #region Private properties
 
@@ -69,13 +63,24 @@ namespace YoavDiscordClient
                 Dock = DockStyle.None,
                 Size = new Size(640, 480)  // Initial size
             };
+            display.Resize += PrintLocalVideoSize;
 
+            // Make sure the display is added to the panel and brought to front
             remotePanel.Controls.Add(display);
             displays["local"] = display;
 
             UpdateVideoLayout();
+            remotePanel.Refresh(); // Force a refresh of the panel
+
+            //Task.Delay(30000).ContinueWith(t => UpdateVideoLayout(true));
 
             return display;
+        }
+
+        private void PrintLocalVideoSize(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine($"Resize event: {((PictureBox)sender).Size}");
+
         }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace YoavDiscordClient
         /// <param name="profilePicture">The participant's profile picture</param>
         /// <param name="username">The participant's username</param>
         /// <returns>True if the participant was successfully added</returns>
-        public async Task<bool> AddParticipant(string ip, int userId, byte[] profilePicture, string username)
+        public bool AddParticipant(string ip, int userId, byte[] profilePicture, string username)
         {
             if (string.IsNullOrEmpty(ip) || userId <= 0)
                 return false;
@@ -101,7 +106,7 @@ namespace YoavDiscordClient
                 // Get user role from UsersImages dictionary
                 var user = DiscordFormsHolder.getInstance().DiscordApp.UsersImages.Keys
                     .Select(id => DiscordFormsHolder.getInstance().DiscordApp
-                        .usersInMediaChannels.Values
+                        .UsersInMediaChannels.Values
                         .SelectMany(list => list)
                         .FirstOrDefault(u => u.UserId == id))
                     .FirstOrDefault(u => u != null && u.UserId == userId);
@@ -123,28 +128,27 @@ namespace YoavDiscordClient
                 };
 
                 // Add the display to the UI thread-safely
-                await Task.Run(() => {
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
+                {
                     try
                     {
-                        DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        {
-                            DiscordFormsHolder.getInstance().DiscordApp.AddNewParticipantDisplay(remotePanel, display);
-                            displays[ip] = display;
-                            UpdateVideoLayout();
-                        }));
+                    
+                        DiscordFormsHolder.getInstance().DiscordApp.AddNewParticipantDisplay(remotePanel, display);
+                        displays[ip] = display;
+                        UpdateVideoLayout();
+                        remotePanel.Refresh();
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"Error adding participant display: {ex.Message}");
                     }
-                });
+                }));
+
 
                 // Create a frame assembler for this participant
                 frameAssemblers[ip] = new FrameAssembler();
 
-                // Raise participant status changed event
-                ParticipantStatusChanged?.Invoke(this, new ParticipantStatusEventArgs(
-                    ip, ParticipantStatusType.Connected));
+                
 
                 return true;
             }
@@ -227,6 +231,7 @@ namespace YoavDiscordClient
                         {
                             System.Diagnostics.Debug.WriteLine($"Error removing display for {ip}: {ex.Message}");
                         }
+                        remotePanel.Refresh();
                     }));
                 }
 
@@ -245,9 +250,7 @@ namespace YoavDiscordClient
                     }
                 }
 
-                // Raise participant status changed event
-                ParticipantStatusChanged?.Invoke(this, new ParticipantStatusEventArgs(
-                    ip, ParticipantStatusType.Disconnected));
+                
 
                 return true;
             }
@@ -333,10 +336,50 @@ namespace YoavDiscordClient
                 if (!displays.ContainsKey(ip) || displays[ip].IsDisposed || !displays[ip].IsHandleCreated)
                     return false;
 
+                System.Diagnostics.Debug.WriteLine($"Processing empty video for {ip}");
+
+                // Check for recent updates differently
+                bool skipUpdate = false;
+                object tagObj = displays[ip].Tag;
+
+                if (tagObj != null)
+                {
+                    // Try to get the LastEmptyVideoUpdate property if it exists
+                    try
+                    {
+                        var lastUpdate = (DateTime?)GetPropertyValue(tagObj, "LastEmptyVideoUpdate");
+                        if (lastUpdate.HasValue && (DateTime.Now - lastUpdate.Value).TotalMilliseconds < 500)
+                        {
+                            skipUpdate = true;
+                        }
+                    }
+                    catch
+                    {
+                        // Property doesn't exist, continue processing
+                    }
+                }
+
+                if (skipUpdate)
+                    return true;
+
+
                 displays[ip].Invoke(new Action(() =>
                 {
                     try
                     {
+                        System.Diagnostics.Debug.WriteLine($"Updating display for {ip} to show profile picture");
+
+                        // Check if profile picture is already displayed
+                        if (displays[ip].Controls.Count > 0 &&
+                            displays[ip].Controls[0] is Panel &&
+                            displays[ip].Controls[0].Name == "backgroundPanel")
+                        {
+                            // Just ensure the panel is visible and correctly sized
+                            displays[ip].Controls[0].Size = displays[ip].Size;
+                            displays[ip].Refresh();
+                            return; // Exit early, don't recreate the panel
+                        }
+
                         // Clear existing display
                         displays[ip].Controls.Clear();
                         if (displays[ip].Image != null)
@@ -345,7 +388,51 @@ namespace YoavDiscordClient
                             displays[ip].Image = null;
                         }
 
-                        var userInfo = (dynamic)displays[ip].Tag;
+                        object userInfo = (dynamic)displays[ip].Tag;
+                        // Extract needed properties
+                        byte[] profilePicture = null;
+                        string username = "User";
+                        Color roleColor = Color.White;
+
+                        // Try to extract profile picture
+                        if (userInfo is UserDetails details)
+                        {
+                            profilePicture = details.Picture;
+                            username = details.Username;
+                            roleColor = DiscordFormsHolder.getInstance().DiscordApp.GetRoleColor(details.role);
+                        }
+                        else
+                        {
+                            // Try to extract using reflection
+                            profilePicture = (byte[])GetPropertyValue(userInfo, "ProfilePicture");
+                            username = (string)GetPropertyValue(userInfo, "Username");
+                            var colorObj = GetPropertyValue(userInfo, "RoleColor");
+                            if (colorObj is Color color)
+                                roleColor = color;
+                        }
+
+                        // Update timestamp to prevent frequent refreshes
+                        if (userInfo is IDictionary<string, object> dict)
+                        {
+                            dict["LastEmptyVideoUpdate"] = DateTime.Now;
+                        }
+                        else
+                        {
+                            // Try setting through reflection
+                            try
+                            {
+                                var type = userInfo.GetType();
+                                var prop = type.GetProperty("LastEmptyVideoUpdate");
+                                if (prop != null && prop.CanWrite)
+                                {
+                                    prop.SetValue(userInfo, DateTime.Now);
+                                }
+                            }
+                            catch
+                            {
+                                // Ignore reflection errors
+                            }
+                        }
 
                         // Set fixed size for display
                         displays[ip].Size = new Size(640, 480);
@@ -360,30 +447,27 @@ namespace YoavDiscordClient
                             Location = new Point(0, 0)
                         };
 
-                        // Add profile picture
-                        CirclePictureBox profilePicture = new CirclePictureBox
+                        // Add profile picture if available
+                        if (profilePicture != null)
                         {
-                            Size = new Size(100, 100),
-                            SizeMode = PictureBoxSizeMode.StretchImage,
-                            Image = ByteArrayToImage((byte[])userInfo.ProfilePicture),
-                            Location = new Point(
-                                (displays[ip].Width - 100) / 2,
-                                (displays[ip].Height - 100) / 2
-                            )
-                        };
-
-                        // Get the appropriate color for the user based on their role
-                        Color userColor = Color.White; // Default color
-                        if (userInfo.RoleColor != null)
-                        {
-                            userColor = (Color)userInfo.RoleColor;
+                            CirclePictureBox profilePictureBox = new CirclePictureBox
+                            {
+                                Size = new Size(100, 100),
+                                SizeMode = PictureBoxSizeMode.StretchImage,
+                                Image = ByteArrayToImage(profilePicture),
+                                Location = new Point(
+                                    (displays[ip].Width - 100) / 2,
+                                    (displays[ip].Height - 100) / 2
+                                )
+                            };
+                            backgroundPanel.Controls.Add(profilePictureBox);
                         }
 
                         // Add username label
                         Label usernameLabel = new Label
                         {
-                            Text = (string)userInfo.Username,
-                            ForeColor = userColor,
+                            Text = username,
+                            ForeColor = roleColor,
                             Font = new Font("Arial", 12, FontStyle.Regular),
                             AutoSize = true,
                             BackColor = Color.Transparent
@@ -394,15 +478,19 @@ namespace YoavDiscordClient
                             displays[ip].Width - usernameLabel.PreferredWidth - 10,
                             displays[ip].Height - usernameLabel.PreferredHeight - 10
                         );
-
-                        // Add controls to panel and update display
-                        backgroundPanel.Controls.Add(profilePicture);
                         backgroundPanel.Controls.Add(usernameLabel);
-                        displays[ip].Controls.Add(backgroundPanel);
 
-                        // Force a layout update
+                        displays[ip].Controls.Add(backgroundPanel);
                         displays[ip].Refresh();
-                        UpdateVideoLayout();
+
+
+                        // Only update layout if necessary
+                        if (displays.Count > 1)
+                        {
+                            UpdateVideoLayout(); 
+                        }
+
+                        System.Diagnostics.Debug.WriteLine($"Profile picture display complete for {ip}");
                     }
                     catch (Exception ex)
                     {
@@ -419,6 +507,32 @@ namespace YoavDiscordClient
             }
         }
 
+        // Helper method to safely get a property value from an object
+        private object GetPropertyValue(object obj, string propertyName)
+        {
+            try
+            {
+                var type = obj.GetType();
+                var propertyInfo = type.GetProperty(propertyName);
+                if (propertyInfo != null)
+                {
+                    return propertyInfo.GetValue(obj, null);
+                }
+
+                // Try to access via dynamic reflection
+                var fieldInfo = type.GetField(propertyName);
+                if (fieldInfo != null)
+                {
+                    return fieldInfo.GetValue(obj);
+                }
+            }
+            catch
+            {
+                // Ignore reflection errors
+            }
+            return null;
+        }
+
         /// <summary>
         /// Gets the IP address for a user ID
         /// </summary>
@@ -432,19 +546,39 @@ namespace YoavDiscordClient
         /// <summary>
         /// Updates the layout of all video displays
         /// </summary>
-        public void UpdateVideoLayout()
+        public void UpdateVideoLayout(bool debug = false)
         {
             // Get total number of participants (including local)
+            //bool debug = false;
             int totalParticipants = displays.Count;
+
+            //if(totalParticipants == 1 || (totalParticipants == 2 && displays.ContainsKey("yoav")))
+            //{
+            //    totalParticipants = 2;
+            //    debug = true;
+            //}
             if (totalParticipants == 0)
                 return;
+
+            System.Diagnostics.Debug.WriteLine($"UpdateVideoLayout called with {totalParticipants} participants and debug: {debug}");
+
 
             // Panel dimensions
             int panelWidth = remotePanel.Width;
             int panelHeight = remotePanel.Height;
 
             // Calculate the optimal display size based on number of participants
-            Size displaySize = CalculateOptimalDisplaySize(totalParticipants, panelWidth, panelHeight);
+            Size displaySize;
+            if (debug)
+            {
+                displaySize = CalculateOptimalDisplaySize(4, panelWidth, panelHeight);
+            } else
+            {
+                displaySize = CalculateOptimalDisplaySize(totalParticipants, panelWidth, panelHeight);
+
+            }
+            System.Diagnostics.Debug.WriteLine($"Calculated display size: {displaySize}");
+
 
             // Calculate positions for each display
             Dictionary<string, Point> positions = CalculatePositions(totalParticipants, displaySize, panelWidth, panelHeight);
@@ -454,12 +588,28 @@ namespace YoavDiscordClient
             {
                 var display = kvp.Value;
                 if (display.IsDisposed || !display.IsHandleCreated)
-                    continue;
+                {
+                    System.Diagnostics.Debug.WriteLine($"skipped display {kvp.Key}");
+                    continue;   
+                }
 
                 display.Invoke(new Action(() =>
                 {
                     try
                     {
+                        // Store any existing child controls that need to be preserved
+                        List<Control> childControls = new List<Control>();
+                        foreach (Control ctrl in display.Controls)
+                        {
+                            childControls.Add(ctrl);
+                        }
+
+                        // Store the Tag property to preserve user info
+                        object tagValue = display.Tag;
+
+                        // Remove the display from parent to reset its rendering state
+                        remotePanel.Controls.Remove(display);
+
                         // Set exact same size for all displays
                         display.Size = displaySize;
                         display.Dock = DockStyle.None;
@@ -469,33 +619,51 @@ namespace YoavDiscordClient
                             display.Location = positions[kvp.Key];
                         }
 
-                        // If this has a background panel (no-camera display), make it exactly the same size
-                        var backgroundPanel = display.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "backgroundPanel");
-                        if (backgroundPanel != null)
+
+                        display.Controls.Clear();
+
+                        foreach (var ctrl in childControls)
                         {
-                            backgroundPanel.Size = displaySize;
-                            backgroundPanel.Dock = DockStyle.None;
-
-                            // Center the profile picture
-                            var profilePicture = backgroundPanel.Controls.OfType<CirclePictureBox>().FirstOrDefault();
-                            if (profilePicture != null)
+                            // For background panel, adjust size to match display
+                            if (ctrl is Panel panel && panel.Name == "backgroundPanel")
                             {
-                                profilePicture.Location = new Point(
-                                    (displaySize.Width - profilePicture.Width) / 2,
-                                    (displaySize.Height - profilePicture.Height) / 2
-                                );
+                                panel.Size = displaySize;
+                                panel.Dock = DockStyle.None;
+
+                                // Center profile picture in the panel
+                                var profilePicture = panel.Controls.OfType<CirclePictureBox>().FirstOrDefault();
+                                if (profilePicture != null)
+                                {
+                                    profilePicture.Location = new Point(
+                                        (displaySize.Width - profilePicture.Width) / 2,
+                                        (displaySize.Height - profilePicture.Height) / 2
+                                    );
+                                }
+
+                                // Position username label at bottom-right
+                                var usernameLabel = panel.Controls.OfType<Label>().FirstOrDefault();
+                                if (usernameLabel != null)
+                                {
+                                    usernameLabel.Location = new Point(
+                                        displaySize.Width - usernameLabel.Width - 10,
+                                        displaySize.Height - usernameLabel.Height - 10
+                                    );
+                                }
                             }
 
-                            // Keep username at bottom-right
-                            var usernameLabel = backgroundPanel.Controls.OfType<Label>().FirstOrDefault();
-                            if (usernameLabel != null)
-                            {
-                                usernameLabel.Location = new Point(
-                                    displaySize.Width - usernameLabel.Width - 10,
-                                    displaySize.Height - usernameLabel.Height - 10
-                                );
-                            }
+                            display.Controls.Add(ctrl);
                         }
+
+                        // Restore the Tag property
+                        display.Tag = tagValue;
+
+                        remotePanel.Controls.Add(display);
+
+
+                        System.Diagnostics.Debug.WriteLine("Updated display layout");
+
+
+                        display.Refresh();
                     }
                     catch (Exception ex)
                     {
@@ -503,6 +671,10 @@ namespace YoavDiscordClient
                     }
                 }));
             }
+
+            remotePanel.Invoke(new Action(() => {
+                remotePanel.Refresh();
+            }));
         }
 
         private Size CalculateOptimalDisplaySize(int totalParticipants, int panelWidth, int panelHeight)
@@ -540,7 +712,30 @@ namespace YoavDiscordClient
         private Dictionary<string, Point> CalculatePositions(int totalParticipants, Size videoSize, int panelWidth, int panelHeight)
         {
             var positions = new Dictionary<string, Point>();
+
+            //if(debug)
+            //{
+            //    if (!displays.ContainsKey("yoav"))
+            //    {
+            //        displays.Add("yoav", new PictureBox());
+
+
+            //    }
+            //}
+            //else
+            //{
+            //    displays.Remove("yoav");
+            //}
+
+            
+
             var participants = displays.Keys.ToList();
+
+            // Safety check
+            if (participants.Count == 0)
+                return positions;
+
+
 
             switch (totalParticipants)
             {
@@ -556,6 +751,10 @@ namespace YoavDiscordClient
                     // Two videos side by side
                     int x = (panelWidth - (videoSize.Width * 2)) / 3; // Space between and on sides
                     int y = (panelHeight - videoSize.Height) / 2;
+
+                    System.Diagnostics.Debug.WriteLine($"Video size: {videoSize}, Panel: {panelWidth}x{panelHeight}");
+                    System.Diagnostics.Debug.WriteLine($"Positions: [{participants[0]}] at ({x},{y}), [{participants[1]}] at ({x * 2 + videoSize.Width},{y})");
+
                     positions[participants[0]] = new Point(x, y);
                     positions[participants[1]] = new Point(x * 2 + videoSize.Width, y);
                     break;
@@ -637,7 +836,9 @@ namespace YoavDiscordClient
 
             UpdateVideoLayout();
             if (!remotePanel.IsDisposed)
+            {
                 remotePanel.Refresh();
+            }
         }
 
         private Image ByteArrayToImage(byte[] byteArray)

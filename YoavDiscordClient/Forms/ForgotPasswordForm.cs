@@ -31,7 +31,7 @@ namespace YoavDiscordClient
         /// <param name="e"></param>
         private void checkButton_Click(object sender, EventArgs e)
         {
-            if(ConnectionManager.getInstance(null).Code != this.codeTextBox.Text)
+            if(ConnectionManager.GetInstance(null).Code != this.codeTextBox.Text)
             {
                 MessageBox.Show("check the code that you entered, it's not similer to the code that you recived in the email");
                 return;
@@ -88,7 +88,7 @@ namespace YoavDiscordClient
                 MessageBox.Show("fix your password that it will contain at least one capital leater, one small letter, one digit and one sign");
                 return;
             }
-            ConnectionManager.getInstance(null).ProcessUpdatePassword(ConnectionManager.getInstance(null).Username, this.passwordTextBox.Text);
+            ConnectionManager.GetInstance(null).ProcessUpdatePassword(ConnectionManager.GetInstance(null).Username, this.passwordTextBox.Text);
         }
 
 

@@ -26,91 +26,92 @@ namespace YoavDiscordClient
         {
             DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() => DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(true)));
             ClientServerProtocol clientServerProtocol = ClientServerProtocolParser.Parse(command);
-            switch(clientServerProtocol.TypeOfCommand)
+            System.Diagnostics.Debug.WriteLine("Received from server: " + clientServerProtocol.ToString());
+            switch (clientServerProtocol.TypeOfCommand)
             {
                 case TypeOfCommand.Error_Command:
-                    ConnectionManager.getInstance(null).ProcessError(clientServerProtocol.ErrorMessage);
+                    ConnectionManager.GetInstance(null).HandleError(clientServerProtocol.ErrorMessage);
                     break;
 
                 case TypeOfCommand.Code_Sent_To_Email_Command:
-                    ConnectionManager.getInstance(null).ProcessCodeSentToEmail(clientServerProtocol.Code);
+                    ConnectionManager.GetInstance(null).HandleCodeSentToEmail(clientServerProtocol.Code);
                     break;
 
                 case TypeOfCommand.Success_Username_Not_In_The_System_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessesUsernameNotInTheSystem();
+                    ConnectionManager.GetInstance(null).HandleSuccessesUsernameNotInTheSystem();
                     break;
 
                 case TypeOfCommand.Success_Connected_To_The_Application_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
+                    ConnectionManager.GetInstance(null).HandleSuccessConnctedToTheApplication(clientServerProtocol.ProfilePicture, 
                         clientServerProtocol.Username, clientServerProtocol.UserId, clientServerProtocol.Role);
                     break;
 
                 case TypeOfCommand.Success_Forgot_Password_Command:
-                    ConnectionManager.getInstance(null).ProcessSuccessesForgotPassword();
+                    ConnectionManager.GetInstance(null).HandleSuccessesForgotPassword();
                     break;
 
                 case TypeOfCommand.Login_Cooldown_Command:
-                    ConnectionManager.getInstance(null).ProcessLoginCooldown(clientServerProtocol.ErrorMessage, clientServerProtocol.TimeToCooldown);
+                    ConnectionManager.GetInstance(null).HandleLoginCooldown(clientServerProtocol.ErrorMessage, clientServerProtocol.TimeToCooldown);
                     break;
 
                 case TypeOfCommand.Message_From_Other_User_Command:
-                    ConnectionManager.getInstance(null).ProcessMessageFromOtherUserCommand(clientServerProtocol.UserId, clientServerProtocol.Username,
+                    ConnectionManager.GetInstance(null).HandleMessageFromOtherUserCommand(clientServerProtocol.UserId, clientServerProtocol.Username,
                         clientServerProtocol.MessageThatTheUserSent, clientServerProtocol.TimeThatTheMessageWasSent, clientServerProtocol.ChatRoomId);
                     break;
 
                 case TypeOfCommand.Return_Image_Of_User_Command:
-                    ConnectionManager.getInstance(null).ProcessReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture);
+                    ConnectionManager.GetInstance(null).HandleReturnImageOfUser(clientServerProtocol.UserId, clientServerProtocol.ProfilePicture);
                     break;
 
                 case TypeOfCommand.Return_Messages_History_Of_Chat_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoom);
+                    ConnectionManager.GetInstance(null).HandleReturnMessagesHistoryOfChatRoom(clientServerProtocol.MessagesOfAChatRoom);
                     break;
 
                 case TypeOfCommand.New_Participant_Join_The_Media_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessNewParticipantJoinTheMediaRoom(clientServerProtocol.NewParticipantIp, clientServerProtocol.MediaPort, clientServerProtocol.UserId, clientServerProtocol.Username);
+                    ConnectionManager.GetInstance(null).HandleNewParticipantJoinTheMediaRoom(clientServerProtocol.NewParticipantIp, clientServerProtocol.MediaPort, clientServerProtocol.UserId, clientServerProtocol.Username);
                     break;
 
                 case TypeOfCommand.Get_All_Ips_Of_Connected_Users_In_Some_Media_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessGetAllIpsOfConnectedUsersInSomeMediaRoom(
+                    ConnectionManager.GetInstance(null).HandleGetAllIpsOfConnectedUsersInSomeMediaRoom(
                         clientServerProtocol.UsersMediaConnectionDetails);
                     break;
 
                 case TypeOfCommand.Some_User_Left_The_Media_Room_Command:
-                    ConnectionManager.getInstance(null).ProcessSomeUserLeftTheMediaRoomCommand(clientServerProtocol.UserIp);
+                    ConnectionManager.GetInstance(null).HandleSomeUserLeftTheMediaRoomCommand(clientServerProtocol.UserIp);
                     break;
 
                 case TypeOfCommand.Get_All_Users_Details_Command:
-                    ConnectionManager.getInstance(null).ProcessGetAllUsersDetails(clientServerProtocol.AllUsersDetails);
+                    ConnectionManager.GetInstance(null).HandleGetAllUsersDetails(clientServerProtocol.AllUsersDetails);
                     break;
 
                 case TypeOfCommand.User_Join_Media_Channel_Command:
-                    ConnectionManager.getInstance(null).ProcessUserJoinMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId,
+                    ConnectionManager.GetInstance(null).HandleUserJoinMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId,
                         clientServerProtocol.Username, clientServerProtocol.ProfilePicture, clientServerProtocol.Role,
                         clientServerProtocol.IsMuted, clientServerProtocol.IsDeafened, clientServerProtocol.IsVideoMuted);
                     break;
 
                 case TypeOfCommand.User_Leave_Media_Channel_Command:
-                    ConnectionManager.getInstance(null).ProcessUserLeaveMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
+                    ConnectionManager.GetInstance(null).HandleUserLeaveMediaRoom(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
                     break;
 
                 case TypeOfCommand.User_Muted_Command:
-                    ConnectionManager.getInstance(null).ProcessUserMuted(clientServerProtocol.UserId, clientServerProtocol.IsMuted);
+                    ConnectionManager.GetInstance(null).HandleUserMuted(clientServerProtocol.UserId, clientServerProtocol.IsMuted);
                     break;
 
                 case TypeOfCommand.User_Deafened_Command:
-                    ConnectionManager.getInstance(null).ProcessUserDeafened(clientServerProtocol.UserId, clientServerProtocol.IsDeafened);
+                    ConnectionManager.GetInstance(null).HandleUserDeafened(clientServerProtocol.UserId, clientServerProtocol.IsDeafened);
                     break;
 
                 case TypeOfCommand.User_Disconnected_Command:
-                    ConnectionManager.getInstance(null).ProcessUserDisconnected(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
+                    ConnectionManager.GetInstance(null).HandleUserDisconnected(clientServerProtocol.UserId, clientServerProtocol.MediaRoomId);
                     break;
 
                 case TypeOfCommand.User_Video_Muted_Command:
-                    ConnectionManager.getInstance(null).ProcessUserVideoMuted(clientServerProtocol.UserId, clientServerProtocol.IsVideoMuted);
+                    ConnectionManager.GetInstance(null).HandleUserVideoMuted(clientServerProtocol.UserId, clientServerProtocol.IsVideoMuted);
                     break;
 
                 case TypeOfCommand.User_Role_Has_Been_Updated_Command:
-                    ConnectionManager.getInstance(null).ProcessUserRoleHasBeenUpdated(clientServerProtocol.UserId, clientServerProtocol.Role);
+                    ConnectionManager.GetInstance(null).HandleUserRoleHasBeenUpdated(clientServerProtocol.UserId, clientServerProtocol.Role);
                     break;
 
                 

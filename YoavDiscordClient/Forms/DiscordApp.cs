@@ -32,7 +32,7 @@ namespace YoavDiscordClient
 
         private Dictionary<int, Panel> mediaChannelPanels = new Dictionary<int, Panel>();
 
-        public Dictionary<int, List<UserDetails>> usersInMediaChannels = new Dictionary<int, List<UserDetails>>();
+        public Dictionary<int, List<UserDetails>> UsersInMediaChannels = new Dictionary<int, List<UserDetails>>();
 
 
         private List<int> _alreadyAskedForImage = new List<int>();
@@ -40,16 +40,18 @@ namespace YoavDiscordClient
         public static VideoStreamConnection VideoStreamConnection;
 
         private int _videoRoomId;
+        private bool _isEmojiSelectionVisible = false;
 
         private bool _isGloballyMuted = false;
 
         private bool _isGloballyDeafened = false;
 
-        private bool _isEmojiSelectionVisible = false;
 
         private bool _isMutedByHigherRole = false;
 
         private bool _isVideoMutedByHigherRole = false;
+        private bool _isDeafenedByHigherRole = false;
+
 
 
         private int role;
@@ -75,9 +77,9 @@ namespace YoavDiscordClient
 
             this.AddEmojisToPanel();
 
-            ConnectionManager.getInstance(null).ProcessFetchAllUsers();
+            ConnectionManager.GetInstance(null).ProcessFetchAllUsers();
 
-            ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+            ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
 
         }
 
@@ -141,7 +143,7 @@ namespace YoavDiscordClient
             }
             int chatRoomId = this.WhichChatMessagesPanelIsVisible();
             this.AddMessageToChat(this._currentUserId, this.Username, this.messageInputTextBox.Text, this.UserProfilePicture, DateTime.Now, chatRoomId);
-            ConnectionManager.getInstance(null).ProcessSendMessage(this.messageInputTextBox.Text, chatRoomId);
+            ConnectionManager.GetInstance(null).ProcessSendMessage(this.messageInputTextBox.Text, chatRoomId);
             this.messageInputTextBox.Text = "";
         }
 
@@ -175,7 +177,7 @@ namespace YoavDiscordClient
             {
                 if (!this._alreadyAskedForImage.Contains(userId))
                 {
-                    ConnectionManager.getInstance(null).ProcessFetchImageOfUser(userId);
+                    ConnectionManager.GetInstance(null).ProcessFetchImageOfUser(userId);
                     this._alreadyAskedForImage.Add(userId);
                 }
                 this.AddMessageToChat(userId, username, message, null, time, chatRoomId);
@@ -199,7 +201,6 @@ namespace YoavDiscordClient
             Image originalVideoMuteLogoImage = Properties.Resources.videoMuteLogo;
             Image originalDisconnectMediaChannelImage = Properties.Resources.disconnectMediaChannelLogo;
 
-            this.settingsButton.Image = this.ResizeImage(originalSettingsLogoImage, this.settingsButton.Width, this.settingsButton.Height);
             this.deafenButton.Image = this.ResizeImage(originalDeafenLogoImage, this.deafenButton.Width, this.deafenButton.Height);
             this.globalMuteButton.Image = this.ResizeImage(originalMuteLogoImage, this.globalMuteButton.Width, this.globalMuteButton.Height);
             // Add images for new media control buttons
@@ -238,7 +239,7 @@ namespace YoavDiscordClient
             this.UpdateEmojiPanelVisibility();
             if (((string)this.ChatMessagesPanel1.Tag) == "0")
             {
-                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+                ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
             }
 
         }
@@ -263,7 +264,7 @@ namespace YoavDiscordClient
             this.UpdateEmojiPanelVisibility();
             if (((string)this.ChatMessagesPanel2.Tag) == "0")
             {
-                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(2);
+                ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(2);
             }
         }
 
@@ -287,7 +288,7 @@ namespace YoavDiscordClient
             this.UpdateEmojiPanelVisibility();
             if (((string)this.ChatMessagesPanel3.Tag) == "0")
             {
-                ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(3);
+                ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(3);
             }
         }
 
@@ -328,10 +329,10 @@ namespace YoavDiscordClient
             ChatMessagesPanel1.Visible = visible;
         }
 
-        private async void voiceChannel1Button_Click(object sender, EventArgs e)
+        private async Task ClickHandlerForMediaRoom(int mediaRoomId)
         {
             // If we're already connected to this channel, just show the video panel
-            if (VideoStreamConnection != null && this._videoRoomId == 1)
+            if (VideoStreamConnection != null && this._videoRoomId == mediaRoomId)
             {
 
                 this.HideAllPanels();
@@ -350,49 +351,21 @@ namespace YoavDiscordClient
             if (VideoStreamConnection != null)
             {
                 RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
-                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                // Properly dispose the old connection
-                var oldConnection = VideoStreamConnection;
-                VideoStreamConnection = null;
+                ConnectionManager.GetInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
+                await this.CleanupVideoStreamConnection();
 
-                // Use a more robust cleanup approach
-                await Task.Run(async () => {
-                    oldConnection.Dispose();
-                    // Force garbage collection to release camera resources
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    await Task.Delay(2000); // Longer delay to ensure device is released
-                });
-
-                // Reset buttons to normal state when switching channels
-                if (this._isMutedByHigherRole)
-                {
-                    this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
-                if (this._isVideoMutedByHigherRole)
-                {
-                    this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
+                
             }
 
-            this._videoRoomId = 1;
+            this._videoRoomId = mediaRoomId;
             // Add the current user to the new channel
-            AddUserToMediaChannel(1, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
+            AddUserToMediaChannel(this._videoRoomId, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
             this.HideAllPanels();
-            this.VideoPanel1.Visible = true;
+            string panelName = "VideoPanel" + mediaRoomId.ToString();
+            Panel videoPanel = ((Panel)this.Controls.Find(panelName, true)[0]);
+            videoPanel.Visible = true;
 
             // Position the media controls panel with some distance from the rectangles
-            mediaControlsPanel.Visible = true;
 
             // Center the panel horizontally at the bottom of the chat area
             mediaControlsPanel.Location = new Point(
@@ -400,8 +373,43 @@ namespace YoavDiscordClient
                 chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
             this.mediaControlsPanel.BringToFront();
 
-            VideoStreamConnection = new VideoStreamConnection(this.VideoPanel1);
+            // Reset buttons to normal state when switching channels
+            if (this._isMutedByHigherRole)
+            {
+                this.mediaChannelMuteButton.Enabled = false;
+                this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
+                this.UpdateUserMuteVisualIndicator(this._currentUserId, true);
+            }
+            else
+            {
+                this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
+            }
+            if (this._isVideoMutedByHigherRole)
+            {
+                this.mediaChannelVideoMuteButton.Enabled = false;
+                this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
+                this.UpdateUserVideoMuteVisualIndicator(this._currentUserId, true);
+
+            }
+            else
+            {
+                this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
+            }
+            if (this._isDeafenedByHigherRole)
+            {
+                this.UpdateUserDeafenVisualIndicator(this._currentUserId, true);
+            }
+
+            VideoStreamConnection = new VideoStreamConnection(videoPanel);
             await VideoStreamConnection.Initialize();
+
+
+            mediaControlsPanel.Visible = true;
+
+            if (this._isMutedByHigherRole)
+            {
+                VideoStreamConnection.SetMutedByHigherRoleState(true);
+            }
 
             // Apply global mute state to the new connection
             if (this._isGloballyMuted)
@@ -409,8 +417,9 @@ namespace YoavDiscordClient
                 VideoStreamConnection.SetGlobalMuteState(true);
             }
 
+
             // Apply global deafen state to the new connection
-            if (this._isGloballyDeafened)
+            if (this._isGloballyDeafened || this._isDeafenedByHigherRole)
             {
                 VideoStreamConnection.SetGlobalDeafenState(true);
             }
@@ -419,236 +428,35 @@ namespace YoavDiscordClient
             if (this._isVideoMutedByHigherRole)
             {
                 // Ensure the video is muted in the new connection
-                await Task.Delay(500); // Small delay to ensure connection is ready
+                await Task.Delay(500); // Small delay to ensure udp connections are ready
                 VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
                 mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
                 mediaChannelVideoMuteButton.Enabled = false;
             }
+            
+            ConnectionManager.GetInstance(null).ProcessConnectToMediaRoom(this._videoRoomId);
+        }
 
-            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(1);
+        private async void voiceChannel1Button_Click(object sender, EventArgs e)
+        {
+            await this.ClickHandlerForMediaRoom(1);
         }
 
         private async void voiceChannel2Button_Click(object sender, EventArgs e)
         {
-            // If we're already connected to this channel, just show the video panel
-            if (VideoStreamConnection != null && this._videoRoomId == 2)
-            {
+            await this.ClickHandlerForMediaRoom(2);
 
-                try
-                {
-                    await Task.Run(async () => {
-                        // Force a video reinit 
-                        await VideoStreamConnection.ReInitializeVideo();
-                    });
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error reinitializing video: {ex.Message}");
-                }
-
-                this.HideAllPanels();
-                this.VideoPanel2.Visible = true;
-
-                // Make sure to show the media controls panel
-                this.mediaControlsPanel.Visible = true;
-                mediaControlsPanel.Location = new Point(
-                    (chatAreaPanel.Width - mediaControlsPanel.Width) / 2,
-                    chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
-                this.mediaControlsPanel.BringToFront();
-                return;
-            }
-
-            // If we're connected to a different channel, disconnect first
-            if (VideoStreamConnection != null)
-            {
-                RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
-                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                // Properly dispose the old connection
-                var oldConnection = VideoStreamConnection;
-                VideoStreamConnection = null;
-
-                // Use a more robust cleanup approach
-                await Task.Run(async () => {
-                    oldConnection.Dispose();
-                    // Force garbage collection to release camera resources
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    await Task.Delay(2000); // Longer delay to ensure device is released
-                });
-
-                // Reset buttons to normal state when switching channels
-                if (this._isMutedByHigherRole)
-                {
-                    this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
-                if (this._isVideoMutedByHigherRole)
-                {
-                    this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
-            }
-            this._videoRoomId = 2;
-            AddUserToMediaChannel(2, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
-            this.HideAllPanels();
-            this.VideoPanel2.Visible = true;
-
-            // Position the media controls panel with some distance from the rectangles
-            mediaControlsPanel.Visible = true;
-
-            // Center the panel horizontally at the bottom of the chat area
-            mediaControlsPanel.Location = new Point(
-                (chatAreaPanel.Width - mediaControlsPanel.Width) / 2,
-                chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
-            this.mediaControlsPanel.BringToFront();
-            VideoStreamConnection = new VideoStreamConnection(this.VideoPanel2);
-            await VideoStreamConnection.Initialize();
-
-            // Apply global mute state to the new connection
-            if (this._isGloballyMuted)
-            {
-                VideoStreamConnection.SetGlobalMuteState(true);
-            }
-
-            // Apply global deafen state to the new connection
-            if (this._isGloballyDeafened)
-            {
-                VideoStreamConnection.SetGlobalDeafenState(true);
-            }
-
-            // Apply video mute state to the new connection
-            if (this._isVideoMutedByHigherRole)
-            {
-                // Ensure the video is muted in the new connection
-                await Task.Delay(500); // Small delay to ensure connection is ready
-                VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
-                mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                mediaChannelVideoMuteButton.Enabled = false;
-            }
-
-            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(2);
         }
 
         private async void voiceChannel3Button_Click(object sender, EventArgs e)
         {
-            // If we're already connected to this channel, just show the video panel
-            if (VideoStreamConnection != null && this._videoRoomId == 3)
-            {
-
-                try
-                {
-                    await Task.Run(async () => {
-                        // Force a video reinit 
-                        await VideoStreamConnection.ReInitializeVideo();
-                    });
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Error reinitializing video: {ex.Message}");
-                }
-
-                this.HideAllPanels();
-                this.VideoPanel3.Visible = true;
-
-                // Make sure to show the media controls panel
-                this.mediaControlsPanel.Visible = true;
-                mediaControlsPanel.Location = new Point(
-                    (chatAreaPanel.Width - mediaControlsPanel.Width) / 2,
-                    chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
-                this.mediaControlsPanel.BringToFront();
-                return;
-            }
-
-            // If we're connected to a different channel, disconnect first
-            if (VideoStreamConnection != null)
-            {
-                RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
-                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
-                // Properly dispose the old connection
-                var oldConnection = VideoStreamConnection;
-                VideoStreamConnection = null;
-
-                // Use a more robust cleanup approach
-                await Task.Run(async () => {
-                    oldConnection.Dispose();
-                    // Force garbage collection to release camera resources
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    await Task.Delay(2000); // Longer delay to ensure device is released
-                });
-
-                // Reset buttons to normal state when switching channels
-                if (this._isMutedByHigherRole)
-                {
-                    this.mediaChannelMuteButton.Enabled = false;
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
-                if (this._isVideoMutedByHigherRole)
-                {
-                    this.mediaChannelVideoMuteButton.Enabled = false;
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                }
-                else
-                {
-                    this.mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground"); // Original color
-                }
-            }
-            this._videoRoomId = 3;
-            AddUserToMediaChannel(3, new UserDetails(this._currentUserId, this.Username, this.ImageToByteArray(this.UserProfilePicture), this.role));
-            this.HideAllPanels();
-            this.VideoPanel3.Visible = true;
-
-            // Position the media controls panel with some distance from the rectangles
-            mediaControlsPanel.Visible = true;
-
-            // Center the panel horizontally at the bottom of the chat area
-            mediaControlsPanel.Location = new Point(
-                (chatAreaPanel.Width - mediaControlsPanel.Width) / 2,
-                chatAreaPanel.Height - mediaControlsPanel.Height - 30); // 30px from bottom
-            this.mediaControlsPanel.BringToFront();
-            VideoStreamConnection = new VideoStreamConnection(this.VideoPanel3);
-            await VideoStreamConnection.Initialize();
-
-            // Apply global mute state to the new connection
-            if (this._isGloballyMuted)
-            {
-                VideoStreamConnection.SetGlobalMuteState(true);
-            }
-
-            // Apply global deafen state to the new connection
-            if (this._isGloballyDeafened)
-            {
-                VideoStreamConnection.SetGlobalDeafenState(true);
-            }
-
-            // Apply video mute state to the new connection
-            if (this._isVideoMutedByHigherRole)
-            {
-                // Ensure the video is muted in the new connection
-                await Task.Delay(500); // Small delay to ensure connection is ready
-                VideoStreamConnection.ToggleVideoMute(); // Mute the video if it's not already muted
-                mediaChannelVideoMuteButton.BackColor = ThemeManager.GetColor("MutedColor");
-                mediaChannelVideoMuteButton.Enabled = false;
-            }
-
-            ConnectionManager.getInstance(null).ProcessConnectToMediaRoom(3);
+            await this.ClickHandlerForMediaRoom(3);
         }
 
         public void AddNewParticipantDisplay(Panel panel, PictureBox pictureBox)
         {
             panel.Controls.Add(pictureBox);
+            panel.Refresh();
         }
 
         public void ShowAllUsersDetails(List<UserDetails> details)
@@ -810,7 +618,7 @@ namespace YoavDiscordClient
 
                 leftSidePanel.Controls.Add(channelPanel);
                 mediaChannelPanels[i] = channelPanel;
-                usersInMediaChannels[i] = new List<UserDetails>();
+                UsersInMediaChannels[i] = new List<UserDetails>();
             }
         }
 
@@ -844,7 +652,7 @@ namespace YoavDiscordClient
 
             Panel channelPanel = mediaChannelPanels[channelId];
             channelPanel.Controls.Clear();
-            usersInMediaChannels[channelId] = users;
+            UsersInMediaChannels[channelId] = users;
 
             int currentY = 5;
 
@@ -974,10 +782,10 @@ namespace YoavDiscordClient
         // Call this when a user joins a media channel
         public void AddUserToMediaChannel(int channelId, UserDetails user)
         {
-            if (!usersInMediaChannels.ContainsKey(channelId))
+            if (!UsersInMediaChannels.ContainsKey(channelId))
                 return;
 
-            var users = usersInMediaChannels[channelId];
+            var users = UsersInMediaChannels[channelId];
             if (!users.Any(u => u.UserId == user.UserId))
             {
                 users.Add(user);
@@ -988,10 +796,10 @@ namespace YoavDiscordClient
         // Call this when a user leaves a media channel
         public void RemoveUserFromMediaChannel(int channelId, int userId)
         {
-            if (!usersInMediaChannels.ContainsKey(channelId))
+            if (!UsersInMediaChannels.ContainsKey(channelId))
                 return;
 
-            var users = usersInMediaChannels[channelId];
+            var users = UsersInMediaChannels[channelId];
             users.RemoveAll(u => u.UserId == userId);
             UpdateMediaChannelUsers(channelId, users);
 
@@ -1066,14 +874,9 @@ namespace YoavDiscordClient
             {
                 // Disconnect user from the current media channel
                 RemoveUserFromMediaChannel(this._videoRoomId, this._currentUserId);
-                ConnectionManager.getInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
+                ConnectionManager.GetInstance(null).ProcessDisconnectFromMediaRoom(this._videoRoomId);
 
-                // Dispose video connection
-                VideoStreamConnection.Dispose();
-                VideoStreamConnection = null;
-
-                // Small delay to ensure proper cleanup
-                await Task.Delay(1000);
+                await CleanupVideoStreamConnection();
 
                 // Reset media control buttons to original state
                 this.mediaChannelMuteButton.BackColor = ThemeManager.GetColor("ButtonBackground");
@@ -1091,11 +894,25 @@ namespace YoavDiscordClient
                 // If chat history isn't loaded yet, load it
                 if (((string)this.ChatMessagesPanel1.Tag) == "0")
                 {
-                    ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+                    ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
                 }
             }
         }
 
+        private async Task CleanupVideoStreamConnection()
+        {
+            var oldConnection = VideoStreamConnection;
+            VideoStreamConnection = null;
+
+            await Task.Run(async () =>
+            {
+                oldConnection.Dispose();
+                // Force garbage collection to release camera resources
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                await Task.Delay(2000); // Longer delay to ensure device is released
+            });
+        }
 
         public List<Control> FindControlsByTag(Panel panel, string searchText)
         {
@@ -1385,14 +1202,9 @@ namespace YoavDiscordClient
             UpdateUserMuteVisualIndicator(targetUser.UserId, item.Checked);
 
             // Send the mute command to the server to propagate to all clients
-            ConnectionManager.getInstance(null).ProcessSetUserMuted(targetUser.UserId, item.Checked);
+            ConnectionManager.GetInstance(null).ProcessSetUserMuted(targetUser.UserId, item.Checked);
 
-            // If this is the current user being muted, apply audio muting locally as well
-            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
-            {
-                VideoStreamConnection.ToggleAudioMute();
-                mediaChannelMuteButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
-            }
+            
         }
 
         private void MuteVideoItem_Click(object sender, EventArgs e)
@@ -1408,14 +1220,9 @@ namespace YoavDiscordClient
             UpdateUserVideoMuteVisualIndicator(targetUser.UserId, item.Checked);
 
             // Send the video mute command to the server to propagate to all clients
-            ConnectionManager.getInstance(null).ProcessSetUserVideoMuted(targetUser.UserId, item.Checked);
+            ConnectionManager.GetInstance(null).ProcessSetUserVideoMuted(targetUser.UserId, item.Checked);
 
-            // If this is the current user being video muted, apply video muting locally as well
-            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
-            {
-                VideoStreamConnection.ToggleVideoMute();
-                mediaChannelVideoMuteButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
-            }
+            
         }
 
         private void DeafenUserItem_Click(object sender, EventArgs e)
@@ -1430,15 +1237,9 @@ namespace YoavDiscordClient
             UpdateUserDeafenVisualIndicator(targetUser.UserId, item.Checked);
 
             // Send the deafen command to the server to propagate to all clients
-            ConnectionManager.getInstance(null).ProcessSetUserDeafened(targetUser.UserId, item.Checked);
+            ConnectionManager.GetInstance(null).ProcessSetUserDeafened(targetUser.UserId, item.Checked);
 
-            // If this is the current user being deafened, apply audio deafening locally
-            if (targetUser.UserId == _currentUserId && VideoStreamConnection != null)
-            {
-                VideoStreamConnection.SetGlobalDeafenState(item.Checked);
-                deafenButton.BackColor = item.Checked ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
-                _isGloballyDeafened = item.Checked;
-            }
+            
         }
 
         private void DisconnectUserItem_Click(object sender, EventArgs e)
@@ -1447,7 +1248,7 @@ namespace YoavDiscordClient
 
             // Find which media channel the user is in
             int userMediaChannelId = -1;
-            foreach (var entry in usersInMediaChannels)
+            foreach (var entry in UsersInMediaChannels)
             {
                 int channelId = entry.Key;
                 List<UserDetails> users = entry.Value;
@@ -1475,7 +1276,7 @@ namespace YoavDiscordClient
                     RemoveUserFromMediaChannel(userMediaChannelId, targetUser.UserId);
 
                     // Send disconnect command to the server to propagate to all clients including the target
-                    ConnectionManager.getInstance(null).ProcessDisconnectUserFromMediaRoom(targetUser.UserId, userMediaChannelId);
+                    ConnectionManager.GetInstance(null).ProcessDisconnectUserFromMediaRoom(targetUser.UserId, userMediaChannelId);
                 }
             }
             else
@@ -1493,25 +1294,27 @@ namespace YoavDiscordClient
         private void SetAdminRoleItem_Click(object sender, EventArgs e)
         {
             UserDetails targetUser = (UserDetails)userContextMenu.Tag;
-            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 0); // 0 is Admin role
+            ConnectionManager.GetInstance(null).ProcessUpdateUserRole(targetUser.UserId, 0); // 0 is Admin role
         }
 
         private void SetModeratorRoleItem_Click(object sender, EventArgs e)
         {
             UserDetails targetUser = (UserDetails)userContextMenu.Tag;
-            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 1); // 1 is Moderator role
+            ConnectionManager.GetInstance(null).ProcessUpdateUserRole(targetUser.UserId, 1); // 1 is Moderator role
         }
 
         private void SetMemberRoleItem_Click(object sender, EventArgs e)
         {
             UserDetails targetUser = (UserDetails)userContextMenu.Tag;
-            ConnectionManager.getInstance(null).ProcessUpdateUserRole(targetUser.UserId, 2); // 2 is Member role
+            ConnectionManager.GetInstance(null).ProcessUpdateUserRole(targetUser.UserId, 2); // 2 is Member role
         }
 
         private void UpdateContextMenuCheckStates(UserDetails user)
         {
             // Get current settings for the user
             var settings = UserContextMenuSettings.GetInstance().GetUserSettings(user.UserId);
+
+            bool isCurrentUser = (user.UserId == this._currentUserId);
 
             // Determine if the current user has permission to modify this user based on roles
             bool isMyRoleStronger = false;
@@ -1547,7 +1350,7 @@ namespace YoavDiscordClient
 
                         case "Update Role":
                             // Apply role update permissions according to requirements
-                            menuItem.Enabled = this.role <= 1; // Only Admin (0) and Moderator (1) can update roles
+                            menuItem.Enabled = !isCurrentUser && this.role <= 1; // Only Admin (0) and Moderator (1) can update roles
 
                             // Check each submenu item and set its enabled state
                             foreach (ToolStripItem subItem in menuItem.DropDownItems)
@@ -1557,7 +1360,7 @@ namespace YoavDiscordClient
                                     switch (roleItem.Text)
                                     {
                                         case "Admin":
-                                            // Nobody can set Admin role (as you mentioned there is always only one admin)
+                                            // Nobody can set Admin role
                                             roleItem.Enabled = false;
                                             break;
 
@@ -1589,7 +1392,7 @@ namespace YoavDiscordClient
 
             // Check if user is in any media channel - if so, they should be shown as online
             bool isInAnyMediaChannel = false;
-            foreach (var channelUsers in usersInMediaChannels.Values)
+            foreach (var channelUsers in UsersInMediaChannels.Values)
             {
                 if (channelUsers.Any(u => u.UserId == targetUser.UserId))
                 {
@@ -1762,16 +1565,44 @@ namespace YoavDiscordClient
             }
         }
 
+        private void RepositionStatusIcons(Panel userPanel, Label usernameLabel)
+        {
+            // Find all status icons in the panel
+            List<Control> statusIcons = new List<Control>();
+            foreach (Control control in userPanel.Controls)
+            {
+                if (control.Tag != null && control.Tag.ToString() == "StatusIcon")
+                {
+                    statusIcons.Add(control);
+                }
+            }
+
+            if (statusIcons.Count == 0)
+                return;
+
+            // Sort icons by their names to ensure consistent order
+            statusIcons.Sort((a, b) => string.Compare(a.Name, b.Name));
+
+            // Position the first icon right after the username
+            int xPos = usernameLabel.Right + 8;
+            int yPos = usernameLabel.Top;
+
+            foreach (Control icon in statusIcons)
+            {
+                icon.Location = new Point(xPos, yPos);
+                icon.BringToFront();
+                xPos += icon.Width + 4; // Add spacing between icons
+            }
+        }
+
         private void UpdateUserMuteVisualIndicator(int userId, bool isMuted)
         {
             // This method updates visual indicators for muted users
-            // Adding a mute icon next to the username instead of on the avatar
-
             foreach (var channelId in mediaChannelPanels.Keys)
             {
-                if (usersInMediaChannels.ContainsKey(channelId))
+                if (UsersInMediaChannels.ContainsKey(channelId))
                 {
-                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    var userInChannel = UsersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
                     if (userInChannel != null)
                     {
                         Panel channelPanel = mediaChannelPanels[channelId];
@@ -1796,8 +1627,6 @@ namespace YoavDiscordClient
                                 {
                                     // Check if mute indicator already exists
                                     Control existingIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
-                                    // Check if deafen indicator exists
-                                    Control deafenIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
 
                                     if (isMuted)
                                     {
@@ -1808,8 +1637,6 @@ namespace YoavDiscordClient
                                             {
                                                 Name = "muteIndicator_" + userId,
                                                 Size = new Size(16, 16),
-                                                // Position it to the right of the username with some space
-                                                Location = new Point(usernameLabel.Right + 8, usernameLabel.Top),
                                                 Image = Properties.Resources.muteLogo, // You should have this resource
                                                 SizeMode = PictureBoxSizeMode.StretchImage,
                                                 BackColor = Color.Transparent,
@@ -1826,11 +1653,11 @@ namespace YoavDiscordClient
                                                 ColorMatrix colorMatrix = new ColorMatrix(
                                                     new float[][]
                                                     {
-                                                new float[] {1, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 1, 0},
-                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                        new float[] {1, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 1, 0},
+                                                        new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
                                                     });
 
                                                 using (ImageAttributes attributes = new ImageAttributes())
@@ -1843,14 +1670,6 @@ namespace YoavDiscordClient
 
                                             muteIndicator.Image = redTintedImage;
                                             userPanel.Controls.Add(muteIndicator);
-                                            muteIndicator.BringToFront();
-
-                                            // If deafen indicator exists, reposition it after mute indicator
-                                            if (deafenIndicator != null)
-                                            {
-                                                deafenIndicator.Location = new Point(muteIndicator.Right + 4, usernameLabel.Top);
-                                                deafenIndicator.BringToFront();
-                                            }
                                         }
                                     }
                                     else if (existingIndicator != null)
@@ -1858,15 +1677,14 @@ namespace YoavDiscordClient
                                         userPanel.Controls.Remove(existingIndicator);
                                         existingIndicator.Dispose();
 
-                                        // Reposition deafen indicator if it exists
-                                        if (deafenIndicator != null)
-                                        {
-                                            deafenIndicator.Location = new Point(usernameLabel.Right + 8, usernameLabel.Top);
-                                        }
                                     }
+
+                                    // Reposition all status icons
+                                    RepositionStatusIcons(userPanel, usernameLabel);
+                                    break;
+                                    
                                 }
 
-                                break;
                             }
                         }
                     }
@@ -1876,14 +1694,12 @@ namespace YoavDiscordClient
 
         private void UpdateUserVideoMuteVisualIndicator(int userId, bool isVideoMuted)
         {
-            // Similar implementation as the mute indicator, but with a video mute icon
-            // Positioned next to the username or after the mute icon if present
 
             foreach (var channelId in mediaChannelPanels.Keys)
             {
-                if (usersInMediaChannels.ContainsKey(channelId))
+                if (UsersInMediaChannels.ContainsKey(channelId))
                 {
-                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    var userInChannel = UsersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
                     if (userInChannel != null)
                     {
                         Panel channelPanel = mediaChannelPanels[channelId];
@@ -1907,25 +1723,16 @@ namespace YoavDiscordClient
                                 {
                                     // Check if video mute indicator already exists
                                     Control existingVideoIndicator = userPanel.Controls.Find("videoMuteIndicator_" + userId, true).FirstOrDefault();
-                                    // Check if mute indicator exists
-                                    Control muteIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
-                                    // Check if deafen indicator exists
-                                    Control deafenIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
 
                                     if (isVideoMuted)
                                     {
                                         if (existingVideoIndicator == null)
                                         {
-                                            // Determine position - after mute icon if it exists, otherwise after username
-                                            int xPosition = muteIndicator != null ?
-                                                muteIndicator.Right + 4 :
-                                                usernameLabel.Right + 8;
 
                                             PictureBox videoMuteIndicator = new PictureBox
                                             {
                                                 Name = "videoMuteIndicator_" + userId,
                                                 Size = new Size(16, 16),
-                                                Location = new Point(xPosition, usernameLabel.Top),
                                                 Image = Properties.Resources.videoMuteLogo, // You should have this resource
                                                 SizeMode = PictureBoxSizeMode.StretchImage,
                                                 BackColor = Color.Transparent,
@@ -1942,11 +1749,11 @@ namespace YoavDiscordClient
                                                 ColorMatrix colorMatrix = new ColorMatrix(
                                                     new float[][]
                                                     {
-                                                new float[] {1, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 1, 0},
-                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                        new float[] {1, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 1, 0},
+                                                        new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
                                                     });
 
                                                 using (ImageAttributes attributes = new ImageAttributes())
@@ -1959,14 +1766,6 @@ namespace YoavDiscordClient
 
                                             videoMuteIndicator.Image = redTintedImage;
                                             userPanel.Controls.Add(videoMuteIndicator);
-                                            videoMuteIndicator.BringToFront();
-
-                                            // If deafen indicator exists, reposition it after video mute indicator
-                                            if (deafenIndicator != null)
-                                            {
-                                                deafenIndicator.Location = new Point(videoMuteIndicator.Right + 4, usernameLabel.Top);
-                                                deafenIndicator.BringToFront();
-                                            }
                                         }
                                     }
                                     else if (existingVideoIndicator != null)
@@ -1974,18 +1773,13 @@ namespace YoavDiscordClient
                                         userPanel.Controls.Remove(existingVideoIndicator);
                                         existingVideoIndicator.Dispose();
 
-                                        // Reposition deafen indicator if it exists
-                                        if (deafenIndicator != null)
-                                        {
-                                            int xPosition = muteIndicator != null ?
-                                                muteIndicator.Right + 4 :
-                                                usernameLabel.Right + 8;
-                                            deafenIndicator.Location = new Point(xPosition, usernameLabel.Top);
-                                        }
                                     }
+
+                                    // Reposition all status icons
+                                    RepositionStatusIcons(userPanel, usernameLabel);
+                                    break;
                                 }
 
-                                break;
                             }
                         }
                     }
@@ -1995,14 +1789,12 @@ namespace YoavDiscordClient
 
         private void UpdateUserDeafenVisualIndicator(int userId, bool isDeafened)
         {
-            // Similar implementation as the mute indicator, but with a deafen icon
-            // Positioned next to the username or after the mute icon if present
 
             foreach (var channelId in mediaChannelPanels.Keys)
             {
-                if (usersInMediaChannels.ContainsKey(channelId))
+                if (UsersInMediaChannels.ContainsKey(channelId))
                 {
-                    var userInChannel = usersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
+                    var userInChannel = UsersInMediaChannels[channelId].FirstOrDefault(u => u.UserId == userId);
                     if (userInChannel != null)
                     {
                         Panel channelPanel = mediaChannelPanels[channelId];
@@ -2026,23 +1818,16 @@ namespace YoavDiscordClient
                                 {
                                     // Check if deafen indicator already exists
                                     Control existingIndicator = userPanel.Controls.Find("deafenIndicator_" + userId, true).FirstOrDefault();
-                                    // Check if there's a mute indicator to position after it
-                                    Control muteIndicator = userPanel.Controls.Find("muteIndicator_" + userId, true).FirstOrDefault();
 
                                     if (isDeafened)
                                     {
                                         if (existingIndicator == null)
-                                        {
-                                            // Determine position - after mute icon if it exists, otherwise after username
-                                            int xPosition = muteIndicator != null ?
-                                                muteIndicator.Right + 4 :
-                                                usernameLabel.Right + 8;
+                                        { 
 
                                             PictureBox deafenIndicator = new PictureBox
                                             {
                                                 Name = "deafenIndicator_" + userId,
                                                 Size = new Size(16, 16),
-                                                Location = new Point(xPosition, usernameLabel.Top),
                                                 Image = Properties.Resources.deafenLogo, // You should have this resource
                                                 SizeMode = PictureBoxSizeMode.StretchImage,
                                                 BackColor = Color.Transparent,
@@ -2059,11 +1844,11 @@ namespace YoavDiscordClient
                                                 ColorMatrix colorMatrix = new ColorMatrix(
                                                     new float[][]
                                                     {
-                                                new float[] {1, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 0, 0},
-                                                new float[] {0, 0, 0, 1, 0},
-                                                new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
+                                                        new float[] {1, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 0, 0},
+                                                        new float[] {0, 0, 0, 1, 0},
+                                                        new float[] {0.7f, 0.3f, 0.3f, 0, 1} // Lighter red with some pink tone
                                                     });
 
                                                 using (ImageAttributes attributes = new ImageAttributes())
@@ -2076,7 +1861,6 @@ namespace YoavDiscordClient
 
                                             deafenIndicator.Image = redTintedImage;
                                             userPanel.Controls.Add(deafenIndicator);
-                                            deafenIndicator.BringToFront();
                                         }
                                     }
                                     else if (existingIndicator != null)
@@ -2084,9 +1868,12 @@ namespace YoavDiscordClient
                                         userPanel.Controls.Remove(existingIndicator);
                                         existingIndicator.Dispose();
                                     }
+
+                                    // Reposition all status icons
+                                    RepositionStatusIcons(userPanel, usernameLabel);
+                                    break;
                                 }
 
-                                break;
                             }
                         }
                     }
@@ -2123,8 +1910,13 @@ namespace YoavDiscordClient
                 this._isMutedByHigherRole = isMuted;
                 if (isCurrentlyMuted != isMuted)
                 {
-                    VideoStreamConnection.ToggleAudioMute();
+                    VideoStreamConnection.SetMutedByHigherRoleState(isMuted);
                     mediaChannelMuteButton.BackColor = isMuted ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
+                    globalMuteButton.BackColor = isMuted ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
+                }
+                if(isMuted == false)
+                {
+                    this._isGloballyMuted = false;
                 }
 
             }
@@ -2168,11 +1960,17 @@ namespace YoavDiscordClient
             {
                 // Only update if the current state doesn't match the desired state
                 this.deafenButton.Enabled = !isDeafened;
+                this._isDeafenedByHigherRole = isDeafened;
                 if (_isGloballyDeafened != isDeafened)
                 {
                     VideoStreamConnection.SetGlobalDeafenState(isDeafened);
                     deafenButton.BackColor = isDeafened ? ThemeManager.GetColor("MutedColor") : ThemeManager.GetColor("ButtonBackground");
                     _isGloballyDeafened = isDeafened;
+                }
+
+                if (isDeafened == false)
+                {
+                    this._isGloballyDeafened = false;
                 }
             }
         }
@@ -2208,7 +2006,7 @@ namespace YoavDiscordClient
                 // If chat history isn't loaded yet, load it
                 if (((string)this.ChatMessagesPanel1.Tag) == "0")
                 {
-                    ConnectionManager.getInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
+                    ConnectionManager.GetInstance(null).ProcessGetMessagesHistoryOfChatRoom(1);
                 }
             }
             else
@@ -2240,7 +2038,7 @@ namespace YoavDiscordClient
             string username = "Unknown";
 
             // Check in all media channels
-            foreach (var channelUsers in usersInMediaChannels.Values)
+            foreach (var channelUsers in UsersInMediaChannels.Values)
             {
                 var user = channelUsers.FirstOrDefault(u => u.UserId == userId);
                 if (user != null)
@@ -2252,13 +2050,13 @@ namespace YoavDiscordClient
             }
 
             // Update all media channel displays
-            foreach (var channelEntry in usersInMediaChannels)
+            foreach (var channelEntry in UsersInMediaChannels)
             {
                 UpdateMediaChannelUsers(channelEntry.Key, channelEntry.Value);
             }
 
             // Request a refresh of the users list to update their display in the sidebar
-            ConnectionManager.getInstance(null).ProcessFetchAllUsers();
+            ConnectionManager.GetInstance(null).ProcessFetchAllUsers();
 
             // Show a notification to the user
             MessageBox.Show($"{username}'s role has been updated to {GetRoleNameFromId(newRole)}");
@@ -2279,6 +2077,6 @@ namespace YoavDiscordClient
             }
         }
 
-        
+
     }
 }

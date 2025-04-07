@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using YoavDiscordClient.Events;
 using System.Windows.Forms;
+using System.Runtime.CompilerServices;
 
 namespace YoavDiscordClient
 {
@@ -50,6 +51,8 @@ namespace YoavDiscordClient
 
         private bool isGloballyDeafened = false;
 
+        private bool isMutedByHigherRole = false;
+
         private bool disposed = false;
 
         #endregion
@@ -88,6 +91,11 @@ namespace YoavDiscordClient
             if (isGloballyMuted)
                 return; // Can't toggle if globally muted
 
+            if (isMutedByHigherRole)
+            {
+                return;
+            }
+
             isAudioMuted = !isAudioMuted;
 
             if (audioInput != null)
@@ -117,6 +125,10 @@ namespace YoavDiscordClient
         /// <param name="muted">Whether audio should be globally muted</param>
         public void SetGlobalMuteState(bool muted)
         {
+            if (this.isMutedByHigherRole)
+            {
+                return;
+            }
             isGloballyMuted = muted;
 
             // Apply global mute setting regardless of channel-specific setting
@@ -133,6 +145,33 @@ namespace YoavDiscordClient
                     {
                         // Resume audio if not channel-muted
                         audioInput.StartRecording();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error applying global mute state: {ex.Message}");
+                }
+            }
+        }
+
+        public void SetMutedByHigherRoleState(bool muted)
+        {
+            this.isMutedByHigherRole = muted;
+            if (audioInput != null)
+            {
+                try
+                {
+                    if (this.isMutedByHigherRole)
+                    {
+                        // Force mute audio
+                        audioInput.StopRecording();
+                    }
+                    else
+                    {
+                        // Resume audio if not channel-muted
+                        audioInput.StartRecording();
+                        isAudioMuted = false;
+                        isGloballyDeafened = false;
                     }
                 }
                 catch (Exception ex)
@@ -335,7 +374,7 @@ namespace YoavDiscordClient
             try
             {
                 // Don't send audio if muted
-                if (isAudioMuted || isGloballyMuted)
+                if (isAudioMuted || isGloballyMuted || isMutedByHigherRole)
                     return;
 
                 // Raise event with audio data

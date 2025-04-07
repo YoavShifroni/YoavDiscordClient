@@ -22,7 +22,7 @@ namespace YoavDiscordClient
 
     public class VideoStreamConnection : IDisposable
     {
-        private VideoStreamConnectionHandler implementation;
+        public VideoStreamConnectionHandler implementation;
         private SemaphoreSlim initLock = new SemaphoreSlim(1, 1);
         private bool disposed = false;
 
@@ -62,11 +62,11 @@ namespace YoavDiscordClient
             }
         }
 
-        public async Task ConnectToParticipant(string ip, int port, byte[] profilePicture, string username, int userId)
+        public void ConnectToParticipant(string ip, int port, byte[] profilePicture, string username, int userId)
         {
             try
             {
-                await implementation.ConnectToParticipant(ip, port, profilePicture, username, userId);
+                implementation.ConnectToParticipant(ip, port, profilePicture, username, userId);
             }
             catch (Exception ex)
             {
@@ -132,6 +132,18 @@ namespace YoavDiscordClient
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error setting global mute state to {muted}: {ex.Message}");
+            }
+        }
+
+        public void SetMutedByHigherRoleState(bool muted)
+        {
+            try
+            {
+                implementation.SetMutedByHigherRoleState(muted);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting mute by higher role state to {muted}: {ex.Message}");
             }
         }
 

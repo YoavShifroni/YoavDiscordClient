@@ -21,7 +21,7 @@ namespace YoavDiscordClient
         private Dictionary<string, UdpClient> connections;
         private VideoManager videoManager;
         private AudioManager audioManager;
-        private ParticipantManager participantManager;
+        public ParticipantManager participantManager;
         private bool isRunning;
         private bool disposed = false;
         private DateTime timeOfLastVideoSend = DateTime.Now;
@@ -71,7 +71,7 @@ namespace YoavDiscordClient
                 }
 
                 // Setup local display
-                participantManager.CreateLocalDisplay();
+                //participantManager.CreateLocalDisplay();
 
                 // Initialize timer for heartbeat packets
                 InitializeTimer();
@@ -101,17 +101,17 @@ namespace YoavDiscordClient
         /// <param name="profilePicture">The participant's profile picture</param>
         /// <param name="username">The participant's username</param>
         /// <param name="userId">The participant's user ID</param>
-        public async Task ConnectToParticipant(string ip, int port, byte[] profilePicture, string username, int userId)
+        public void ConnectToParticipant(string ip, int port, byte[] profilePicture, string username, int userId)
         {
             try
             {
                 System.Diagnostics.Debug.WriteLine($"Connecting to participant: {username} ({ip}:{port})");
 
                 // Reinitialize if needed before connecting to ensure fresh state
-                if (!isInitialized)
-                {
-                    await Initialize();
-                }
+                //if (!isInitialized)
+                //{
+                //    await Initialize();
+                //}
 
                 // Create UDP client for this participant
                 var videoClient = new UdpClient();
@@ -119,7 +119,7 @@ namespace YoavDiscordClient
                 connections[ip] = videoClient;
 
                 // Setup participant display
-                await participantManager.AddParticipant(ip, userId, profilePicture, username);
+                participantManager.AddParticipant(ip, userId, profilePicture, username);
 
                 // Setup audio for this participant
                 audioManager.AddParticipant(ip);
@@ -128,6 +128,7 @@ namespace YoavDiscordClient
                 StartReceiving(ip, videoClient);
 
                 System.Diagnostics.Debug.WriteLine($"Connected to participant: {username} ({ip}:{port})");
+
             }
             catch (Exception ex)
             {
@@ -204,6 +205,15 @@ namespace YoavDiscordClient
             try
             {
                 videoManager.ToggleVideoMute();
+
+                // Make sure an empty video packet is sent immediately when video is muted
+                if (videoManager.IsVideoMuted)
+                {
+                    SendEmptyVideoPacket(true);
+                    // Send it a second time to ensure delivery
+                    Task.Delay(100).ContinueWith(t => SendEmptyVideoPacket(true));
+                }
+
                 System.Diagnostics.Debug.WriteLine($"Video mute toggled: {videoManager.IsVideoMuted}");
             }
             catch (Exception ex)
@@ -226,6 +236,19 @@ namespace YoavDiscordClient
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error setting global mute state: {ex.Message}");
+            }
+        }
+
+        public void SetMutedByHigherRoleState(bool muted)
+        {
+            try
+            {
+                audioManager.SetMutedByHigherRoleState(muted);
+                System.Diagnostics.Debug.WriteLine($"Mute by higher role state set to: {muted}");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting mute by higher role state: {ex.Message}");
             }
         }
 
@@ -261,18 +284,18 @@ namespace YoavDiscordClient
                 {
                     case PacketType.Video:
                         var videoPacket = VideoPacket.FromBytes(bytes);
-                        participantManager.ProcessVideoData(ip, videoPacket);
+                        participantManager?.ProcessVideoData(ip, videoPacket);
                         break;
 
                     case PacketType.Audio:
                         // Process audio data
                         var audioPacket = AudioPacket.FromBytes(bytes);
-                        audioManager.ProcessRemoteAudioData(ip, audioPacket.AudioData);
+                        audioManager?.ProcessRemoteAudioData(ip, audioPacket.AudioData);
                         break;
 
                     case PacketType.Empty_Video:
                         // Process empty video notification (camera off)
-                        participantManager.ProcessEmptyVideo(ip);
+                        participantManager?.ProcessEmptyVideo(ip);
                         break;
 
                     default:
@@ -381,14 +404,22 @@ namespace YoavDiscordClient
             {
                 if (isMuted)
                 {
+                    // Create the packet only once
                     var packet = new EmptyVideoPacket();
                     var packetBytes = packet.ToBytes();
+
+                    System.Diagnostics.Debug.WriteLine($"Sending empty video packet to {connections.Count} connections");
 
                     foreach (var client in connections.Values)
                     {
                         try
                         {
                             client.Send(packetBytes, packetBytes.Length);
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            // Skip disposed clients
+                            continue;
                         }
                         catch (Exception ex)
                         {

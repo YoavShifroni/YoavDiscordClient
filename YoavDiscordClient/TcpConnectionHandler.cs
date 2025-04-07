@@ -91,7 +91,6 @@ namespace YoavDiscordClient
         /// <param name="message"></param>
         public void SendMessage(string message)
         {
-            System.Diagnostics.Debug.WriteLine(message);
             try
             {
                 // send message to the server
@@ -112,7 +111,6 @@ namespace YoavDiscordClient
                         Thread.Sleep(1000);
                     }
                     message = AesFunctions.Encrypt(message);
-                    System.Diagnostics.Debug.WriteLine("message sent to the server: " + message);
                 }
 
                 byte[] data = System.Text.Encoding.UTF8.GetBytes(message);

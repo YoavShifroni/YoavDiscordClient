@@ -45,7 +45,7 @@ namespace YoavDiscordClient
             }
             if (this.isFilled())
             {
-                ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessCheckIfUsernameAlreadyExist(this.usernameTextBox.Text);
+                ConnectionManager.GetInstance(this.serverIpTextBox.Text).ProcessCheckIfUsernameAlreadyExist(this.usernameTextBox.Text);
             }
 
         }

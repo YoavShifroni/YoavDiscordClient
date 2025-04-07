@@ -9,10 +9,10 @@ namespace YoavDiscordClient
     {
         // Singleton pattern
         private static UserContextMenuSettings _instance;
+
         // Dictionary to store user settings by user ID
         private Dictionary<int, UserSettings> _userSettings;
-        // Event for user settings changes
-        public event EventHandler<UserSettingsChangedEventArgs> UserSettingsChanged;
+
 
         private UserContextMenuSettings()
         {
@@ -54,7 +54,6 @@ namespace YoavDiscordClient
                 {
                     settings.IsMuted = isMuted;
                     System.Diagnostics.Debug.WriteLine($"User {userId} mute state set to {isMuted}");
-                    OnUserSettingsChanged(userId);
                 }
             }
             catch (Exception ex)
@@ -77,7 +76,6 @@ namespace YoavDiscordClient
                 {
                     settings.IsVideoMuted = isVideoMuted;
                     System.Diagnostics.Debug.WriteLine($"User {userId} video mute state set to {isVideoMuted}");
-                    OnUserSettingsChanged(userId);
                 }
             }
             catch (Exception ex)
@@ -100,7 +98,6 @@ namespace YoavDiscordClient
                 {
                     settings.IsDeafened = isDeafened;
                     System.Diagnostics.Debug.WriteLine($"User {userId} deafen state set to {isDeafened}");
-                    OnUserSettingsChanged(userId);
                 }
             }
             catch (Exception ex)
@@ -109,21 +106,7 @@ namespace YoavDiscordClient
             }
         }
 
-        /// <summary>
-        /// Raises the UserSettingsChanged event
-        /// </summary>
-        /// <param name="userId">The user ID whose settings have changed</param>
-        protected virtual void OnUserSettingsChanged(int userId)
-        {
-            try
-            {
-                UserSettingsChanged?.Invoke(this, new UserSettingsChangedEventArgs(userId));
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error raising UserSettingsChanged event for user {userId} : {ex.Message}");
-            }
-        }
+        
     }
 
     // User settings structure - No changes needed as IsVideoMuted already exists
@@ -141,13 +124,5 @@ namespace YoavDiscordClient
         }
     }
 
-    public class UserSettingsChangedEventArgs : EventArgs
-    {
-        public int UserId { get; private set; }
-
-        public UserSettingsChangedEventArgs(int userId)
-        {
-            UserId = userId;
-        }
-    }
+    
 }

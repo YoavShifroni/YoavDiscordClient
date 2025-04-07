@@ -36,7 +36,6 @@ namespace YoavDiscordClient
             deafenButton = new Button();
             userProfilePicturePictureBox = new CirclePictureBox();
             usernameLabel = new Label();
-            settingsButton = new Button();
             voiceChannel3Button = new Button();
             voiceChannel2Button = new Button();
             voiceChannel1Button = new Button();
@@ -100,7 +99,6 @@ namespace YoavDiscordClient
             userInfoPanel.Controls.Add(deafenButton);
             userInfoPanel.Controls.Add(userProfilePicturePictureBox);
             userInfoPanel.Controls.Add(usernameLabel);
-            userInfoPanel.Controls.Add(settingsButton);
             userInfoPanel.Dock = DockStyle.Bottom;
             userInfoPanel.Location = new System.Drawing.Point(0, 1068);
             userInfoPanel.Name = "userInfoPanel";
@@ -149,16 +147,6 @@ namespace YoavDiscordClient
             usernameLabel.TabIndex = 11;
             usernameLabel.Text = "Username";
             usernameLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // settingsButton
-            // 
-            settingsButton.BackgroundImageLayout = ImageLayout.Stretch;
-            settingsButton.FlatStyle = FlatStyle.Flat;
-            settingsButton.Location = new System.Drawing.Point(418, 76);
-            settingsButton.Name = "settingsButton";
-            settingsButton.Size = new System.Drawing.Size(47, 47);
-            settingsButton.TabIndex = 4;
-            settingsButton.UseVisualStyleBackColor = true;
             // 
             // voiceChannel3Button
             // 
@@ -593,7 +581,6 @@ namespace YoavDiscordClient
         private System.Windows.Forms.Button voiceChannel1Button;
         private System.Windows.Forms.Label voiceChannelsLabel;
         private System.Windows.Forms.Panel userInfoPanel;
-        private System.Windows.Forms.Button settingsButton;
         private System.Windows.Forms.Label usernameLabel;
         private System.Windows.Forms.Panel chatAreaPanel;
         private System.Windows.Forms.Label nameOfTheProjectLabel;

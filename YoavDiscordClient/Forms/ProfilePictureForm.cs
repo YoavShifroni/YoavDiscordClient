@@ -190,7 +190,7 @@ namespace YoavDiscordClient
             Bitmap croppedImage = CropToCircle(originalImage, circleCenter, circleRadius);
             byte[] imageToByteArray = this.ImageToByteArray(croppedImage);
             RegistrationInfo registrationInfo = DiscordFormsHolder.getInstance().RegistrationForm.RegistrationInfo;
-            ConnectionManager.getInstance(null).ProcessRegistration(registrationInfo, imageToByteArray);
+            ConnectionManager.GetInstance(null).ProcessRegistration(registrationInfo, imageToByteArray);
         }
 
         /// <summary>

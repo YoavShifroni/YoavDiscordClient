@@ -39,7 +39,7 @@ namespace YoavDiscordClient
         private bool disposed = false;
         private PictureBox localDisplay;
         private bool isInitialized = false;
-        private SemaphoreSlim initializationLock = new SemaphoreSlim(1, 1);
+        private readonly object _lockObject = new object();
 
         #endregion
 
@@ -129,11 +129,15 @@ namespace YoavDiscordClient
                     // Update UI to show profile picture
                     ShowProfilePicture();
 
-                    // Stop video capture frames by safely removing the event handler
-                    if (localVideo != null)
+                    lock (this._lockObject)
                     {
-                        localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
+                        // Stop video capture frames by safely removing the event handler
+                        if (localVideo != null)
+                        {
+                            localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
+                        }
                     }
+    
                 }
                 else
                 {
@@ -161,12 +165,16 @@ namespace YoavDiscordClient
                     }
 
                     // Restart video capture frames
-                    if (localVideo != null)
+                    lock (this._lockObject) 
                     {
-                        // Make sure we're not double-subscribing
-                        localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
-                        localVideo.Argb32VideoFrameReady += LocalVideoFrame_Ready;
+                        if (localVideo != null)
+                        {
+                            // Make sure we're not double-subscribing
+                            localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
+                            localVideo.Argb32VideoFrameReady += LocalVideoFrame_Ready;
+                        }
                     }
+                    
                 }
             }
             catch (Exception ex)
@@ -203,6 +211,8 @@ namespace YoavDiscordClient
                             var oldImage = localDisplay.Image;
                             localDisplay.Image = bitmap;
                             oldImage?.Dispose();
+                            localDisplay.Refresh();
+
                         }
                         catch (Exception ex)
                         {
@@ -311,41 +321,64 @@ namespace YoavDiscordClient
             {
                 System.Diagnostics.Debug.WriteLine("Starting video cleanup...");
 
+                lock (this._lockObject)
+                {
+                    if (localVideo != null)
+                    {
+                        // First, safely remove the event handler to prevent further frames
+                        localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
+                    }
+                }
+
                 if (localVideo != null)
                 {
-                    // First, safely remove the event handler to prevent further frames
-                    localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
 
-                    // Create a timeout task
-                    var timeoutTask = Task.Delay(3000); // 3 second timeout
+                    //// Create a timeout task
+                    //var timeoutTask = Task.Delay(3000); // 3 second timeout
 
-                    // Create a task to fully dispose the track
-                    var cleanupTask = Task.Run(() =>
+                    //// Create a task to fully dispose the track
+                    //var cleanupTask = Task.Run(() =>
+                    //{
+                    //    try
+                    //    {
+                    //        localVideo.Dispose();
+
+                    //        System.Diagnostics.Debug.WriteLine("Local video track disposed");
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        System.Diagnostics.Debug.WriteLine($"Error disposing local video track: {ex.Message}");
+                    //    }
+                    //    finally
+                    //    {
+                    //        localVideo = null;
+                    //    }
+                    //});
+
+                    //// Wait for either the cleanup to complete or timeout
+                    //var completedTask = await Task.WhenAny(cleanupTask, timeoutTask);
+                    //if (completedTask == timeoutTask)
+                    //{
+                    //    System.Diagnostics.Debug.WriteLine("Video track cleanup timed out");
+                    //    // Force nullify for garbage collection
+                    //    localVideo = null;
+                    //
+                    
+                    try
                     {
-                        try
-                        {
-                            localVideo.Dispose();
+                        localVideo.Dispose();
 
-                            System.Diagnostics.Debug.WriteLine("Local video track disposed");
-                        }
-                        catch (Exception ex)
-                        {
-                            System.Diagnostics.Debug.WriteLine($"Error disposing local video track: {ex.Message}");
-                        }
-                        finally
-                        {
-                            localVideo = null;
-                        }
-                    });
-
-                    // Wait for either the cleanup to complete or timeout
-                    var completedTask = await Task.WhenAny(cleanupTask, timeoutTask);
-                    if (completedTask == timeoutTask)
+                        System.Diagnostics.Debug.WriteLine("Local video track disposed");
+                    }
+                    catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine("Video track cleanup timed out");
-                        // Force nullify for garbage collection
+                        System.Diagnostics.Debug.WriteLine($"Error disposing local video track: {ex.Message}");
+                    }
+                    finally
+                    {
                         localVideo = null;
                     }
+
                 }
 
                 if (videoSource != null)
@@ -403,7 +436,6 @@ namespace YoavDiscordClient
                     System.Diagnostics.Debug.WriteLine("Inside the dispose method in Video Manager class");
                     // Clean up managed resources
                     _ = CleanupVideo();
-                    initializationLock?.Dispose();
                 }
 
                 disposed = true;

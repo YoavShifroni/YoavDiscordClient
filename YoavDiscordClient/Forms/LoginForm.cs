@@ -57,7 +57,15 @@ namespace YoavDiscordClient
                 return;
             }
             DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(false);
-            ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessLogin(this.usernameTextBox.Text, this.passwordTextBox.Text);
+            try
+            {
+                ConnectionManager.GetInstance(this.serverIpTextBox.Text).ProcessLogin(this.usernameTextBox.Text, this.passwordTextBox.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("the server ip you've entered is incorrect");
+                DiscordFormsHolder.getInstance().ChangeCursorSignAndActiveFormStatus(true);
+            }
 
         }
 
@@ -129,7 +137,7 @@ namespace YoavDiscordClient
                 MessageBox.Show("please fill your username and server ip first");
                 return;
             }
-            ConnectionManager.getInstance(this.serverIpTextBox.Text).ProcessForgotPassword(this.usernameTextBox.Text);
+            ConnectionManager.GetInstance(this.serverIpTextBox.Text).ProcessForgotPassword(this.usernameTextBox.Text);
         }
 
         public void ForgotPasswordNextStage()
@@ -322,7 +330,7 @@ namespace YoavDiscordClient
                 return;
             }
             MessageBox.Show("Captcha is correct");
-            ConnectionManager.getInstance(null).ProcessGetProfilePictureAndUsername();
+            ConnectionManager.GetInstance(null).ProcessGetProfilePictureAndUsername();
         }
 
 

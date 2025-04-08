@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using YoavDiscordClient.Events;
 using System.Windows.Forms;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace YoavDiscordClient
 {
@@ -55,6 +56,10 @@ namespace YoavDiscordClient
 
         private bool disposed = false;
 
+        private System.Windows.Forms.Timer healthCheckTimer;
+
+        private DateTime lastDataAvailableCall = DateTime.MinValue;
+
         #endregion
 
         #region Public properties
@@ -81,6 +86,11 @@ namespace YoavDiscordClient
             this.remoteAudioInputs = new Dictionary<string, BufferedWaveProvider>();
 
             InitializeAudio();
+
+            // Setup health check timer to detect and repair audio input issues
+            InitializeHealthCheckTimer();
+
+            System.Diagnostics.Debug.WriteLine("Completed AudioManager constructor");
         }
 
         /// <summary>
@@ -97,6 +107,7 @@ namespace YoavDiscordClient
             }
 
             isAudioMuted = !isAudioMuted;
+            System.Diagnostics.Debug.WriteLine($"In ToggleAudioMute: {isAudioMuted}");
 
             if (audioInput != null)
             {
@@ -115,6 +126,8 @@ namespace YoavDiscordClient
                 {
                     // Handle any errors that might occur during state change
                     System.Diagnostics.Debug.WriteLine($"Error changing audio state: {ex.Message}");
+                    // Attempt to repair audio input
+                    ReinitializeAudioInput();
                 }
             }
         }
@@ -150,6 +163,8 @@ namespace YoavDiscordClient
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Error applying global mute state: {ex.Message}");
+                    // Attempt to repair audio input
+                    ReinitializeAudioInput();
                 }
             }
         }
@@ -161,7 +176,7 @@ namespace YoavDiscordClient
             {
                 try
                 {
-                    if (this.isMutedByHigherRole)
+                    if (isMutedByHigherRole)
                     {
                         // Force mute audio
                         audioInput.StopRecording();
@@ -171,12 +186,14 @@ namespace YoavDiscordClient
                         // Resume audio if not channel-muted
                         audioInput.StartRecording();
                         isAudioMuted = false;
-                        isGloballyDeafened = false;
+                        isGloballyMuted = false;
                     }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"Error applying global mute state: {ex.Message}");
+                    // Attempt to repair audio input
+                    ReinitializeAudioInput();
                 }
             }
         }
@@ -260,6 +277,7 @@ namespace YoavDiscordClient
 
                 // Recreate the mixer with remaining inputs
                 RecreateAudioMixer();
+                System.Diagnostics.Debug.WriteLine($"Removed Audio setup for {participantId}");
 
                 return true;
             }
@@ -354,14 +372,7 @@ namespace YoavDiscordClient
                 System.Diagnostics.Debug.WriteLine("Audio output initialized and playing");
 
                 // Setup audio input (microphone)
-                this.audioInput = new WaveIn
-                {
-                    WaveFormat = this.waveFormat,
-                    BufferMilliseconds = BUFFER_MILLISECONDS
-                };
-                this.audioInput.DataAvailable += AudioInput_DataAvailable;
-                this.audioInput.StartRecording();
-                System.Diagnostics.Debug.WriteLine("Audio input initialized and recording");
+                InitializeAudioInput();
             }
             catch (Exception ex)
             {
@@ -369,10 +380,123 @@ namespace YoavDiscordClient
             }
         }
 
+        private void InitializeAudioInput()
+        {
+            try
+            {
+                // Clean up existing audio input if it exists
+                if (audioInput != null)
+                {
+                    try
+                    {
+                        audioInput.StopRecording();
+                        audioInput.DataAvailable -= AudioInput_DataAvailable;
+                        audioInput.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error cleaning up existing audio input: {ex.Message}");
+                    }
+                }
+
+                // Create new audio input
+                this.audioInput = new WaveIn
+                {
+                    WaveFormat = this.waveFormat,
+                    BufferMilliseconds = BUFFER_MILLISECONDS
+                };
+
+                // Make sure to attach event handler before starting recording
+                this.audioInput.DataAvailable += AudioInput_DataAvailable;
+
+                // Reset timestamp
+                this.lastDataAvailableCall = DateTime.Now;
+
+                // Start recording if not muted
+                if (!(isAudioMuted || isGloballyMuted || isMutedByHigherRole))
+                {
+                    this.audioInput.StartRecording();
+                    System.Diagnostics.Debug.WriteLine("Audio input initialized and recording");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Audio input initialized but not recording (muted)");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error initializing audio input: {ex.Message}");
+            }
+        }
+
+        private void ReinitializeAudioInput()
+        {
+            System.Diagnostics.Debug.WriteLine("Reinitializing audio input due to potential issues");
+
+            // Execute on UI thread to avoid cross-thread issues
+            if (DiscordFormsHolder.getInstance().GetActiveForm() != null)
+            {
+                if (DiscordFormsHolder.getInstance().GetActiveForm().InvokeRequired)
+                {
+                    DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() =>
+                    {
+                        InitializeAudioInput();
+                    }));
+                }
+                else
+                {
+                    InitializeAudioInput();
+                }
+            }
+            else
+            {
+                // Fallback if no form is available
+                InitializeAudioInput();
+            }
+        }
+
+        private void InitializeHealthCheckTimer()
+        {
+            // Create timer to periodically check audio input health
+            this.healthCheckTimer = new System.Windows.Forms.Timer
+            {
+                Interval = 2000, // Check every 2 seconds
+                Enabled = true
+            };
+            this.healthCheckTimer.Tick += HealthCheckTimer_Tick;
+            this.healthCheckTimer.Start();
+        }
+
+        private void HealthCheckTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                // Don't check while muted
+                if (isAudioMuted || isGloballyMuted || isMutedByHigherRole)
+                    return;
+
+                // If we haven't received any audio data for 2 seconds, reinitialize
+                TimeSpan timeSinceLastData = DateTime.Now - lastDataAvailableCall;
+
+                if (timeSinceLastData.TotalSeconds > 2)
+                {
+                    System.Diagnostics.Debug.WriteLine("Audio input health check: No recent data received, reinitializing");
+                    ReinitializeAudioInput();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in health check timer: {ex.Message}");
+            }
+        }
+
         private void AudioInput_DataAvailable(object sender, WaveInEventArgs e)
         {
             try
             {
+                // Update last activity timestamp
+                lastDataAvailableCall = DateTime.Now;
+
                 // Don't send audio if muted
                 if (isAudioMuted || isGloballyMuted || isMutedByHigherRole)
                     return;
@@ -441,6 +565,8 @@ namespace YoavDiscordClient
         /// </summary>
         protected virtual void Dispose(bool disposing)
         {
+            System.Diagnostics.Debug.WriteLine($"Calling dispose method in Audio Manager class: {disposing}");
+
             if (!disposed)
             {
                 if (disposing)
@@ -449,10 +575,21 @@ namespace YoavDiscordClient
 
                     try
                     {
+                        // Stop health check timer first
+                        if (healthCheckTimer != null)
+                        {
+                            healthCheckTimer.Stop();
+                            healthCheckTimer.Tick -= HealthCheckTimer_Tick;
+                            healthCheckTimer.Dispose();
+                            healthCheckTimer = null;
+                        }
+
                         if (DiscordFormsHolder.getInstance().GetActiveForm() != null && DiscordFormsHolder.getInstance().GetActiveForm().InvokeRequired)
                         {
                             DiscordFormsHolder.getInstance().GetActiveForm().Invoke(new Action(() =>
                             {
+                                System.Diagnostics.Debug.WriteLine("Calling dispose method in Audio Manager class Invoke ");
+
                                 try
                                 {
                                     // Cleanup managed resources
@@ -468,31 +605,24 @@ namespace YoavDiscordClient
                                     if (audioOutput != null)
                                     {
                                         // Make sure we're on the UI thread when stopping/disposing audio output
-
-                                        audioOutput.Stop();
-                                        audioOutput.Dispose();
-
-                                    }
-                                    else
-                                    {
                                         audioOutput.Stop();
                                         audioOutput.Dispose();
                                     }
                                     audioOutput = null;
+                                    System.Diagnostics.Debug.WriteLine("Completed dispose method in Audio Manager class Invoke ");
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     System.Diagnostics.Debug.WriteLine($"Error during AudioManager disposal 2: {ex}");
                                 }
-                                
                             }));
 
                             remoteAudioInputs?.Clear();
                             remoteAudioInputs = null;
                             mixer = null;
                             volumeProvider = null;
+                            System.Diagnostics.Debug.WriteLine($"Completed dispose method in Audio Manager class: {disposing}");
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -502,7 +632,6 @@ namespace YoavDiscordClient
                 }
 
                 // Cleanup unmanaged resources
-
                 disposed = true;
             }
         }

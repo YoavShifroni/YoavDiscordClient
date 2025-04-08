@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,19 +53,38 @@ namespace YoavDiscordClient
             ShowCategory(PictureCategory.Male);
         }
 
+
         /// <summary>
         /// Loads the male profile pictures from resources
         /// </summary>
         private void LoadMalePictures()
         {
-            this.male1PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("defaultDiscordImage");
-            // The rest would be actual male avatar pictures from resources
-            // For now using placeholder images from the original form
-            this.male2PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("dogPicture");
-            this.male3PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("catImage");
-            this.male4PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("cowImage");
-            this.male5PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("horseImage");
-            this.male6PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("monkeyImage");
+            try
+            {
+                // Get resource object and convert from byte[] to Image if needed
+                object malePic1 = Properties.Resources.ResourceManager.GetObject("malePicture1");
+                this.male1PictureBox.Image = malePic1 is byte[]? ByteArrayToImage((byte[])malePic1) : (Image)malePic1;
+
+                object malePic2 = Properties.Resources.ResourceManager.GetObject("malePicture2");
+                this.male2PictureBox.Image = malePic2 is byte[]? ByteArrayToImage((byte[])malePic2) : (Image)malePic2;
+
+                object malePic3 = Properties.Resources.ResourceManager.GetObject("malePicture3");
+                this.male3PictureBox.Image = malePic3 is byte[]? ByteArrayToImage((byte[])malePic3) : (Image)malePic3;
+
+                object malePic4 = Properties.Resources.ResourceManager.GetObject("malePicture4");
+                this.male4PictureBox.Image = malePic4 is byte[]? ByteArrayToImage((byte[])malePic4) : (Image)malePic4;
+
+                object malePic5 = Properties.Resources.ResourceManager.GetObject("malePicture5");
+                this.male5PictureBox.Image = malePic5 is byte[]? ByteArrayToImage((byte[])malePic5) : (Image)malePic5;
+
+                object malePic6 = Properties.Resources.ResourceManager.GetObject("malePicture6");
+                this.male6PictureBox.Image = malePic6 is byte[]? ByteArrayToImage((byte[])malePic6) : (Image)malePic6;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading male pictures: {ex.Message}", "Resource Loading Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -72,14 +92,32 @@ namespace YoavDiscordClient
         /// </summary>
         private void LoadFemalePictures()
         {
-            // These would be actual female avatar pictures from resources
-            // For now using placeholder images from the original form
-            this.female1PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("defaultDiscordImage");
-            this.female2PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("dogPicture");
-            this.female3PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("catImage");
-            this.female4PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("cowImage");
-            this.female5PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("horseImage");
-            this.female6PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("monkeyImage");
+            try
+            {
+                // Get resource object and convert from byte[] to Image if needed
+                object femalePic1 = Properties.Resources.ResourceManager.GetObject("femalePicture1");
+                this.female1PictureBox.Image = femalePic1 is byte[]? ByteArrayToImage((byte[])femalePic1) : (Image)femalePic1;
+
+                object femalePic2 = Properties.Resources.ResourceManager.GetObject("femalePicture2");
+                this.female2PictureBox.Image = femalePic2 is byte[]? ByteArrayToImage((byte[])femalePic2) : (Image)femalePic2;
+
+                object femalePic3 = Properties.Resources.ResourceManager.GetObject("femalePicture3");
+                this.female3PictureBox.Image = femalePic3 is byte[]? ByteArrayToImage((byte[])femalePic3) : (Image)femalePic3;
+
+                object femalePic4 = Properties.Resources.ResourceManager.GetObject("femalePicture4");
+                this.female4PictureBox.Image = femalePic4 is byte[]? ByteArrayToImage((byte[])femalePic4) : (Image)femalePic4;
+
+                object femalePic5 = Properties.Resources.ResourceManager.GetObject("femalePicture5");
+                this.female5PictureBox.Image = femalePic5 is byte[]? ByteArrayToImage((byte[])femalePic5) : (Image)femalePic5;
+
+                object femalePic6 = Properties.Resources.ResourceManager.GetObject("femalePicture6");
+                this.female6PictureBox.Image = femalePic6 is byte[]? ByteArrayToImage((byte[])femalePic6) : (Image)femalePic6;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading female pictures: {ex.Message}", "Resource Loading Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         /// <summary>
@@ -87,12 +125,45 @@ namespace YoavDiscordClient
         /// </summary>
         private void LoadAnimalPictures()
         {
-            this.animal1PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("dogPicture");
-            this.animal2PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("catImage");
-            this.animal3PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("cowImage");
-            this.animal4PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("horseImage");
-            this.animal5PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("monkeyImage");
-            this.animal6PictureBox.Image = (Image)Properties.Resources.ResourceManager.GetObject("defaultDiscordImage");
+            try
+            {
+                // Get resource object and convert from byte[] to Image if needed
+                object animalPic1 = Properties.Resources.ResourceManager.GetObject("dogPicture");
+                this.animal1PictureBox.Image = animalPic1 is byte[]? ByteArrayToImage((byte[])animalPic1) : (Image)animalPic1;
+
+                object animalPic2 = Properties.Resources.ResourceManager.GetObject("catImage");
+                this.animal2PictureBox.Image = animalPic2 is byte[]? ByteArrayToImage((byte[])animalPic2) : (Image)animalPic2;
+
+                object animalPic3 = Properties.Resources.ResourceManager.GetObject("cowImage");
+                this.animal3PictureBox.Image = animalPic3 is byte[]? ByteArrayToImage((byte[])animalPic3) : (Image)animalPic3;
+
+                object animalPic4 = Properties.Resources.ResourceManager.GetObject("horseImage");
+                this.animal4PictureBox.Image = animalPic4 is byte[]? ByteArrayToImage((byte[])animalPic4) : (Image)animalPic4;
+
+                object animalPic5 = Properties.Resources.ResourceManager.GetObject("monkeyImage");
+                this.animal5PictureBox.Image = animalPic5 is byte[]? ByteArrayToImage((byte[])animalPic5) : (Image)animalPic5;
+
+                object animalPic6 = Properties.Resources.ResourceManager.GetObject("defaultDiscordImage");
+                this.animal6PictureBox.Image = animalPic6 is byte[]? ByteArrayToImage((byte[])animalPic6) : (Image)animalPic6;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading animal pictures: {ex.Message}", "Resource Loading Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Converts a byte array to an Image
+        /// </summary>
+        /// <param name="byteArray">The byte array to convert</param>
+        /// <returns>An Image object</returns>
+        private Image ByteArrayToImage(byte[] byteArray)
+        {
+            using (MemoryStream ms = new MemoryStream(byteArray))
+            {
+                return Image.FromStream(ms);
+            }
         }
 
         /// <summary>

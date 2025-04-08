@@ -136,8 +136,44 @@
   <data name="dogPicture" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\dogPicture.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="femalePicture1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="femalePicture2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="femalePicture3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="femalePicture4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="femalePicture5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="femalePicture6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\femalePicture6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="horseImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\horseImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="malePicture6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\malePicture6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="monkeyImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\monkeyImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

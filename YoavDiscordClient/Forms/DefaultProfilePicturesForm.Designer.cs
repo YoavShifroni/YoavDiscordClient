@@ -532,7 +532,7 @@
             this.selectAnimal6.Name = "selectAnimal6";
             this.selectAnimal6.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal6.TabIndex = 55;
-            this.selectAnimal6.Text = "animal pic 6";
+            this.selectAnimal6.Text = "Picture 6";
             this.selectAnimal6.UseVisualStyleBackColor = true;
             this.selectAnimal6.CheckedChanged += new System.EventHandler(this.selectAnimal6_CheckedChanged);
             // 
@@ -545,7 +545,7 @@
             this.selectAnimal5.Name = "selectAnimal5";
             this.selectAnimal5.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal5.TabIndex = 54;
-            this.selectAnimal5.Text = "animal pic 5";
+            this.selectAnimal5.Text = "Picture 5";
             this.selectAnimal5.UseVisualStyleBackColor = true;
             this.selectAnimal5.CheckedChanged += new System.EventHandler(this.selectAnimal5_CheckedChanged);
             // 
@@ -558,7 +558,7 @@
             this.selectAnimal4.Name = "selectAnimal4";
             this.selectAnimal4.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal4.TabIndex = 53;
-            this.selectAnimal4.Text = "animal pic 4";
+            this.selectAnimal4.Text = "Picture 4";
             this.selectAnimal4.UseVisualStyleBackColor = true;
             this.selectAnimal4.CheckedChanged += new System.EventHandler(this.selectAnimal4_CheckedChanged);
             // 
@@ -571,7 +571,7 @@
             this.selectAnimal3.Name = "selectAnimal3";
             this.selectAnimal3.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal3.TabIndex = 52;
-            this.selectAnimal3.Text = "animal pic 3";
+            this.selectAnimal3.Text = "Picture 3";
             this.selectAnimal3.UseVisualStyleBackColor = true;
             this.selectAnimal3.CheckedChanged += new System.EventHandler(this.selectAnimal3_CheckedChanged);
             // 
@@ -584,7 +584,7 @@
             this.selectAnimal2.Name = "selectAnimal2";
             this.selectAnimal2.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal2.TabIndex = 51;
-            this.selectAnimal2.Text = "animal pic 2";
+            this.selectAnimal2.Text = "Picture 2";
             this.selectAnimal2.UseVisualStyleBackColor = true;
             this.selectAnimal2.CheckedChanged += new System.EventHandler(this.selectAnimal2_CheckedChanged);
             // 
@@ -597,7 +597,7 @@
             this.selectAnimal1.Name = "selectAnimal1";
             this.selectAnimal1.Size = new System.Drawing.Size(105, 21);
             this.selectAnimal1.TabIndex = 50;
-            this.selectAnimal1.Text = "animal pic 1";
+            this.selectAnimal1.Text = "Picture 1";
             this.selectAnimal1.UseVisualStyleBackColor = true;
             this.selectAnimal1.CheckedChanged += new System.EventHandler(this.selectAnimal1_CheckedChanged);
             // 

@@ -103,10 +103,14 @@ namespace YoavDiscordClient
                 // Map user ID to IP
                 userIdToIp[userId] = ip;
 
+                // Get UserManager and MediaChannelManager references
+                var userManager = DiscordFormsHolder.getInstance().DiscordApp.GetUserManager();
+                var mediaManager = DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager();
+
+
                 // Get user role from UsersImages dictionary
-                var user = DiscordFormsHolder.getInstance().DiscordApp.UsersImages.Keys
-                    .Select(id => DiscordFormsHolder.getInstance().DiscordApp
-                        .UsersInMediaChannels.Values
+                var user = userManager.UsersImages.Keys
+                    .Select(id => mediaManager.UsersInMediaChannels.Values
                         .SelectMany(list => list)
                         .FirstOrDefault(u => u.UserId == id))
                     .FirstOrDefault(u => u != null && u.UserId == userId);
@@ -115,7 +119,7 @@ namespace YoavDiscordClient
                 int userRole = (user != null) ? user.role : 2;
 
                 // Get the appropriate color for the user based on their role
-                Color userColor = DiscordFormsHolder.getInstance().DiscordApp.GetRoleColor(userRole);
+                Color userColor = userManager.GetRoleColor(userRole);
 
                 // Create the display for this participant
                 var display = new PictureBox
@@ -399,7 +403,7 @@ namespace YoavDiscordClient
                         {
                             profilePicture = details.Picture;
                             username = details.Username;
-                            roleColor = DiscordFormsHolder.getInstance().DiscordApp.GetRoleColor(details.role);
+                            roleColor = DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().GetRoleColor(details.role);
                         }
                         else
                         {

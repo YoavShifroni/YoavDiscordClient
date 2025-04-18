@@ -8,6 +8,9 @@
     <Compile Update="CustomControls\CirclePictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="DiscordApp.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Forms\DefaultProfilePicturesForm.cs">
       <SubType>Form</SubType>
     </Compile>

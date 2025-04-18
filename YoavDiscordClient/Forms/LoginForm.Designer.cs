@@ -168,7 +168,6 @@ namespace YoavDiscordClient
             passwordTextBox.PasswordChar = '•';
             passwordTextBox.Size = new System.Drawing.Size(216, 25);
             passwordTextBox.TabIndex = 33;
-            passwordTextBox.Text = "Yh123!";
             passwordTextBox.WordWrap = false;
             // 
             // usernameTextBox
@@ -181,7 +180,6 @@ namespace YoavDiscordClient
             usernameTextBox.Name = "usernameTextBox";
             usernameTextBox.Size = new System.Drawing.Size(216, 25);
             usernameTextBox.TabIndex = 31;
-            usernameTextBox.Text = "yoav";
             usernameTextBox.WordWrap = false;
             // 
             // serverIpTextBox
@@ -194,7 +192,6 @@ namespace YoavDiscordClient
             serverIpTextBox.Name = "serverIpTextBox";
             serverIpTextBox.Size = new System.Drawing.Size(216, 25);
             serverIpTextBox.TabIndex = 40;
-            serverIpTextBox.Text = "10.0.0.26";
             // 
             // label1
             // 

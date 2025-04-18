@@ -28,429 +28,362 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.showPasswordCheckBox = new System.Windows.Forms.CheckBox();
-            this.serverIpTextBox = new System.Windows.Forms.TextBox();
-            this.serverIpLabel = new System.Windows.Forms.Label();
-            this.genderComboBox = new System.Windows.Forms.ComboBox();
-            this.cityComboBox = new System.Windows.Forms.ComboBox();
-            this.genderLabel = new System.Windows.Forms.Label();
-            this.cityLabel = new System.Windows.Forms.Label();
-            this.emailTextBox = new System.Windows.Forms.TextBox();
-            this.emailLabel = new System.Windows.Forms.Label();
-            this.backToLoginLabel = new System.Windows.Forms.Label();
-            this.HaveAnAccountLabel = new System.Windows.Forms.Label();
-            this.clearButton = new System.Windows.Forms.Button();
-            this.registerButton = new System.Windows.Forms.Button();
-            this.lastNameTextBox = new System.Windows.Forms.TextBox();
-            this.lastNameLabel = new System.Windows.Forms.Label();
-            this.firstNameTextBox = new System.Windows.Forms.TextBox();
-            this.firstNameLabel = new System.Windows.Forms.Label();
-            this.passwordTextBox = new System.Windows.Forms.TextBox();
-            this.PasswordLabel = new System.Windows.Forms.Label();
-            this.usernameTextBox = new System.Windows.Forms.TextBox();
-            this.usernameLabel = new System.Windows.Forms.Label();
-            this.startLabel = new System.Windows.Forms.Label();
-            this.checkThatTheCodesAreTheSameButton = new System.Windows.Forms.Button();
-            this.enterTheCodeShownAboveTextBox = new System.Windows.Forms.TextBox();
-            this.enterTheCodeShownAboveLabel = new System.Windows.Forms.Label();
-            this.captchaPictureBox = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).BeginInit();
-            this.SuspendLayout();
+            showPasswordCheckBox = new System.Windows.Forms.CheckBox();
+            serverIpTextBox = new System.Windows.Forms.TextBox();
+            serverIpLabel = new System.Windows.Forms.Label();
+            genderComboBox = new System.Windows.Forms.ComboBox();
+            cityComboBox = new System.Windows.Forms.ComboBox();
+            genderLabel = new System.Windows.Forms.Label();
+            cityLabel = new System.Windows.Forms.Label();
+            emailTextBox = new System.Windows.Forms.TextBox();
+            emailLabel = new System.Windows.Forms.Label();
+            backToLoginLabel = new System.Windows.Forms.Label();
+            HaveAnAccountLabel = new System.Windows.Forms.Label();
+            clearButton = new System.Windows.Forms.Button();
+            registerButton = new System.Windows.Forms.Button();
+            lastNameTextBox = new System.Windows.Forms.TextBox();
+            lastNameLabel = new System.Windows.Forms.Label();
+            firstNameTextBox = new System.Windows.Forms.TextBox();
+            firstNameLabel = new System.Windows.Forms.Label();
+            passwordTextBox = new System.Windows.Forms.TextBox();
+            PasswordLabel = new System.Windows.Forms.Label();
+            usernameTextBox = new System.Windows.Forms.TextBox();
+            usernameLabel = new System.Windows.Forms.Label();
+            startLabel = new System.Windows.Forms.Label();
+            checkThatTheCodesAreTheSameButton = new System.Windows.Forms.Button();
+            enterTheCodeShownAboveTextBox = new System.Windows.Forms.TextBox();
+            enterTheCodeShownAboveLabel = new System.Windows.Forms.Label();
+            captchaPictureBox = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)captchaPictureBox).BeginInit();
+            SuspendLayout();
             // 
             // showPasswordCheckBox
             // 
-            this.showPasswordCheckBox.AutoSize = true;
-            this.showPasswordCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.showPasswordCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.showPasswordCheckBox.Location = new System.Drawing.Point(127, 270);
-            this.showPasswordCheckBox.Name = "showPasswordCheckBox";
-            this.showPasswordCheckBox.Size = new System.Drawing.Size(119, 21);
-            this.showPasswordCheckBox.TabIndex = 52;
-            this.showPasswordCheckBox.Text = "Show Password";
-            this.showPasswordCheckBox.UseVisualStyleBackColor = true;
-            this.showPasswordCheckBox.CheckedChanged += new System.EventHandler(this.showPasswordCheckBox_CheckedChanged);
+            showPasswordCheckBox.AutoSize = true;
+            showPasswordCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            showPasswordCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            showPasswordCheckBox.Location = new System.Drawing.Point(127, 270);
+            showPasswordCheckBox.Name = "showPasswordCheckBox";
+            showPasswordCheckBox.Size = new System.Drawing.Size(119, 21);
+            showPasswordCheckBox.TabIndex = 52;
+            showPasswordCheckBox.Text = "Show Password";
+            showPasswordCheckBox.UseVisualStyleBackColor = true;
+            showPasswordCheckBox.CheckedChanged += showPasswordCheckBox_CheckedChanged;
             // 
             // serverIpTextBox
             // 
-            this.serverIpTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.serverIpTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.serverIpTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.serverIpTextBox.Location = new System.Drawing.Point(322, 162);
-            this.serverIpTextBox.Multiline = true;
-            this.serverIpTextBox.Name = "serverIpTextBox";
-            this.serverIpTextBox.Size = new System.Drawing.Size(216, 25);
-            this.serverIpTextBox.TabIndex = 51;
-            this.serverIpTextBox.Text = "127.0.0.1";
+            serverIpTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            serverIpTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            serverIpTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            serverIpTextBox.Location = new System.Drawing.Point(322, 162);
+            serverIpTextBox.Multiline = true;
+            serverIpTextBox.Name = "serverIpTextBox";
+            serverIpTextBox.Size = new System.Drawing.Size(216, 25);
+            serverIpTextBox.TabIndex = 51;
             // 
             // serverIpLabel
             // 
-            this.serverIpLabel.AutoSize = true;
-            this.serverIpLabel.Location = new System.Drawing.Point(319, 142);
-            this.serverIpLabel.Name = "serverIpLabel";
-            this.serverIpLabel.Size = new System.Drawing.Size(63, 17);
-            this.serverIpLabel.TabIndex = 50;
-            this.serverIpLabel.Text = "Server Ip";
+            serverIpLabel.AutoSize = true;
+            serverIpLabel.Location = new System.Drawing.Point(319, 142);
+            serverIpLabel.Name = "serverIpLabel";
+            serverIpLabel.Size = new System.Drawing.Size(63, 17);
+            serverIpLabel.TabIndex = 50;
+            serverIpLabel.Text = "Server Ip";
             // 
             // genderComboBox
             // 
-            this.genderComboBox.Font = new System.Drawing.Font("David", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.genderComboBox.FormattingEnabled = true;
-            this.genderComboBox.Items.AddRange(new object[] {
-            "Male",
-            "Female"});
-            this.genderComboBox.Location = new System.Drawing.Point(322, 381);
-            this.genderComboBox.Name = "genderComboBox";
-            this.genderComboBox.Size = new System.Drawing.Size(216, 23);
-            this.genderComboBox.TabIndex = 49;
+            genderComboBox.Font = new System.Drawing.Font("David", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            genderComboBox.FormattingEnabled = true;
+            genderComboBox.Items.AddRange(new object[] { "Male", "Female" });
+            genderComboBox.Location = new System.Drawing.Point(322, 381);
+            genderComboBox.Name = "genderComboBox";
+            genderComboBox.Size = new System.Drawing.Size(216, 23);
+            genderComboBox.TabIndex = 49;
             // 
             // cityComboBox
             // 
-            this.cityComboBox.Font = new System.Drawing.Font("David", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cityComboBox.FormattingEnabled = true;
-            this.cityComboBox.Items.AddRange(new object[] {
-            "Tel Aviv-Yafo",
-            "Jerusalem",
-            "Haifa",
-            "Rishon LeẔiyyon",
-            "Petaẖ Tiqwa",
-            "Ashdod",
-            "Netanya",
-            "Beersheba",
-            "Holon",
-            "Bené Beraq",
-            "Ramat Gan",
-            "Ashqelon",
-            "Reẖovot",
-            "Bat Yam",
-            "Bet Shemesh",
-            "Kefar Sava",
-            "Hadera",
-            "Herẕliyya",
-            "Modi‘in Makkabbim Re‘ut",
-            "Nazareth",
-            "Lod",
-            "Ramla",
-            "Ra‘ananna",
-            "Rahat",
-            "Qiryat Gat",
-            "Nahariyya",
-            "Afula",
-            "Givatayim",
-            "Hod HaSharon",
-            "Rosh Ha‘Ayin",
-            "Qiryat Ata",
-            "Umm el Faḥm",
-            "Eilat",
-            "Nes Ẕiyyona",
-            "‘Akko",
-            "El‘ad",
-            "Ramat HaSharon",
-            "Karmiel",
-            "Tiberias",
-            "Eṭ Ṭaiyiba",
-            "Ben Zakkay",
-            "Pardés H̱anna Karkur",
-            "Qiryat Moẕqin",
-            "Qiryat Ono",
-            "Shefar‘am",
-            "Qiryat Bialik",
-            "Qiryat Yam",
-            "Or Yehuda",
-            "Ma‘alot Tarshīḥā",
-            "Ẕefat",
-            "Dimona",
-            "Tamra",
-            "Netivot",
-            "Sakhnīn",
-            "Yehud",
-            "Al Buţayḩah",
-            "Al Khushnīyah",
-            "Fīq"});
-            this.cityComboBox.Location = new System.Drawing.Point(322, 309);
-            this.cityComboBox.Name = "cityComboBox";
-            this.cityComboBox.Size = new System.Drawing.Size(216, 23);
-            this.cityComboBox.TabIndex = 48;
+            cityComboBox.Font = new System.Drawing.Font("David", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            cityComboBox.FormattingEnabled = true;
+            cityComboBox.Items.AddRange(new object[] { "Tel Aviv-Yafo", "Jerusalem", "Haifa", "Rishon LeẔiyyon", "Petaẖ Tiqwa", "Ashdod", "Netanya", "Beersheba", "Holon", "Bené Beraq", "Ramat Gan", "Ashqelon", "Reẖovot", "Bat Yam", "Bet Shemesh", "Kefar Sava", "Hadera", "Herẕliyya", "Modi‘in Makkabbim Re‘ut", "Nazareth", "Lod", "Ramla", "Ra‘ananna", "Rahat", "Qiryat Gat", "Nahariyya", "Afula", "Givatayim", "Hod HaSharon", "Rosh Ha‘Ayin", "Qiryat Ata", "Umm el Faḥm", "Eilat", "Nes Ẕiyyona", "‘Akko", "El‘ad", "Ramat HaSharon", "Karmiel", "Tiberias", "Eṭ Ṭaiyiba", "Ben Zakkay", "Pardés H̱anna Karkur", "Qiryat Moẕqin", "Qiryat Ono", "Shefar‘am", "Qiryat Bialik", "Qiryat Yam", "Or Yehuda", "Ma‘alot Tarshīḥā", "Ẕefat", "Dimona", "Tamra", "Netivot", "Sakhnīn", "Yehud", "Al Buţayḩah", "Al Khushnīyah", "Fīq" });
+            cityComboBox.Location = new System.Drawing.Point(322, 309);
+            cityComboBox.Name = "cityComboBox";
+            cityComboBox.Size = new System.Drawing.Size(216, 23);
+            cityComboBox.TabIndex = 48;
             // 
             // genderLabel
             // 
-            this.genderLabel.AutoSize = true;
-            this.genderLabel.Location = new System.Drawing.Point(319, 361);
-            this.genderLabel.Name = "genderLabel";
-            this.genderLabel.Size = new System.Drawing.Size(52, 17);
-            this.genderLabel.TabIndex = 47;
-            this.genderLabel.Text = "Gender";
+            genderLabel.AutoSize = true;
+            genderLabel.Location = new System.Drawing.Point(319, 361);
+            genderLabel.Name = "genderLabel";
+            genderLabel.Size = new System.Drawing.Size(52, 17);
+            genderLabel.TabIndex = 47;
+            genderLabel.Text = "Gender";
             // 
             // cityLabel
             // 
-            this.cityLabel.AutoSize = true;
-            this.cityLabel.Location = new System.Drawing.Point(319, 289);
-            this.cityLabel.Name = "cityLabel";
-            this.cityLabel.Size = new System.Drawing.Size(32, 17);
-            this.cityLabel.TabIndex = 46;
-            this.cityLabel.Text = "City";
+            cityLabel.AutoSize = true;
+            cityLabel.Location = new System.Drawing.Point(319, 289);
+            cityLabel.Name = "cityLabel";
+            cityLabel.Size = new System.Drawing.Size(32, 17);
+            cityLabel.TabIndex = 46;
+            cityLabel.Text = "City";
             // 
             // emailTextBox
             // 
-            this.emailTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.emailTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.emailTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.emailTextBox.Location = new System.Drawing.Point(322, 236);
-            this.emailTextBox.Multiline = true;
-            this.emailTextBox.Name = "emailTextBox";
-            this.emailTextBox.Size = new System.Drawing.Size(216, 25);
-            this.emailTextBox.TabIndex = 45;
-            this.emailTextBox.Text = "yoavshifroni@gmail.com";
-            this.emailTextBox.WordWrap = false;
+            emailTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            emailTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            emailTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            emailTextBox.Location = new System.Drawing.Point(322, 236);
+            emailTextBox.Multiline = true;
+            emailTextBox.Name = "emailTextBox";
+            emailTextBox.Size = new System.Drawing.Size(216, 25);
+            emailTextBox.TabIndex = 45;
+            emailTextBox.WordWrap = false;
             // 
             // emailLabel
             // 
-            this.emailLabel.AutoSize = true;
-            this.emailLabel.Location = new System.Drawing.Point(319, 216);
-            this.emailLabel.Name = "emailLabel";
-            this.emailLabel.Size = new System.Drawing.Size(42, 17);
-            this.emailLabel.TabIndex = 44;
-            this.emailLabel.Text = "Email";
+            emailLabel.AutoSize = true;
+            emailLabel.Location = new System.Drawing.Point(319, 216);
+            emailLabel.Name = "emailLabel";
+            emailLabel.Size = new System.Drawing.Size(42, 17);
+            emailLabel.TabIndex = 44;
+            emailLabel.Text = "Email";
             // 
             // backToLoginLabel
             // 
-            this.backToLoginLabel.AutoSize = true;
-            this.backToLoginLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.backToLoginLabel.Location = new System.Drawing.Point(225, 598);
-            this.backToLoginLabel.Name = "backToLoginLabel";
-            this.backToLoginLabel.Size = new System.Drawing.Size(97, 17);
-            this.backToLoginLabel.TabIndex = 43;
-            this.backToLoginLabel.Text = "Back to LOGIN";
-            this.backToLoginLabel.Click += new System.EventHandler(this.backToLoginLabel_Click);
+            backToLoginLabel.AutoSize = true;
+            backToLoginLabel.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            backToLoginLabel.Location = new System.Drawing.Point(225, 598);
+            backToLoginLabel.Name = "backToLoginLabel";
+            backToLoginLabel.Size = new System.Drawing.Size(97, 17);
+            backToLoginLabel.TabIndex = 43;
+            backToLoginLabel.Text = "Back to LOGIN";
+            backToLoginLabel.Click += backToLoginLabel_Click;
             // 
             // HaveAnAccountLabel
             // 
-            this.HaveAnAccountLabel.AutoSize = true;
-            this.HaveAnAccountLabel.Location = new System.Drawing.Point(198, 568);
-            this.HaveAnAccountLabel.Name = "HaveAnAccountLabel";
-            this.HaveAnAccountLabel.Size = new System.Drawing.Size(163, 17);
-            this.HaveAnAccountLabel.TabIndex = 42;
-            this.HaveAnAccountLabel.Text = "Already Have an Account";
+            HaveAnAccountLabel.AutoSize = true;
+            HaveAnAccountLabel.Location = new System.Drawing.Point(198, 568);
+            HaveAnAccountLabel.Name = "HaveAnAccountLabel";
+            HaveAnAccountLabel.Size = new System.Drawing.Size(163, 17);
+            HaveAnAccountLabel.TabIndex = 42;
+            HaveAnAccountLabel.Text = "Already Have an Account";
             // 
             // clearButton
             // 
-            this.clearButton.BackColor = System.Drawing.Color.White;
-            this.clearButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.clearButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.clearButton.Location = new System.Drawing.Point(172, 506);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(216, 35);
-            this.clearButton.TabIndex = 41;
-            this.clearButton.Text = "CLEAR";
-            this.clearButton.UseVisualStyleBackColor = false;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            clearButton.BackColor = System.Drawing.Color.White;
+            clearButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            clearButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            clearButton.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            clearButton.Location = new System.Drawing.Point(172, 506);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new System.Drawing.Size(216, 35);
+            clearButton.TabIndex = 41;
+            clearButton.Text = "CLEAR";
+            clearButton.UseVisualStyleBackColor = false;
+            clearButton.Click += clearButton_Click;
             // 
             // registerButton
             // 
-            this.registerButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.registerButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.registerButton.FlatAppearance.BorderSize = 0;
-            this.registerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.registerButton.ForeColor = System.Drawing.Color.White;
-            this.registerButton.Location = new System.Drawing.Point(172, 447);
-            this.registerButton.Name = "registerButton";
-            this.registerButton.Size = new System.Drawing.Size(216, 35);
-            this.registerButton.TabIndex = 40;
-            this.registerButton.Text = "REGISTER";
-            this.registerButton.UseVisualStyleBackColor = false;
-            this.registerButton.Click += new System.EventHandler(this.registerButton_Click);
+            registerButton.BackColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            registerButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            registerButton.FlatAppearance.BorderSize = 0;
+            registerButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            registerButton.ForeColor = System.Drawing.Color.White;
+            registerButton.Location = new System.Drawing.Point(172, 447);
+            registerButton.Name = "registerButton";
+            registerButton.Size = new System.Drawing.Size(216, 35);
+            registerButton.TabIndex = 40;
+            registerButton.Text = "REGISTER";
+            registerButton.UseVisualStyleBackColor = false;
+            registerButton.Click += registerButton_Click;
             // 
             // lastNameTextBox
             // 
-            this.lastNameTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.lastNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lastNameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lastNameTextBox.Location = new System.Drawing.Point(30, 380);
-            this.lastNameTextBox.Multiline = true;
-            this.lastNameTextBox.Name = "lastNameTextBox";
-            this.lastNameTextBox.Size = new System.Drawing.Size(216, 25);
-            this.lastNameTextBox.TabIndex = 39;
-            this.lastNameTextBox.Text = "Shifroni";
-            this.lastNameTextBox.WordWrap = false;
+            lastNameTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            lastNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            lastNameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lastNameTextBox.Location = new System.Drawing.Point(30, 380);
+            lastNameTextBox.Multiline = true;
+            lastNameTextBox.Name = "lastNameTextBox";
+            lastNameTextBox.Size = new System.Drawing.Size(216, 25);
+            lastNameTextBox.TabIndex = 39;
+            lastNameTextBox.WordWrap = false;
             // 
             // lastNameLabel
             // 
-            this.lastNameLabel.AutoSize = true;
-            this.lastNameLabel.Location = new System.Drawing.Point(27, 360);
-            this.lastNameLabel.Name = "lastNameLabel";
-            this.lastNameLabel.Size = new System.Drawing.Size(73, 17);
-            this.lastNameLabel.TabIndex = 38;
-            this.lastNameLabel.Text = "Last Name";
+            lastNameLabel.AutoSize = true;
+            lastNameLabel.Location = new System.Drawing.Point(27, 360);
+            lastNameLabel.Name = "lastNameLabel";
+            lastNameLabel.Size = new System.Drawing.Size(73, 17);
+            lastNameLabel.TabIndex = 38;
+            lastNameLabel.Text = "Last Name";
             // 
             // firstNameTextBox
             // 
-            this.firstNameTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.firstNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.firstNameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.firstNameTextBox.Location = new System.Drawing.Point(30, 307);
-            this.firstNameTextBox.Multiline = true;
-            this.firstNameTextBox.Name = "firstNameTextBox";
-            this.firstNameTextBox.Size = new System.Drawing.Size(216, 25);
-            this.firstNameTextBox.TabIndex = 37;
-            this.firstNameTextBox.Text = "yoavvvv";
-            this.firstNameTextBox.WordWrap = false;
+            firstNameTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            firstNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            firstNameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            firstNameTextBox.Location = new System.Drawing.Point(30, 307);
+            firstNameTextBox.Multiline = true;
+            firstNameTextBox.Name = "firstNameTextBox";
+            firstNameTextBox.Size = new System.Drawing.Size(216, 25);
+            firstNameTextBox.TabIndex = 37;
+            firstNameTextBox.WordWrap = false;
             // 
             // firstNameLabel
             // 
-            this.firstNameLabel.AutoSize = true;
-            this.firstNameLabel.Location = new System.Drawing.Point(27, 287);
-            this.firstNameLabel.Name = "firstNameLabel";
-            this.firstNameLabel.Size = new System.Drawing.Size(75, 17);
-            this.firstNameLabel.TabIndex = 36;
-            this.firstNameLabel.Text = "First Name";
+            firstNameLabel.AutoSize = true;
+            firstNameLabel.Location = new System.Drawing.Point(27, 287);
+            firstNameLabel.Name = "firstNameLabel";
+            firstNameLabel.Size = new System.Drawing.Size(75, 17);
+            firstNameLabel.TabIndex = 36;
+            firstNameLabel.Text = "First Name";
             // 
             // passwordTextBox
             // 
-            this.passwordTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.passwordTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.passwordTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.passwordTextBox.Location = new System.Drawing.Point(30, 236);
-            this.passwordTextBox.Multiline = true;
-            this.passwordTextBox.Name = "passwordTextBox";
-            this.passwordTextBox.PasswordChar = '•';
-            this.passwordTextBox.Size = new System.Drawing.Size(216, 25);
-            this.passwordTextBox.TabIndex = 35;
-            this.passwordTextBox.Text = "Yh123!";
-            this.passwordTextBox.WordWrap = false;
+            passwordTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            passwordTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            passwordTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            passwordTextBox.Location = new System.Drawing.Point(30, 236);
+            passwordTextBox.Multiline = true;
+            passwordTextBox.Name = "passwordTextBox";
+            passwordTextBox.PasswordChar = '•';
+            passwordTextBox.Size = new System.Drawing.Size(216, 25);
+            passwordTextBox.TabIndex = 35;
+            passwordTextBox.WordWrap = false;
             // 
             // PasswordLabel
             // 
-            this.PasswordLabel.AutoSize = true;
-            this.PasswordLabel.Location = new System.Drawing.Point(27, 216);
-            this.PasswordLabel.Name = "PasswordLabel";
-            this.PasswordLabel.Size = new System.Drawing.Size(66, 17);
-            this.PasswordLabel.TabIndex = 34;
-            this.PasswordLabel.Text = "Password";
+            PasswordLabel.AutoSize = true;
+            PasswordLabel.Location = new System.Drawing.Point(27, 216);
+            PasswordLabel.Name = "PasswordLabel";
+            PasswordLabel.Size = new System.Drawing.Size(66, 17);
+            PasswordLabel.TabIndex = 34;
+            PasswordLabel.Text = "Password";
             // 
             // usernameTextBox
             // 
-            this.usernameTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.usernameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.usernameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.usernameTextBox.Location = new System.Drawing.Point(30, 162);
-            this.usernameTextBox.Multiline = true;
-            this.usernameTextBox.Name = "usernameTextBox";
-            this.usernameTextBox.Size = new System.Drawing.Size(216, 25);
-            this.usernameTextBox.TabIndex = 33;
-            this.usernameTextBox.Text = "yoavvvv";
-            this.usernameTextBox.WordWrap = false;
+            usernameTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            usernameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            usernameTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            usernameTextBox.Location = new System.Drawing.Point(30, 162);
+            usernameTextBox.Multiline = true;
+            usernameTextBox.Name = "usernameTextBox";
+            usernameTextBox.Size = new System.Drawing.Size(216, 25);
+            usernameTextBox.TabIndex = 33;
+            usernameTextBox.WordWrap = false;
             // 
             // usernameLabel
             // 
-            this.usernameLabel.AutoSize = true;
-            this.usernameLabel.Location = new System.Drawing.Point(27, 142);
-            this.usernameLabel.Name = "usernameLabel";
-            this.usernameLabel.Size = new System.Drawing.Size(69, 17);
-            this.usernameLabel.TabIndex = 32;
-            this.usernameLabel.Text = "Username";
+            usernameLabel.AutoSize = true;
+            usernameLabel.Location = new System.Drawing.Point(27, 142);
+            usernameLabel.Name = "usernameLabel";
+            usernameLabel.Size = new System.Drawing.Size(69, 17);
+            usernameLabel.TabIndex = 32;
+            usernameLabel.Text = "Username";
             // 
             // startLabel
             // 
-            this.startLabel.AutoSize = true;
-            this.startLabel.Font = new System.Drawing.Font("MS UI Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.startLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.startLabel.Location = new System.Drawing.Point(206, 60);
-            this.startLabel.Name = "startLabel";
-            this.startLabel.Size = new System.Drawing.Size(155, 27);
-            this.startLabel.TabIndex = 31;
-            this.startLabel.Text = "Get Started";
+            startLabel.AutoSize = true;
+            startLabel.Font = new System.Drawing.Font("MS UI Gothic", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            startLabel.ForeColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            startLabel.Location = new System.Drawing.Point(206, 60);
+            startLabel.Name = "startLabel";
+            startLabel.Size = new System.Drawing.Size(155, 27);
+            startLabel.TabIndex = 31;
+            startLabel.Text = "Get Started";
             // 
             // checkThatTheCodesAreTheSameButton
             // 
-            this.checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(116)))), ((int)(((byte)(86)))), ((int)(((byte)(174)))));
-            this.checkThatTheCodesAreTheSameButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
-            this.checkThatTheCodesAreTheSameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.checkThatTheCodesAreTheSameButton.ForeColor = System.Drawing.Color.White;
-            this.checkThatTheCodesAreTheSameButton.Location = new System.Drawing.Point(167, 852);
-            this.checkThatTheCodesAreTheSameButton.Name = "checkThatTheCodesAreTheSameButton";
-            this.checkThatTheCodesAreTheSameButton.Size = new System.Drawing.Size(216, 35);
-            this.checkThatTheCodesAreTheSameButton.TabIndex = 56;
-            this.checkThatTheCodesAreTheSameButton.Text = "CHECK";
-            this.checkThatTheCodesAreTheSameButton.UseVisualStyleBackColor = false;
-            this.checkThatTheCodesAreTheSameButton.Visible = false;
-            this.checkThatTheCodesAreTheSameButton.Click += new System.EventHandler(this.checkThatTheCodesAreTheSameButton_Click);
+            checkThatTheCodesAreTheSameButton.BackColor = System.Drawing.Color.FromArgb(116, 86, 174);
+            checkThatTheCodesAreTheSameButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            checkThatTheCodesAreTheSameButton.FlatAppearance.BorderSize = 0;
+            checkThatTheCodesAreTheSameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            checkThatTheCodesAreTheSameButton.ForeColor = System.Drawing.Color.White;
+            checkThatTheCodesAreTheSameButton.Location = new System.Drawing.Point(167, 852);
+            checkThatTheCodesAreTheSameButton.Name = "checkThatTheCodesAreTheSameButton";
+            checkThatTheCodesAreTheSameButton.Size = new System.Drawing.Size(216, 35);
+            checkThatTheCodesAreTheSameButton.TabIndex = 56;
+            checkThatTheCodesAreTheSameButton.Text = "CHECK";
+            checkThatTheCodesAreTheSameButton.UseVisualStyleBackColor = false;
+            checkThatTheCodesAreTheSameButton.Visible = false;
+            checkThatTheCodesAreTheSameButton.Click += checkThatTheCodesAreTheSameButton_Click;
             // 
             // enterTheCodeShownAboveTextBox
             // 
-            this.enterTheCodeShownAboveTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(231)))), ((int)(((byte)(233)))));
-            this.enterTheCodeShownAboveTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.enterTheCodeShownAboveTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.enterTheCodeShownAboveTextBox.Location = new System.Drawing.Point(167, 808);
-            this.enterTheCodeShownAboveTextBox.Multiline = true;
-            this.enterTheCodeShownAboveTextBox.Name = "enterTheCodeShownAboveTextBox";
-            this.enterTheCodeShownAboveTextBox.Size = new System.Drawing.Size(216, 25);
-            this.enterTheCodeShownAboveTextBox.TabIndex = 55;
-            this.enterTheCodeShownAboveTextBox.Visible = false;
-            this.enterTheCodeShownAboveTextBox.WordWrap = false;
+            enterTheCodeShownAboveTextBox.BackColor = System.Drawing.Color.FromArgb(230, 231, 233);
+            enterTheCodeShownAboveTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            enterTheCodeShownAboveTextBox.Font = new System.Drawing.Font("David", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            enterTheCodeShownAboveTextBox.Location = new System.Drawing.Point(167, 808);
+            enterTheCodeShownAboveTextBox.Multiline = true;
+            enterTheCodeShownAboveTextBox.Name = "enterTheCodeShownAboveTextBox";
+            enterTheCodeShownAboveTextBox.Size = new System.Drawing.Size(216, 25);
+            enterTheCodeShownAboveTextBox.TabIndex = 55;
+            enterTheCodeShownAboveTextBox.Visible = false;
+            enterTheCodeShownAboveTextBox.WordWrap = false;
             // 
             // enterTheCodeShownAboveLabel
             // 
-            this.enterTheCodeShownAboveLabel.AutoSize = true;
-            this.enterTheCodeShownAboveLabel.Location = new System.Drawing.Point(164, 778);
-            this.enterTheCodeShownAboveLabel.Name = "enterTheCodeShownAboveLabel";
-            this.enterTheCodeShownAboveLabel.Size = new System.Drawing.Size(154, 17);
-            this.enterTheCodeShownAboveLabel.TabIndex = 54;
-            this.enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
-            this.enterTheCodeShownAboveLabel.Visible = false;
+            enterTheCodeShownAboveLabel.AutoSize = true;
+            enterTheCodeShownAboveLabel.Location = new System.Drawing.Point(164, 778);
+            enterTheCodeShownAboveLabel.Name = "enterTheCodeShownAboveLabel";
+            enterTheCodeShownAboveLabel.Size = new System.Drawing.Size(154, 17);
+            enterTheCodeShownAboveLabel.TabIndex = 54;
+            enterTheCodeShownAboveLabel.Text = "The Code Shown Above";
+            enterTheCodeShownAboveLabel.Visible = false;
             // 
             // captchaPictureBox
             // 
-            this.captchaPictureBox.Location = new System.Drawing.Point(172, 635);
-            this.captchaPictureBox.Name = "captchaPictureBox";
-            this.captchaPictureBox.Size = new System.Drawing.Size(211, 113);
-            this.captchaPictureBox.TabIndex = 53;
-            this.captchaPictureBox.TabStop = false;
-            this.captchaPictureBox.Visible = false;
+            captchaPictureBox.Location = new System.Drawing.Point(172, 635);
+            captchaPictureBox.Name = "captchaPictureBox";
+            captchaPictureBox.Size = new System.Drawing.Size(211, 113);
+            captchaPictureBox.TabIndex = 53;
+            captchaPictureBox.TabStop = false;
+            captchaPictureBox.Visible = false;
             // 
             // RegistrationForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(595, 930);
-            this.Controls.Add(this.checkThatTheCodesAreTheSameButton);
-            this.Controls.Add(this.enterTheCodeShownAboveTextBox);
-            this.Controls.Add(this.enterTheCodeShownAboveLabel);
-            this.Controls.Add(this.captchaPictureBox);
-            this.Controls.Add(this.showPasswordCheckBox);
-            this.Controls.Add(this.serverIpTextBox);
-            this.Controls.Add(this.serverIpLabel);
-            this.Controls.Add(this.genderComboBox);
-            this.Controls.Add(this.cityComboBox);
-            this.Controls.Add(this.genderLabel);
-            this.Controls.Add(this.cityLabel);
-            this.Controls.Add(this.emailTextBox);
-            this.Controls.Add(this.emailLabel);
-            this.Controls.Add(this.backToLoginLabel);
-            this.Controls.Add(this.HaveAnAccountLabel);
-            this.Controls.Add(this.clearButton);
-            this.Controls.Add(this.registerButton);
-            this.Controls.Add(this.lastNameTextBox);
-            this.Controls.Add(this.lastNameLabel);
-            this.Controls.Add(this.firstNameTextBox);
-            this.Controls.Add(this.firstNameLabel);
-            this.Controls.Add(this.passwordTextBox);
-            this.Controls.Add(this.PasswordLabel);
-            this.Controls.Add(this.usernameTextBox);
-            this.Controls.Add(this.usernameLabel);
-            this.Controls.Add(this.startLabel);
-            this.Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(164)))), ((int)(((byte)(165)))), ((int)(((byte)(169)))));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "RegistrationForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "RegistrationForm";
-            ((System.ComponentModel.ISupportInitialize)(this.captchaPictureBox)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(595, 930);
+            Controls.Add(checkThatTheCodesAreTheSameButton);
+            Controls.Add(enterTheCodeShownAboveTextBox);
+            Controls.Add(enterTheCodeShownAboveLabel);
+            Controls.Add(captchaPictureBox);
+            Controls.Add(showPasswordCheckBox);
+            Controls.Add(serverIpTextBox);
+            Controls.Add(serverIpLabel);
+            Controls.Add(genderComboBox);
+            Controls.Add(cityComboBox);
+            Controls.Add(genderLabel);
+            Controls.Add(cityLabel);
+            Controls.Add(emailTextBox);
+            Controls.Add(emailLabel);
+            Controls.Add(backToLoginLabel);
+            Controls.Add(HaveAnAccountLabel);
+            Controls.Add(clearButton);
+            Controls.Add(registerButton);
+            Controls.Add(lastNameTextBox);
+            Controls.Add(lastNameLabel);
+            Controls.Add(firstNameTextBox);
+            Controls.Add(firstNameLabel);
+            Controls.Add(passwordTextBox);
+            Controls.Add(PasswordLabel);
+            Controls.Add(usernameTextBox);
+            Controls.Add(usernameLabel);
+            Controls.Add(startLabel);
+            Font = new System.Drawing.Font("Nirmala UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            ForeColor = System.Drawing.Color.FromArgb(164, 165, 169);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Margin = new System.Windows.Forms.Padding(4);
+            Name = "RegistrationForm";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            Text = "RegistrationForm";
+            ((System.ComponentModel.ISupportInitialize)captchaPictureBox).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

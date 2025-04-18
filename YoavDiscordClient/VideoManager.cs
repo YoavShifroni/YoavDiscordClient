@@ -279,7 +279,7 @@ namespace YoavDiscordClient
                     {
                         Size = new Size(100, 100),
                         SizeMode = PictureBoxSizeMode.StretchImage,
-                        Image = DiscordFormsHolder.getInstance().DiscordApp.UserProfilePicture,
+                        Image = DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().UserProfilePicture,
                         Location = new Point(
                             (localDisplay.Width - 100) / 2,
                             (localDisplay.Height - 100) / 2
@@ -288,7 +288,7 @@ namespace YoavDiscordClient
 
                     Label usernameLabel = new Label
                     {
-                        Text = DiscordFormsHolder.getInstance().DiscordApp.Username,
+                        Text = DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().Username,
                         ForeColor = Color.White,
                         Font = new Font("Arial", 12, FontStyle.Regular),
                         AutoSize = true,

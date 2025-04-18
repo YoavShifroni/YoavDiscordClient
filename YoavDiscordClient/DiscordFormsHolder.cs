@@ -137,7 +137,7 @@ namespace YoavDiscordClient
 
         public void MoveToTheDiscordAppWindow(byte[] profilePicture, string username, int userId, int role)
         {
-            this.DiscordApp.SetUsernameAndProfilePicture(profilePicture, username, userId, role);
+            this.DiscordApp.GetUserManager().SetUsernameAndProfilePicture(profilePicture, username, userId, role);
             this._activeForm.Visible = false;
             this.DiscordApp.Visible = true;
             this.SetActiveForm(FormNames.DiscordApp);

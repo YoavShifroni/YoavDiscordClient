@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
+using YoavDiscordClient.Managers;
 
 
 namespace YoavDiscordClient
@@ -32,7 +33,7 @@ namespace YoavDiscordClient
 
         private void StartListeningAndReceiving()
         {
-            UdpListener udpListener = new UdpListener(this._port, DiscordApp.VideoStreamConnection.ProcessDataFromOtherUser);
+            UdpListener udpListener = new UdpListener(this._port, MediaChannelManager.VideoStreamConnection.ProcessDataFromOtherUser);
             udpListener.Start();
         }
 

@@ -26,9 +26,6 @@ namespace YoavDiscordClient.Enums
         /// </summary>
         Empty_Video = 3,
 
-        /// <summary>
-        /// Control packet for signaling
-        /// </summary>
-        Control = 4
+        
     }
 }

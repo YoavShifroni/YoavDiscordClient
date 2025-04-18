@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YoavDiscordClient.Enums;
+using YoavDiscordClient.Managers;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace YoavDiscordClient
@@ -245,8 +246,9 @@ namespace YoavDiscordClient
         public void HandleMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent,
             int chatRoomId)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddMessageToChatFromOtherUser(
-                username, userId, messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetChatManager().AddMessageToChatFromOtherUser(username, userId,
+                messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
         }
 
         public void ProcessFetchImageOfUser(int userId)
@@ -260,10 +262,14 @@ namespace YoavDiscordClient
 
         public void HandleReturnImageOfUser(int userId, byte[] profilePicture)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.UpdateUserImage(
-                userId, profilePicture)));
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().UpdateUserImage(userId, profilePicture)));
         }
 
+        /// <summary>
+        /// Requests the message history for a specific chat room
+        /// </summary>
+        /// <param name="chatRoomId"></param>
         public void ProcessGetMessagesHistoryOfChatRoom(int chatRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -275,7 +281,8 @@ namespace YoavDiscordClient
 
         public void HandleReturnMessagesHistoryOfChatRoom(List<UserMessage> messagesOfAChatRoom)
         {
-            DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.SetMessagesHistoryOfAChatRoom(messagesOfAChatRoom)));
+            DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetChatManager().SetMessagesHistoryOfAChatRoom(messagesOfAChatRoom)));
         }
 
         public void ProcessConnectToMediaRoom(int mediaRoomId)
@@ -300,7 +307,12 @@ namespace YoavDiscordClient
 
         public void HandleNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort, int userId, string username)
         {
-            DiscordApp.VideoStreamConnection.ConnectToParticipant(newParticipantIp, newParticipantPort, this.ImageToByteArray(DiscordFormsHolder.getInstance().DiscordApp.UsersImages[userId]), username, userId);
+            MediaChannelManager.VideoStreamConnection.ConnectToParticipant(
+                    newParticipantIp,
+                    newParticipantPort,
+                    this.ImageToByteArray(DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().UsersImages[userId]),
+                    username,
+                    userId);
         }
 
         public void HandleGetAllIpsOfConnectedUsersInSomeMediaRoom(List<UserMediaConnectionDetails> UsersMediaConnectionDetails)
@@ -321,26 +333,26 @@ namespace YoavDiscordClient
                 if (isMuted)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserMuteStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserMuteStatusChanged(userId, true)));
                 }
 
                 if (isDeafened)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserDeafenStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserDeafenStatusChanged(userId, true)));
                 }
 
                 if (isVideoMuted)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserVideoMuteStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserVideoMuteStatusChanged(userId, true)));
                 }
             }
         }
 
         public void HandleSomeUserLeftTheMediaRoomCommand(string userIp)
         {
-            DiscordApp.VideoStreamConnection.DisconnectFromParticipant(userIp);
+            MediaChannelManager.VideoStreamConnection.DisconnectFromParticipant(userIp);
         }
 
         public void ProcessFetchAllUsers()
@@ -355,10 +367,11 @@ namespace YoavDiscordClient
         {
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
             {
-                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.ShowAllUsersDetails(allUsersDetails)));
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                    new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().ShowAllUsersDetails(allUsersDetails)));
             }
             
-        }
+        }   
 
         public void HandleUserJoinMediaRoom(int userId, int mediaRoomId, string username, byte[] profilePicture, int role, bool isMuted,
             bool isDeafened, bool isVideoMuted)
@@ -366,26 +379,27 @@ namespace YoavDiscordClient
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
             {
                 // First, add the user to the channel
-                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.AddUserToMediaChannel
-                    (mediaRoomId, new UserDetails(userId, username, profilePicture, role))));
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                    new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager().AddUserToMediaChannel(mediaRoomId, 
+                    new UserDetails(userId, username, profilePicture, role))));
 
                 // Then, apply any status effects that were active
                 if (isMuted)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserMuteStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserMuteStatusChanged(userId, true)));
                 }
 
                 if (isDeafened)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserDeafenStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserDeafenStatusChanged(userId, true)));
                 }
 
                 if (isVideoMuted)
                 {
                     DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                        DiscordFormsHolder.getInstance().DiscordApp.HandleUserVideoMuteStatusChanged(userId, true)));
+                        DiscordFormsHolder.getInstance().DiscordApp.OnUserVideoMuteStatusChanged(userId, true)));
                 }
             }
             
@@ -395,8 +409,8 @@ namespace YoavDiscordClient
         {
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
             {
-                DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() => DiscordFormsHolder.getInstance().DiscordApp.RemoveUserFromMediaChannel
-                    (mediaRoomId, userId)));
+                DiscordFormsHolder.getInstance().DiscordApp.Invoke(
+                    new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager().RemoveUserFromMediaChannel(mediaRoomId, userId)));
             }
             
         }
@@ -470,21 +484,21 @@ namespace YoavDiscordClient
         {
             // Forward the mute status change to the Discord app
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                DiscordFormsHolder.getInstance().DiscordApp.HandleUserMuteStatusChanged(userId, isMuted)));
+                DiscordFormsHolder.getInstance().DiscordApp.OnUserMuteStatusChanged(userId, isMuted)));
         }
 
         public void HandleUserDeafened(int userId, bool isDeafened)
         {
             // Forward the deafen status change to the Discord app
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                DiscordFormsHolder.getInstance().DiscordApp.HandleUserDeafenStatusChanged(userId, isDeafened)));
+                DiscordFormsHolder.getInstance().DiscordApp.OnUserDeafenStatusChanged(userId, isDeafened)));
         }
 
         public void HandleUserDisconnected(int userId, int mediaRoomId)
         {
             // Forward the disconnect command to the Discord app
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                DiscordFormsHolder.getInstance().DiscordApp.HandleUserDisconnect(userId, mediaRoomId)));
+                DiscordFormsHolder.getInstance().DiscordApp.OnUserDisconnected(userId, mediaRoomId)));
         }
 
         public void ProcessSetUserVideoMuted(int userId, bool isVideoMuted)
@@ -501,7 +515,7 @@ namespace YoavDiscordClient
         {
             // Forward the video mute status change to the Discord app
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                DiscordFormsHolder.getInstance().DiscordApp.HandleUserVideoMuteStatusChanged(userId, isVideoMuted)));
+                DiscordFormsHolder.getInstance().DiscordApp.OnUserVideoMuteStatusChanged(userId, isVideoMuted)));
         }
 
         public void ProcessUpdateUserRole(int userId, int newRole)
@@ -518,7 +532,7 @@ namespace YoavDiscordClient
         {
             // Update the user's role in the UI
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
-                DiscordFormsHolder.getInstance().DiscordApp.HandleUserRoleUpdated(userId, newRole)));
+                DiscordFormsHolder.getInstance().DiscordApp.OnUserRoleUpdated(userId, newRole)));
 
         }
 

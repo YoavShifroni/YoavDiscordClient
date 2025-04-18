@@ -434,6 +434,16 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Sends a video frame to all connected clients by splitting it into multiple packets.
+        /// </summary>
+        /// <param name="frameData">The raw video frame data as a byte array.</param>
+        /// <param name="timestamp">The timestamp indicating when the frame was captured or sent.</param>
+        /// <remarks>
+        /// This method generates a unique frame ID for each frame and splits the frame into smaller packets
+        /// according to <see cref="VideoPacket.MAX_PACKET_SIZE"/>. Each packet is sent individually to all connected clients.
+        /// Errors in sending to individual clients are logged and do not interrupt the sending process for others.
+        /// </remarks>
         private void SendVideoFrame(byte[] frameData, DateTime timestamp)
         {
             try
@@ -482,6 +492,7 @@ namespace YoavDiscordClient
                 System.Diagnostics.Debug.WriteLine($"Error sending video frame: {ex.Message}");
             }
         }
+
 
         private void SendAudioData(byte[] audioData)
         {

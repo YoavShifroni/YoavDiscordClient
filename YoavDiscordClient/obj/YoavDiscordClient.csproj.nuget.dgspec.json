@@ -51,14 +51,6 @@
         "net5.0-windows8.0": {
           "targetAlias": "net5.0-windows8.0",
           "dependencies": {
-            "AForge.Video.DirectShow": {
-              "target": "Package",
-              "version": "[2.2.5, )"
-            },
-            "BouncyCastle.Cryptography": {
-              "target": "Package",
-              "version": "[2.5.0, )"
-            },
             "Microsoft.MixedReality.WebRTC": {
               "target": "Package",
               "version": "[2.0.2, )"

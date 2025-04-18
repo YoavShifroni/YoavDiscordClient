@@ -213,7 +213,7 @@ namespace YoavDiscordClient
             voiceChannelsLabel.Name = "voiceChannelsLabel";
             voiceChannelsLabel.Size = new System.Drawing.Size(207, 23);
             voiceChannelsLabel.TabIndex = 8;
-            voiceChannelsLabel.Text = "Voice Channels ▼";
+            voiceChannelsLabel.Text = "Voice Channels";
             voiceChannelsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // textChannel3Button
@@ -284,7 +284,7 @@ namespace YoavDiscordClient
             textChannelsLabel.Name = "textChannelsLabel";
             textChannelsLabel.Size = new System.Drawing.Size(207, 23);
             textChannelsLabel.TabIndex = 4;
-            textChannelsLabel.Text = "Text Channels ▼";
+            textChannelsLabel.Text = "Text Channels";
             textChannelsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // rightSidePanel
@@ -570,40 +570,40 @@ namespace YoavDiscordClient
 
         #endregion
 
-        private System.Windows.Forms.Panel leftSidePanel;
-        private System.Windows.Forms.Panel rightSidePanel;
-        private System.Windows.Forms.Label textChannelsLabel;
-        private System.Windows.Forms.Button textChannel1Button;
-        private System.Windows.Forms.Button textChannel3Button;
-        private System.Windows.Forms.Button textChannel2Button;
-        private System.Windows.Forms.Button voiceChannel3Button;
-        private System.Windows.Forms.Button voiceChannel2Button;
-        private System.Windows.Forms.Button voiceChannel1Button;
-        private System.Windows.Forms.Label voiceChannelsLabel;
-        private System.Windows.Forms.Panel userInfoPanel;
-        private System.Windows.Forms.Label usernameLabel;
-        private System.Windows.Forms.Panel chatAreaPanel;
-        private System.Windows.Forms.Label nameOfTheProjectLabel;
-        private System.Windows.Forms.Label onlineUsersLabel;
-        private System.Windows.Forms.Label offlineUsersLabel;
-        private System.Windows.Forms.TextBox messageInputTextBox;
-        private System.Windows.Forms.Button sendMessageButton;
-        private CirclePictureBox userProfilePicturePictureBox;
-        private System.Windows.Forms.Button globalMuteButton;
-        private System.Windows.Forms.Button deafenButton;
-        private System.Windows.Forms.Panel ChatMessagesPanel1;
-        private System.Windows.Forms.Panel ChatMessagesPanel2;
-        private System.Windows.Forms.Panel ChatMessagesPanel3;
-        private System.Windows.Forms.Panel VideoPanel1;
-        private System.Windows.Forms.Panel VideoPanel2;
-        private System.Windows.Forms.Panel VideoPanel3;
-        private System.Windows.Forms.Button mediaChannelMuteButton;
-        private System.Windows.Forms.Button mediaChannelVideoMuteButton;
-        private System.Windows.Forms.Button mediaChannelDisconnectButton;
-        private System.Windows.Forms.Panel mediaControlsPanel;
-        private System.Windows.Forms.Button emojiButton;
-        private System.Windows.Forms.Panel emojiPanel;
-        private System.Windows.Forms.Panel emojiSelectionPanel;
+        internal System.Windows.Forms.Panel leftSidePanel;
+        internal System.Windows.Forms.Panel rightSidePanel;
+        internal System.Windows.Forms.Label textChannelsLabel;
+        internal System.Windows.Forms.Button textChannel1Button;
+        internal System.Windows.Forms.Button textChannel3Button;
+        internal System.Windows.Forms.Button textChannel2Button;
+        internal System.Windows.Forms.Button voiceChannel3Button;
+        internal System.Windows.Forms.Button voiceChannel2Button;
+        internal System.Windows.Forms.Button voiceChannel1Button;
+        internal System.Windows.Forms.Label voiceChannelsLabel;
+        internal System.Windows.Forms.Panel userInfoPanel;
+        internal System.Windows.Forms.Label usernameLabel;
+        internal System.Windows.Forms.Panel chatAreaPanel;
+        internal System.Windows.Forms.Label nameOfTheProjectLabel;
+        internal System.Windows.Forms.Label onlineUsersLabel;
+        internal System.Windows.Forms.Label offlineUsersLabel;
+        internal System.Windows.Forms.TextBox messageInputTextBox;
+        internal System.Windows.Forms.Button sendMessageButton;
+        internal CirclePictureBox userProfilePicturePictureBox;
+        internal System.Windows.Forms.Button globalMuteButton;
+        internal System.Windows.Forms.Button deafenButton;
+        internal System.Windows.Forms.Panel ChatMessagesPanel1;
+        internal System.Windows.Forms.Panel ChatMessagesPanel2;
+        internal System.Windows.Forms.Panel ChatMessagesPanel3;
+        internal System.Windows.Forms.Panel VideoPanel1;
+        internal System.Windows.Forms.Panel VideoPanel2;
+        internal System.Windows.Forms.Panel VideoPanel3;
+        internal System.Windows.Forms.Button mediaChannelMuteButton;
+        internal System.Windows.Forms.Button mediaChannelVideoMuteButton;
+        internal System.Windows.Forms.Button mediaChannelDisconnectButton;
+        internal System.Windows.Forms.Panel mediaControlsPanel;
+        internal System.Windows.Forms.Button emojiButton;
+        internal System.Windows.Forms.Panel emojiPanel;
+        internal System.Windows.Forms.Panel emojiSelectionPanel;
         //private CustomScrollBar customScrollBar1;
         //private CustomScrollBar customScrollBar2;
         //private CustomScrollBar customScrollBar3;

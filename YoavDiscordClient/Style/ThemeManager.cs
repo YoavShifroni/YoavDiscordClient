@@ -128,14 +128,6 @@ namespace YoavDiscordClient.Style
 
 
 
-        /// <summary>
-        /// Toggles between dark and light themes
-        /// </summary>
-        public static void ToggleTheme()
-        {
-            IsDarkTheme = !IsDarkTheme;
-        }
-
         private static void UpdateCurrentThemeColors()
         {
             // Clear existing colors

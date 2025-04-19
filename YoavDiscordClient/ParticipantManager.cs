@@ -14,20 +14,50 @@ namespace YoavDiscordClient
     public class ParticipantManager : IDisposable
     {
 
-       
+
 
         #region Private properties
 
+        /// <summary>
+        /// The panel where remote video feeds are displayed.
+        /// Acts as a container for all remote participant video displays.
+        /// </summary>
         private readonly Panel remotePanel;
 
+        /// <summary>
+        /// Maps IP addresses to PictureBox controls that display remote video feeds.
+        /// Each key is a remote participant's IP address, and the value is the associated PictureBox 
+        /// control displaying their video feed.
+        /// </summary>
         private Dictionary<string, PictureBox> displays;
 
+        /// <summary>
+        /// Maps IP addresses to FrameAssembler instances that reconstruct video frames.
+        /// Each key is a remote participant's IP address, and the value is the associated
+        /// FrameAssembler responsible for reconstructing potentially fragmented video frames.
+        /// </summary>
         private Dictionary<string, FrameAssembler> frameAssemblers;
 
+        /// <summary>
+        /// Maps user IDs to IP addresses for quick lookups.
+        /// Enables finding a participant's IP address when only their user ID is known.
+        /// </summary>
         private Dictionary<int, string> userIdToIp;
 
+        /// <summary>
+        /// Flag indicating whether this instance has been disposed.
+        /// Used to prevent multiple dispose operations and to track resource cleanup status.
+        /// </summary>
         private bool disposed = false;
 
+        /// <summary>
+        /// Reference to the parent object that owns this instance.
+        /// Used for callbacks and to access parent functionality when needed.
+        /// </summary>
+        /// <remarks>
+        /// This is stored as an object type to avoid circular dependencies.
+        /// Appropriate casting is required before use.
+        /// </remarks>
         private readonly object parent;
 
         #endregion
@@ -77,6 +107,11 @@ namespace YoavDiscordClient
             return display;
         }
 
+        /// <summary>
+        /// Print the local video size for debug 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrintLocalVideoSize(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine($"Resize event: {((PictureBox)sender).Size}");
@@ -511,7 +546,12 @@ namespace YoavDiscordClient
             }
         }
 
-        // Helper method to safely get a property value from an object
+        /// <summary>
+        /// safely get a property value from an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
         private object GetPropertyValue(object obj, string propertyName)
         {
             try
@@ -681,6 +721,13 @@ namespace YoavDiscordClient
             }));
         }
 
+        /// <summary>
+        /// Calculate the displays size base on the number of participants
+        /// </summary>
+        /// <param name="totalParticipants"></param>
+        /// <param name="panelWidth"></param>
+        /// <param name="panelHeight"></param>
+        /// <returns></returns>
         private Size CalculateOptimalDisplaySize(int totalParticipants, int panelWidth, int panelHeight)
         {
             // Calculate the optimal display size based on number of participants
@@ -713,25 +760,17 @@ namespace YoavDiscordClient
             return displaySize;
         }
 
+        /// <summary>
+        /// Calculate positions
+        /// </summary>
+        /// <param name="totalParticipants"></param>
+        /// <param name="videoSize"></param>
+        /// <param name="panelWidth"></param>
+        /// <param name="panelHeight"></param>
+        /// <returns></returns>
         private Dictionary<string, Point> CalculatePositions(int totalParticipants, Size videoSize, int panelWidth, int panelHeight)
         {
             var positions = new Dictionary<string, Point>();
-
-            //if(debug)
-            //{
-            //    if (!displays.ContainsKey("yoav"))
-            //    {
-            //        displays.Add("yoav", new PictureBox());
-
-
-            //    }
-            //}
-            //else
-            //{
-            //    displays.Remove("yoav");
-            //}
-
-            
 
             var participants = displays.Keys.ToList();
 
@@ -811,6 +850,9 @@ namespace YoavDiscordClient
             return positions;
         }
 
+        /// <summary>
+        /// Reset display
+        /// </summary>
         private void ResetDisplay()
         {
             // Reset all displays
@@ -845,6 +887,11 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Convert byte array to image
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
         private Image ByteArrayToImage(byte[] byteArray)
         {
             try

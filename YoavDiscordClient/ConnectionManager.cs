@@ -220,11 +220,19 @@ namespace YoavDiscordClient
             DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ShowCooldownTimer(timeToCooldown)));
         }
 
+        /// <summary>
+        /// Handles the successful completion of the forgot password operation.
+        /// Updates the Login form to proceed to the next stage of the password recovery process.
+        /// </summary>
         public void HandleSuccessesForgotPassword()
         {
             DiscordFormsHolder.getInstance().LoginForm.Invoke(new Action(() => DiscordFormsHolder.getInstance().LoginForm.ForgotPasswordNextStage()));
         }
 
+        /// <summary>
+        /// Requests the profile picture and username of the current user from the server.
+        /// Sends a Get_Username_And_Profile_Picture_Command to retrieve the user's profile information.
+        /// </summary>
         public void ProcessGetProfilePictureAndUsername()
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -233,6 +241,14 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Sends a chat message to a specific chat room.
+        /// </summary>
+        /// <param name="text">The message text to send.</param>
+        /// <param name="chatRoomId">The ID of the chat room to send the message to.</param>
+        /// <remarks>
+        /// Creates a Send_Message_Command and forwards it to the server through the established connection.
+        /// </remarks>
         public void ProcessSendMessage(string text, int chatRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -243,6 +259,15 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles a message received from another user in a chat room.
+        /// Updates the chat UI to display the received message.
+        /// </summary>
+        /// <param name="userId">The ID of the user who sent the message.</param>
+        /// <param name="username">The username of the user who sent the message.</param>
+        /// <param name="messageThatTheUserSent">The content of the message.</param>
+        /// <param name="timeThatTheMessageWasSent">The timestamp when the message was sent.</param>
+        /// <param name="chatRoomId">The ID of the chat room where the message was sent.</param>
         public void HandleMessageFromOtherUserCommand(int userId, string username, string messageThatTheUserSent, DateTime timeThatTheMessageWasSent,
             int chatRoomId)
         {
@@ -251,15 +276,29 @@ namespace YoavDiscordClient
                 messageThatTheUserSent, timeThatTheMessageWasSent, chatRoomId)));
         }
 
+        /// <summary>
+        /// Requests the profile picture of a specific user from the server.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose profile picture is being requested.</param>
+        /// <remarks>
+        /// This method is typically called when the application needs to display a user's
+        /// profile picture but does not have it cached locally.
+        /// </remarks>
         public void ProcessFetchImageOfUser(int userId)
         {
-            ClientServerProtocol clientServerProtocol= new ClientServerProtocol();
+            ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Fetch_Image_Of_User_Command;
             clientServerProtocol.UserId = userId;
             System.Diagnostics.Debug.WriteLine("Message sent to server: " + clientServerProtocol.ToString());
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles the server's response to a profile picture request.
+        /// Updates the UserManager with the received profile picture.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose profile picture was received.</param>
+        /// <param name="profilePicture">The profile picture data as a byte array.</param>
         public void HandleReturnImageOfUser(int userId, byte[] profilePicture)
         {
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(
@@ -267,24 +306,44 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Requests the message history for a specific chat room
+        /// Requests the message history for a specific chat room from the server.
         /// </summary>
-        /// <param name="chatRoomId"></param>
+        /// <param name="chatRoomId">The ID of the chat room whose message history is being requested.</param>
+        /// <remarks>
+        /// This is typically called when a user navigates to a chat room to display
+        /// previous messages that were sent while the user was not actively viewing the chat.
+        /// </remarks>
         public void ProcessGetMessagesHistoryOfChatRoom(int chatRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
             clientServerProtocol.TypeOfCommand = TypeOfCommand.Get_Messages_History_Of_Chat_Room_Command;
-            clientServerProtocol.ChatRoomId= chatRoomId;
+            clientServerProtocol.ChatRoomId = chatRoomId;
             System.Diagnostics.Debug.WriteLine("Message sent to server: " + clientServerProtocol.ToString());
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles the server's response containing the message history of a chat room.
+        /// Updates the ChatManager with the received message history.
+        /// </summary>
+        /// <param name="messagesOfAChatRoom">A list of user messages representing the chat history.</param>
         public void HandleReturnMessagesHistoryOfChatRoom(List<UserMessage> messagesOfAChatRoom)
         {
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(
                 new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetChatManager().SetMessagesHistoryOfAChatRoom(messagesOfAChatRoom)));
         }
 
+        /// <summary>
+        /// Initiates connection to a media (voice/video) room.
+        /// Creates a local media room, then notifies the server to connect the user to the room.
+        /// </summary>
+        /// <param name="mediaRoomId">The ID of the media room to connect to.</param>
+        /// <remarks>
+        /// This method:
+        /// 1. Creates a new local MediaRoom instance to handle incoming media traffic
+        /// 2. Sends a Connect_To_Media_Room_Command to the server
+        /// 3. Includes the locally allocated port for media communication
+        /// </remarks>
         public void ProcessConnectToMediaRoom(int mediaRoomId)
         {
             MediaRoom mediaRoom = new MediaRoom(mediaRoomId);
@@ -296,6 +355,11 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Disconnects the user from a media room.
+        /// Notifies the server that the user is leaving the specified media room.
+        /// </summary>
+        /// <param name="mediaRoomId">The ID of the media room to disconnect from.</param>
         public void ProcessDisconnectFromMediaRoom(int mediaRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -305,6 +369,14 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles notification of a new participant joining a media room.
+        /// Establishes a connection to the new participant for media exchange.
+        /// </summary>
+        /// <param name="newParticipantIp">The IP address of the new participant.</param>
+        /// <param name="newParticipantPort">The port number on which the new participant is listening.</param>
+        /// <param name="userId">The user ID of the new participant.</param>
+        /// <param name="username">The username of the new participant.</param>
         public void HandleNewParticipantJoinTheMediaRoom(string newParticipantIp, int newParticipantPort, int userId, string username)
         {
             MediaChannelManager.VideoStreamConnection.ConnectToParticipant(
@@ -315,9 +387,18 @@ namespace YoavDiscordClient
                     userId);
         }
 
+        /// <summary>
+        /// Handles information about all users currently connected to a media room.
+        /// Establishes connections to each participant and applies their status effects.
+        /// </summary>
+        /// <param name="UsersMediaConnectionDetails">A list of details for all users in the media room.</param>
+        /// <remarks>
+        /// This method is typically called when a user joins a media room to establish
+        /// connections with all existing participants. It also applies status effects such as
+        /// mute, deafen, and video mute for each connected user.
+        /// </remarks>
         public void HandleGetAllIpsOfConnectedUsersInSomeMediaRoom(List<UserMediaConnectionDetails> UsersMediaConnectionDetails)
         {
-
             foreach (UserMediaConnectionDetails userMediaConnectionDetail in UsersMediaConnectionDetails)
             {
                 this.HandleNewParticipantJoinTheMediaRoom(userMediaConnectionDetail.Ip, userMediaConnectionDetail.Port,
@@ -350,11 +431,20 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Handles notification that a user has left a media room.
+        /// Disconnects from the specified user's media stream.
+        /// </summary>
+        /// <param name="userIp">The IP address of the user who left.</param>
         public void HandleSomeUserLeftTheMediaRoomCommand(string userIp)
         {
             MediaChannelManager.VideoStreamConnection.DisconnectFromParticipant(userIp);
         }
 
+        /// <summary>
+        /// Requests a list of all users from the server.
+        /// Used to populate the user list in the application.
+        /// </summary>
         public void ProcessFetchAllUsers()
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -363,6 +453,11 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles the server's response containing details of all users.
+        /// Updates the UserManager with the received user details.
+        /// </summary>
+        /// <param name="allUsersDetails">A list of user details for all users.</param>
         public void HandleGetAllUsersDetails(List<UserDetails> allUsersDetails)
         {
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
@@ -370,9 +465,21 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.Invoke(
                     new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetUserManager().ShowAllUsersDetails(allUsersDetails)));
             }
-            
-        }   
 
+        }
+
+        /// <summary>
+        /// Handles notification that a user has joined a media room.
+        /// Updates the UI to show the user in the specified media channel and applies their status effects.
+        /// </summary>
+        /// <param name="userId">The ID of the user who joined.</param>
+        /// <param name="mediaRoomId">The ID of the media room the user joined.</param>
+        /// <param name="username">The username of the user who joined.</param>
+        /// <param name="profilePicture">The profile picture of the user who joined.</param>
+        /// <param name="role">The role of the user who joined.</param>
+        /// <param name="isMuted">Whether the user's audio is muted.</param>
+        /// <param name="isDeafened">Whether the user is deafened.</param>
+        /// <param name="isVideoMuted">Whether the user's video is muted.</param>
         public void HandleUserJoinMediaRoom(int userId, int mediaRoomId, string username, byte[] profilePicture, int role, bool isMuted,
             bool isDeafened, bool isVideoMuted)
         {
@@ -380,7 +487,7 @@ namespace YoavDiscordClient
             {
                 // First, add the user to the channel
                 DiscordFormsHolder.getInstance().DiscordApp.Invoke(
-                    new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager().AddUserToMediaChannel(mediaRoomId, 
+                    new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager().AddUserToMediaChannel(mediaRoomId,
                     new UserDetails(userId, username, profilePicture, role))));
 
                 // Then, apply any status effects that were active
@@ -402,9 +509,15 @@ namespace YoavDiscordClient
                         DiscordFormsHolder.getInstance().DiscordApp.OnUserVideoMuteStatusChanged(userId, true)));
                 }
             }
-            
+
         }
 
+        /// <summary>
+        /// Handles notification that a user has left a media room.
+        /// Updates the UI to remove the user from the specified media channel.
+        /// </summary>
+        /// <param name="userId">The ID of the user who left.</param>
+        /// <param name="mediaRoomId">The ID of the media room the user left.</param>
         public void HandleUserLeaveMediaRoom(int userId, int mediaRoomId)
         {
             if (DiscordFormsHolder.getInstance().DiscordApp.IsHandleCreated)
@@ -412,11 +525,18 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.Invoke(
                     new Action(() => DiscordFormsHolder.getInstance().DiscordApp.GetMediaChannelManager().RemoveUserFromMediaChannel(mediaRoomId, userId)));
             }
-            
+
         }
 
-       
-
+        /// <summary>
+        /// Converts an Image object to a byte array for transmission.
+        /// </summary>
+        /// <param name="image">The Image to convert.</param>
+        /// <returns>A byte array containing the image data in PNG format.</returns>
+        /// <remarks>
+        /// If the conversion fails, a placeholder gray image is generated and returned.
+        /// This ensures that operations dependent on image data don't fail completely.
+        /// </remarks>
         private byte[] ImageToByteArray(Image image)
         {
             try
@@ -450,6 +570,11 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Sends a request to the server to update a user's audio mute status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose mute status should be updated.</param>
+        /// <param name="isMuted">True to mute the user, false to unmute.</param>
         public void ProcessSetUserMuted(int userId, bool isMuted)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -460,6 +585,11 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Sends a request to the server to update a user's deafen status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose deafen status should be updated.</param>
+        /// <param name="isDeafened">True to deafen the user, false to undeafen.</param>
         public void ProcessSetUserDeafened(int userId, bool isDeafened)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -470,6 +600,15 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Sends a request to the server to disconnect a user from a media room.
+        /// </summary>
+        /// <param name="userId">The ID of the user to disconnect.</param>
+        /// <param name="mediaRoomId">The ID of the media room from which to disconnect the user.</param>
+        /// <remarks>
+        /// This is typically used by moderators or administrators to forcibly disconnect
+        /// a user from a voice or video channel.
+        /// </remarks>
         public void ProcessDisconnectUserFromMediaRoom(int userId, int mediaRoomId)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -480,6 +619,12 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles notification of a user's audio mute status change.
+        /// Updates the UI to reflect the user's new mute status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose mute status changed.</param>
+        /// <param name="isMuted">The new mute status (true for muted, false for unmuted).</param>
         public void HandleUserMuted(int userId, bool isMuted)
         {
             // Forward the mute status change to the Discord app
@@ -487,6 +632,12 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.OnUserMuteStatusChanged(userId, isMuted)));
         }
 
+        /// <summary>
+        /// Handles notification of a user's deafen status change.
+        /// Updates the UI to reflect the user's new deafen status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose deafen status changed.</param>
+        /// <param name="isDeafened">The new deafen status (true for deafened, false for undeafened).</param>
         public void HandleUserDeafened(int userId, bool isDeafened)
         {
             // Forward the deafen status change to the Discord app
@@ -494,6 +645,12 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.OnUserDeafenStatusChanged(userId, isDeafened)));
         }
 
+        /// <summary>
+        /// Handles notification that a user has been forcibly disconnected from a media room.
+        /// Updates the UI to reflect the user's disconnection.
+        /// </summary>
+        /// <param name="userId">The ID of the user who was disconnected.</param>
+        /// <param name="mediaRoomId">The ID of the media room from which the user was disconnected.</param>
         public void HandleUserDisconnected(int userId, int mediaRoomId)
         {
             // Forward the disconnect command to the Discord app
@@ -501,6 +658,11 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.OnUserDisconnected(userId, mediaRoomId)));
         }
 
+        /// <summary>
+        /// Sends a request to the server to update a user's video mute status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose video mute status should be updated.</param>
+        /// <param name="isVideoMuted">True to mute the user's video, false to unmute.</param>
         public void ProcessSetUserVideoMuted(int userId, bool isVideoMuted)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -511,6 +673,12 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles notification of a user's video mute status change.
+        /// Updates the UI to reflect the user's new video mute status.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose video mute status changed.</param>
+        /// <param name="isVideoMuted">The new video mute status (true for muted, false for unmuted).</param>
         public void HandleUserVideoMuted(int userId, bool isVideoMuted)
         {
             // Forward the video mute status change to the Discord app
@@ -518,6 +686,15 @@ namespace YoavDiscordClient
                 DiscordFormsHolder.getInstance().DiscordApp.OnUserVideoMuteStatusChanged(userId, isVideoMuted)));
         }
 
+        /// <summary>
+        /// Sends a request to the server to update a user's role.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose role should be updated.</param>
+        /// <param name="newRole">The new role ID to assign to the user.</param>
+        /// <remarks>
+        /// Roles typically define permissions levels in the application,
+        /// such as regular user, moderator, or administrator.
+        /// </remarks>
         public void ProcessUpdateUserRole(int userId, int newRole)
         {
             ClientServerProtocol clientServerProtocol = new ClientServerProtocol();
@@ -528,17 +705,22 @@ namespace YoavDiscordClient
             this.ConnectionWithServer.SendMessage(ClientServerProtocolParser.Generate(clientServerProtocol));
         }
 
+        /// <summary>
+        /// Handles notification that a user's role has been updated.
+        /// Updates the UI to reflect the user's new role.
+        /// </summary>
+        /// <param name="userId">The ID of the user whose role was updated.</param>
+        /// <param name="newRole">The new role ID assigned to the user.</param>
         public void HandleUserRoleHasBeenUpdated(int userId, int newRole)
         {
             // Update the user's role in the UI
             DiscordFormsHolder.getInstance().DiscordApp.Invoke(new Action(() =>
                 DiscordFormsHolder.getInstance().DiscordApp.OnUserRoleUpdated(userId, newRole)));
-
         }
 
 
 
-        
+
 
 
     }

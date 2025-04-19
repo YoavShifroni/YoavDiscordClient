@@ -14,6 +14,10 @@ namespace YoavDiscordClient.Managers
     /// </summary>
     public class ContextMenuManager
     {
+        /// <summary>
+        /// Reference to the main Discord application form that owns this manager.
+        /// Used to access application-wide functionality and other managers.
+        /// </summary>
         private readonly DiscordApp _form;
 
         /// <summary>
@@ -21,6 +25,19 @@ namespace YoavDiscordClient.Managers
         /// </summary>
         private ContextMenuStrip userContextMenu;
 
+        /// <summary>
+        /// Initializes a new instance of the ContextMenuManager class.
+        /// </summary>
+        /// <param name="form">The main Discord application form that owns this manager.</param>
+        /// <remarks>
+        /// The ContextMenuManager is responsible for:
+        /// - Creating and configuring right-click context menus throughout the application
+        /// - Managing the styling and behavior of context menu items
+        /// - Handling context menu events and delegating actions to appropriate components
+        /// 
+        /// It maintains a reference to the main form to coordinate with other
+        /// application components and access shared resources.
+        /// </remarks>
         public ContextMenuManager(DiscordApp form)
         {
             _form = form;

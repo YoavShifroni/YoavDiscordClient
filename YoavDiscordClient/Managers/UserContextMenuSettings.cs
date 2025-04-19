@@ -14,11 +14,28 @@ namespace YoavDiscordClient.Managers
         // Dictionary to store user settings by user ID
         private Dictionary<int, UserState> _userSettings;
 
+        /// <summary>
+        /// Private constructor for the UserContextMenuSettings singleton.
+        /// Initializes the user settings dictionary.
+        /// </summary>
+        /// <remarks>
+        /// This constructor is private to enforce the singleton pattern.
+        /// It initializes an empty dictionary to store user state information.
+        /// </remarks>
         private UserContextMenuSettings()
         {
             _userSettings = new Dictionary<int, UserState>();
         }
 
+        /// <summary>
+        /// Gets the singleton instance of the UserContextMenuSettings class.
+        /// </summary>
+        /// <returns>The singleton instance of UserContextMenuSettings.</returns>
+        /// <remarks>
+        /// This method implements the lazy initialization pattern for the singleton.
+        /// The instance is created on first access and reused for all subsequent calls.
+        /// This ensures that user context menu settings are consistent throughout the application.
+        /// </remarks>
         public static UserContextMenuSettings GetInstance()
         {
             if (_instance == null)
@@ -28,7 +45,11 @@ namespace YoavDiscordClient.Managers
             return _instance;
         }
 
-        // Get settings for a specific user
+        /// <summary>
+        /// Get settings for a specific user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public UserState GetUserSettings(int userId)
         {
             if (!_userSettings.ContainsKey(userId))

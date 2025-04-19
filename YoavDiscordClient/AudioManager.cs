@@ -15,51 +15,119 @@ namespace YoavDiscordClient
     public class AudioManager : IDisposable
     {
         #region Constants
-
+        /// <summary>
+        /// Defines the sample rate in Hz for audio capture and playback.
+        /// Standard CD-quality sample rate providing good voice clarity while limiting bandwidth usage.
+        /// </summary>
         private const int SAMPLE_RATE = 44100;
 
+        /// <summary>
+        /// Defines the number of audio channels to use.
+        /// Set to 1 for mono, which is sufficient for voice communication and reduces bandwidth usage.
+        /// </summary>
         private const int CHANNELS = 1;
 
+        /// <summary>
+        /// Defines the size of the audio buffer in milliseconds.
+        /// Lower values reduce latency but increase CPU usage and network packets.
+        /// 50ms provides a good balance between responsiveness and efficiency.
+        /// </summary>
         private const int BUFFER_MILLISECONDS = 50;
 
+        /// <summary>
+        /// Defines the target audio latency in milliseconds for playback.
+        /// This value affects how much audio is buffered before playback begins.
+        /// Higher values improve stability but increase delay in communication.
+        /// </summary>
         private const int AUDIO_LATENCY = 100;
-
         #endregion
 
         #region Events
-
+        /// <summary>
+        /// Event raised when local audio data is available for transmission.
+        /// Subscribers can use this event to send audio data to remote participants.
+        /// Provides audio data and timestamp information via AudioPacketEventArgs.
+        /// </summary>
         public event EventHandler<AudioPacketEventArgs> LocalAudioDataAvailable;
-
         #endregion
 
         #region Private properties
-
+        /// <summary>
+        /// Captures audio from the default system microphone.
+        /// Provides a stream of audio samples for processing and transmission.
+        /// </summary>
         private WaveIn audioInput;
 
+        /// <summary>
+        /// Handles audio playback to the default system audio output device.
+        /// </summary>
         private WaveOut audioOutput;
 
+        /// <summary>
+        /// Maps remote participant identifiers to their individual audio buffers.
+        /// Each remote participant has a dedicated buffer for smooth playback.
+        /// </summary>
         private Dictionary<string, BufferedWaveProvider> remoteAudioInputs;
 
+        /// <summary>
+        /// Mixes audio streams from multiple remote participants into a single output stream.
+        /// Allows multiple people to be heard simultaneously during voice communication.
+        /// </summary>
         private MixingSampleProvider mixer;
 
+        /// <summary>
+        /// Controls the volume of the mixed audio output.
+        /// Allows for global volume adjustment of all remote participants.
+        /// </summary>
         private VolumeSampleProvider volumeProvider;
 
+        /// <summary>
+        /// Defines the format of the audio data used throughout the system.
+        /// Ensures consistency in audio processing between capture and playback.
+        /// </summary>
         private WaveFormat waveFormat;
 
+        /// <summary>
+        /// Indicates whether the local microphone is muted.
+        /// When true, audio is still captured but not transmitted to other participants.
+        /// </summary>
         private bool isAudioMuted = false;
 
+        /// <summary>
+        /// Indicates whether all incoming audio is muted.
+        /// When true, remote participants' audio is not played locally, but the microphone remains active.
+        /// </summary>
         private bool isGloballyMuted = false;
 
+        /// <summary>
+        /// Indicates whether the user is deafened (both incoming and outgoing audio disabled).
+        /// When true, the user cannot hear others and cannot be heard, regardless of other mute settings.
+        /// </summary>
         private bool isGloballyDeafened = false;
 
+        /// <summary>
+        /// Indicates whether the user has been muted by someone with a higher role.
+        /// When true, the user cannot unmute themselves until a moderator removes this restriction.
+        /// </summary>
         private bool isMutedByHigherRole = false;
 
+        /// <summary>
+        /// Tracks whether this instance has been disposed.
+        /// Used to prevent multiple dispose operations and resource leaks.
+        /// </summary>
         private bool disposed = false;
 
+        /// <summary>
+        /// Timer for periodically checking the health of audio connections.
+        /// Used to detect and recover from audio device failures or disconnections.
+        /// </summary>
         private System.Windows.Forms.Timer healthCheckTimer;
 
+        /// <summary>
+        /// Tracks the last time audio data was received.
+        /// Used to detect audio stream interruptions and trigger recovery mechanisms.
+        /// </summary>
         private DateTime lastDataAvailableCall = DateTime.MinValue;
-
         #endregion
 
         #region Public properties
@@ -169,6 +237,10 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Set muted by higher role
+        /// </summary>
+        /// <param name="muted"></param>
         public void SetMutedByHigherRoleState(bool muted)
         {
             this.isMutedByHigherRole = muted;
@@ -348,6 +420,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Initialize the user audio
+        /// </summary>
         private void InitializeAudio()
         {
             try
@@ -380,6 +455,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Initialize audio input
+        /// </summary>
         private void InitializeAudioInput()
         {
             try
@@ -429,6 +507,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Reinitialize audio input
+        /// </summary>
         private void ReinitializeAudioInput()
         {
             System.Diagnostics.Debug.WriteLine("Reinitializing audio input due to potential issues");
@@ -455,6 +536,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// initialize the health check timer
+        /// </summary>
         private void InitializeHealthCheckTimer()
         {
             // Create timer to periodically check audio input health
@@ -467,6 +551,11 @@ namespace YoavDiscordClient
             this.healthCheckTimer.Start();
         }
 
+        /// <summary>
+        /// Event hendler for the health check timer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HealthCheckTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -490,6 +579,11 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Callback when there is audio data available
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AudioInput_DataAvailable(object sender, WaveInEventArgs e)
         {
             try
@@ -510,6 +604,9 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Recreate the audio mixer
+        /// </summary>
         private void RecreateAudioMixer()
         {
             try

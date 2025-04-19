@@ -10,10 +10,32 @@ namespace YoavDiscordClient.Managers
     /// </summary>
     public class EmojiManager
     {
+        /// <summary>
+        /// Reference to the main Discord application form that owns this manager.
+        /// Used to access application-wide functionality and other managers.
+        /// </summary>
         private readonly DiscordApp _form;
+
+        /// <summary>
+        /// The panel that contains the emoji selection interface.
+        /// This panel is shown or hidden when the emoji button is clicked.
+        /// </summary>
         private readonly Panel _emojiSelectionPanel;
+
+        /// <summary>
+        /// The panel that contains the emoji icon grid.
+        /// This is where individual emoji icons are added for user selection.
+        /// </summary>
         private readonly Panel _emojiPanel;
+
+        /// <summary>
+        /// The text box where messages are typed and where selected emojis are inserted.
+        /// </summary>
         private readonly TextBox _messageInputTextBox;
+
+        /// <summary>
+        /// The button that toggles the visibility of the emoji selection panel.
+        /// </summary>
         private readonly Button _emojiButton;
 
         /// <summary>
@@ -21,13 +43,32 @@ namespace YoavDiscordClient.Managers
         /// </summary>
         private bool _isEmojiSelectionVisible = false;
 
+        /// <summary>
+        /// Initializes a new instance of the EmojiManager class.
+        /// </summary>
+        /// <param name="form">The main Discord application form that owns this manager.</param>
+        /// <param name="emojiSelectionPanel">The panel containing the emoji selection interface.</param>
+        /// <param name="emojiPanel">The panel where emoji icons are displayed in a grid.</param>
+        /// <param name="messageInputTextBox">The text box where messages are typed and emojis are inserted.</param>
+        /// <param name="emojiButton">The button that toggles the emoji selection panel visibility.</param>
+        /// <remarks>
+        /// The EmojiManager is responsible for:
+        /// - Loading and displaying available emojis in a selectable grid
+        /// - Handling emoji selection events
+        /// - Inserting selected emojis into the message input text box
+        /// - Managing the visibility of the emoji selection panel
+        /// - Handling clicks outside the emoji panel to dismiss it
+        /// 
+        /// It requires references to UI components to manage the emoji selection
+        /// workflow and coordinate with the chat input system.
+        /// </remarks>
         public EmojiManager(DiscordApp form, Panel emojiSelectionPanel, Panel emojiPanel, TextBox messageInputTextBox, Button emojiButton)
         {
-            _form = form;
-            _emojiSelectionPanel = emojiSelectionPanel;
-            _emojiPanel = emojiPanel;
-            _messageInputTextBox = messageInputTextBox;
-            _emojiButton = emojiButton;
+            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _emojiSelectionPanel = emojiSelectionPanel ?? throw new ArgumentNullException(nameof(emojiSelectionPanel));
+            _emojiPanel = emojiPanel ?? throw new ArgumentNullException(nameof(emojiPanel));
+            _messageInputTextBox = messageInputTextBox ?? throw new ArgumentNullException(nameof(messageInputTextBox));
+            _emojiButton = emojiButton ?? throw new ArgumentNullException(nameof(emojiButton));
         }
 
         /// <summary>

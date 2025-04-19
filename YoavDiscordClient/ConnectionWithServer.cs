@@ -1,53 +1,56 @@
-﻿    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace YoavDiscordClient
 {
+    /// <summary>
+    /// Manages the connection between the client and the server, handles sending and receiving encrypted messages.
+    /// Implements the Singleton design pattern.
+    /// </summary>
     public class ConnectionWithServer
     {
         /// <summary>
-        /// The port number that will be used in order to open tcp connection to the server
+        /// The port number used to open the TCP connection to the server.
         /// </summary>
         private const int PORT_NUMBER = 500;
 
         /// <summary>
-        /// The tcp client that will connect to the server
+        /// The TCP client used to communicate with the server.
         /// </summary>
         private TcpClient _tcpClient;
 
         /// <summary>
-        /// Boolean that tell if the rsa public key already sent to the server or not
+        /// Indicates whether the RSA public key has already been sent to the server.
         /// </summary>
         private bool _isRsaSent = false;
 
         /// <summary>
-        /// Instance of the class handle command from server that will be used everytime that the user will receive a message from the server
+        /// Handles incoming commands received from the server.
         /// </summary>
         private HandleCommandFromServer _handleCommandFromServer;
 
+        /// <summary>
+        /// Handles the underlying TCP connection and message transmission logic.
+        /// </summary>
         private TcpConnectionHandler _tcpConnectionHandler;
 
         /// <summary>
-        /// The instance of this class per singleton design pattern
+        /// The singleton instance of this class.
         /// </summary>
         private static ConnectionWithServer _instance = null;
 
-
         /// <summary>
-        /// Static getInstance method, as in Singleton patterns. Protected with mutex
+        /// Returns the singleton instance of the class, initializing it if necessary.
+        /// Thread-safe due to the synchronized method.
         /// </summary>
-        /// <param name="ipAddress"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="ipAddress">The IP address of the server.</param>
+        /// <returns>The singleton instance of the connection.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if IP address is null when the instance is being initialized.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static ConnectionWithServer GetInstance(string ipAddress)
         {
@@ -63,10 +66,9 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Constructor that get the server ip as a parameter. The constructor create a tcp connection to the server and after that send
-        /// the rsa public key to the server
+        /// Private constructor used to initialize the TCP connection and send the RSA public key.
         /// </summary>
-        /// <param name="ipAddress"></param>
+        /// <param name="ipAddress">The IP address of the server.</param>
         private ConnectionWithServer(string ipAddress)
         {
             this._tcpConnectionHandler = new TcpConnectionHandler(new TcpClient(), this);
@@ -74,29 +76,36 @@ namespace YoavDiscordClient
             this._tcpConnectionHandler.Connect(ipAddress, PORT_NUMBER);
             this._tcpConnectionHandler.SendRsaPublicKey();
             this._tcpConnectionHandler.StartListen();
-            
         }
 
         /// <summary>
-        /// The function convert the string that we want to send to the server into byte array and send it to the server over the tcp connection
+        /// Sends a message to the server over the TCP connection, encrypting it as needed.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The plaintext message to be sent.</param>
         public void SendMessage(string message)
         {
             this._tcpConnectionHandler.SendMessage(message);
         }
 
+        /// <summary>
+        /// Processes a received message from the server, decrypting it and handling commands if needed.
+        /// </summary>
+        /// <param name="messageData">The raw byte array representing the encrypted message.</param>
+        /// <param name="bytesRead">The number of bytes read for the message.</param>
+        /// <param name="isFirstMessage">True if this is the first message from the server, typically containing AES keys.</param>
         public void ProcessMessage(byte[] messageData, int bytesRead, bool isFirstMessage)
         {
-            string textFromServer = System.Text.Encoding.UTF8.GetString(messageData, 0, bytesRead);
+            string textFromServer = Encoding.UTF8.GetString(messageData, 0, bytesRead);
 
             if (isFirstMessage)
             {
+                // Decrypt with RSA and initialize AES keys
                 textFromServer = RsaFunctions.Decrypt(textFromServer);
                 AesFunctions.AesKeys = JsonConvert.DeserializeObject<AesKeys>(textFromServer);
             }
             else
             {
+                // Decrypt with AES and process individual command lines
                 textFromServer = AesFunctions.Decrypt(textFromServer);
                 string[] stringSeparators = new string[] { ClientServerProtocolParser.MessageTrailingDelimiter };
                 string[] lines = textFromServer.Split(stringSeparators, StringSplitOptions.RemoveEmptyEntries);
@@ -109,7 +118,7 @@ namespace YoavDiscordClient
             if (bytesRead < 1)
             {
                 MessageBox.Show("You are disconnected");
-                //GameViewManager.getInstance(null).StopGame();
+                //GameViewManager.getInstance(null).StopGame(); // Optional reconnect logic can be placed here
                 return;
             }
         }

@@ -8,9 +8,49 @@ namespace YoavDiscordClient
     /// </summary>
     public class FrameAssembler
     {
+        /// <summary>
+        /// Tracks packets belonging to partial video frames that are being assembled.
+        /// Maps frame identifiers to lists of received video packets for that frame.
+        /// </summary>
+        /// <remarks>
+        /// Each key is a unique frame identifier (GUID), and the value is a collection of 
+        /// VideoPacket objects representing fragments of that frame that have been received.
+        /// As packets arrive, they are collected here until the frame is complete enough to process.
+        /// </remarks>
         private Dictionary<Guid, List<VideoPacket>> framePackets = new Dictionary<Guid, List<VideoPacket>>();
+
+        /// <summary>
+        /// Tracks the time when the first packet of each frame was received.
+        /// Used to identify and clean up stale incomplete frames.
+        /// </summary>
+        /// <remarks>
+        /// Each key is a unique frame identifier (GUID) matching a key in framePackets, 
+        /// and the value is the timestamp when the first packet for that frame was received.
+        /// This allows implementing timeout logic to discard frames that remain incomplete
+        /// for too long.
+        /// </remarks>
         private Dictionary<Guid, DateTime> frameTimestamps = new Dictionary<Guid, DateTime>();
+
+        /// <summary>
+        /// The maximum time allowed for a frame to be assembled before it's considered stale.
+        /// After this timeout period, incomplete frames are discarded to prevent memory leaks.
+        /// </summary>
+        /// <remarks>
+        /// Set to 5 seconds, balancing between giving enough time for all packets to arrive
+        /// over potentially unreliable networks, while not holding onto stale data for too long.
+        /// </remarks>
         private readonly TimeSpan frameTimeout = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// The maximum number of incomplete frames to track simultaneously.
+        /// Limits memory usage by preventing an unbounded number of partial frames
+        /// from accumulating under heavy network loss conditions.
+        /// </summary>
+        /// <remarks>
+        /// If this limit is reached, the oldest incomplete frames will be discarded first
+        /// when new frames begin assembly. This prevents memory growth in situations
+        /// where many frames are started but never completed.
+        /// </remarks>
         private const int MAX_INCOMPLETE_FRAMES = 10; // Maximum number of incomplete frames to track
 
         /// <summary>

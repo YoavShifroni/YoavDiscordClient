@@ -14,31 +14,91 @@ using System.Threading;
 
 namespace YoavDiscordClient
 {
+    /// <summary>
+    /// Manages video capture, processing, and display for Discord clone client.
+    /// Responsible for handling local video sources, toggling video mute state,
+    /// and generating frame data for transmission to remote clients.
+    /// </summary>
+    /// <remarks>
+    /// The VideoManager uses Microsoft's Mixed Reality WebRTC library to access
+    /// the local camera and generate video frames. It provides video frames in ARGB32 format
+    /// and handles conversion to appropriate formats for display and transmission.
+    /// 
+    /// Thread safety is maintained through internal locking mechanisms when accessing
+    /// shared resources like video tracks and event handlers.
+    /// </remarks>
     public class VideoManager : IDisposable
     {
         #region Constants
 
+        /// <summary>
+        /// Width of the video frames in pixels.
+        /// </summary>
         private const int VIDEO_WIDTH = 640;
+
+        /// <summary>
+        /// Height of the video frames in pixels.
+        /// </summary>
         private const int VIDEO_HEIGHT = 480;
+
+        /// <summary>
+        /// Target framerate for video capture in frames per second.
+        /// </summary>
         private const int VIDEO_FRAMERATE = 20;
 
         #endregion
 
         #region Events
 
+        /// <summary>
+        /// Event fired when a new local video frame is ready for processing or transmission.
+        /// Provides the frame data as a byte array and timestamp.
+        /// </summary>
         public event EventHandler<VideoFrameEventArgs> LocalVideoFrameReady;
+
+        /// <summary>
+        /// Event fired when the video mute state changes.
+        /// Used to notify other components about video mute state changes.
+        /// </summary>
         public event EventHandler<EmptyVideoEventArgs> VideoMuteStateChanged;
 
         #endregion
 
         #region Private fields
 
+        /// <summary>
+        /// The device video track source providing access to the hardware camera.
+        /// </summary>
         private DeviceVideoTrackSource videoSource;
+
+        /// <summary>
+        /// The local video track created from the video source.
+        /// </summary>
         private LocalVideoTrack localVideo;
+
+        /// <summary>
+        /// Flag indicating whether video is currently muted.
+        /// </summary>
         private bool isVideoMuted = false;
+
+        /// <summary>
+        /// Flag indicating whether this instance has been disposed.
+        /// </summary>
         private bool disposed = false;
+
+        /// <summary>
+        /// PictureBox control for displaying the local video feed.
+        /// </summary>
         private PictureBox localDisplay;
+
+        /// <summary>
+        /// Flag indicating whether video has been successfully initialized.
+        /// </summary>
         private bool isInitialized = false;
+
+        /// <summary>
+        /// Lock object for thread synchronization when accessing shared resources.
+        /// </summary>
         private readonly object _lockObject = new object();
 
         #endregion
@@ -46,24 +106,32 @@ namespace YoavDiscordClient
         #region Public properties
 
         /// <summary>
-        /// Gets whether video streaming is currently muted
+        /// Gets whether video streaming is currently muted.
+        /// When muted, the profile picture is displayed instead of the video feed.
         /// </summary>
         public bool IsVideoMuted => isVideoMuted;
 
         #endregion
 
         /// <summary>
-        /// Creates a new VideoManager with the specified local display
+        /// Creates a new VideoManager with the specified local display.
         /// </summary>
-        /// <param name="localDisplay">The PictureBox to display the local video feed</param>
+        /// <param name="localDisplay">The PictureBox control to display the local video feed.</param>
+        /// <exception cref="ArgumentNullException">Thrown when localDisplay is null.</exception>
         public VideoManager(PictureBox localDisplay)
         {
             this.localDisplay = localDisplay ?? throw new ArgumentNullException(nameof(localDisplay));
         }
 
         /// <summary>
-        /// Initializes video capture from the default device
+        /// Initializes video capture from the default device.
+        /// Creates the video source and track, and sets up event handlers.
         /// </summary>
+        /// <returns>A task representing the asynchronous initialization operation.</returns>
+        /// <remarks>
+        /// If initialization fails or no video devices are found, the profile picture
+        /// will be displayed instead of a video feed.
+        /// </remarks>
         public async Task Initialize()
         {
             try
@@ -113,8 +181,17 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Toggles the video mute state
+        /// Toggles the video mute state between muted and unmuted.
+        /// When muted, the profile picture is displayed instead of the video feed.
         /// </summary>
+        /// <remarks>
+        /// This method handles:
+        /// - Updating the mute state flag
+        /// - Firing the VideoMuteStateChanged event
+        /// - Showing/hiding the profile picture
+        /// - Managing event subscriptions for frame processing
+        /// - Reinitializing video if needed
+        /// </remarks>
         public void ToggleVideoMute()
         {
             isVideoMuted = !isVideoMuted;
@@ -137,7 +214,7 @@ namespace YoavDiscordClient
                             localVideo.Argb32VideoFrameReady -= LocalVideoFrame_Ready;
                         }
                     }
-    
+
                 }
                 else
                 {
@@ -165,7 +242,7 @@ namespace YoavDiscordClient
                     }
 
                     // Restart video capture frames
-                    lock (this._lockObject) 
+                    lock (this._lockObject)
                     {
                         if (localVideo != null)
                         {
@@ -174,7 +251,7 @@ namespace YoavDiscordClient
                             localVideo.Argb32VideoFrameReady += LocalVideoFrame_Ready;
                         }
                     }
-                    
+
                 }
             }
             catch (Exception ex)
@@ -183,6 +260,12 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Processes video frames from the local video track.
+        /// Converts the frame to a bitmap, raises the LocalVideoFrameReady event,
+        /// and updates the local display.
+        /// </summary>
+        /// <param name="frame">The ARGB32 video frame received from the camera.</param>
         private void LocalVideoFrame_Ready(Argb32VideoFrame frame)
         {
             try
@@ -227,6 +310,15 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Converts a Bitmap to a compressed JPEG byte array for transmission.
+        /// </summary>
+        /// <param name="bitmap">The bitmap to convert.</param>
+        /// <returns>A byte array containing the JPEG-compressed bitmap data.</returns>
+        /// <remarks>
+        /// The compression quality is set to 70%, balancing image quality and data size
+        /// for efficient transmission over the network.
+        /// </remarks>
         private byte[] BitmapToByteArray(Bitmap bitmap)
         {
             using (var clonedBitmap = new Bitmap(bitmap)) // Clone to avoid conflicts
@@ -240,6 +332,10 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Gets the JPEG codec information for image compression.
+        /// </summary>
+        /// <returns>The ImageCodecInfo for JPEG encoding.</returns>
         private ImageCodecInfo GetJpegEncoder()
         {
             var codecs = ImageCodecInfo.GetImageEncoders();
@@ -251,6 +347,14 @@ namespace YoavDiscordClient
             return null;
         }
 
+        /// <summary>
+        /// Displays the user's profile picture in the local video display.
+        /// Creates a panel with the profile picture and username display.
+        /// </summary>
+        /// <remarks>
+        /// This method is called when video is muted or when video initialization fails.
+        /// It creates a circular profile picture with the username displayed below it.
+        /// </remarks>
         private void ShowProfilePicture()
         {
             if (localDisplay == null || localDisplay.IsDisposed || !localDisplay.IsHandleCreated)
@@ -313,8 +417,12 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Performs a thorough cleanup of video resources
+        /// Performs a thorough cleanup of video resources.
+        /// Safely removes event handlers and disposes of video track and source objects.
         /// </summary>
+        /// <param name="forceCleanup">If true, performs additional cleanup operations including
+        /// garbage collection to ensure hardware resources are released.</param>
+        /// <returns>A task representing the asynchronous cleanup operation.</returns>
         private async Task CleanupVideo(bool forceCleanup = false)
         {
             try
@@ -333,37 +441,6 @@ namespace YoavDiscordClient
                 if (localVideo != null)
                 {
 
-                    //// Create a timeout task
-                    //var timeoutTask = Task.Delay(3000); // 3 second timeout
-
-                    //// Create a task to fully dispose the track
-                    //var cleanupTask = Task.Run(() =>
-                    //{
-                    //    try
-                    //    {
-                    //        localVideo.Dispose();
-
-                    //        System.Diagnostics.Debug.WriteLine("Local video track disposed");
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        System.Diagnostics.Debug.WriteLine($"Error disposing local video track: {ex.Message}");
-                    //    }
-                    //    finally
-                    //    {
-                    //        localVideo = null;
-                    //    }
-                    //});
-
-                    //// Wait for either the cleanup to complete or timeout
-                    //var completedTask = await Task.WhenAny(cleanupTask, timeoutTask);
-                    //if (completedTask == timeoutTask)
-                    //{
-                    //    System.Diagnostics.Debug.WriteLine("Video track cleanup timed out");
-                    //    // Force nullify for garbage collection
-                    //    localVideo = null;
-                    //
-                    
                     try
                     {
                         localVideo.Dispose();
@@ -416,7 +493,7 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Releases all resources used by the VideoManager
+        /// Releases all resources used by the VideoManager.
         /// </summary>
         public void Dispose()
         {
@@ -425,8 +502,10 @@ namespace YoavDiscordClient
         }
 
         /// <summary>
-        /// Releases all resources used by the VideoManager
+        /// Releases all resources used by the VideoManager.
         /// </summary>
+        /// <param name="disposing">True to release both managed and unmanaged resources;
+        /// False to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)

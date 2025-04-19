@@ -11,6 +11,10 @@ using YoavDiscordClient;
 
 namespace YoavDiscordClient
 {
+    /// <summary>
+    /// Handles TCP communication between the client and the server.
+    /// Manages sending and receiving of encrypted messages, message buffering, and stream handling.
+    /// </summary>
     public class TcpConnectionHandler
     {
         /// <summary>
@@ -23,14 +27,15 @@ namespace YoavDiscordClient
         /// </summary>
         private int totalBytesRead = 0;
 
-
         /// <summary>
         /// Indicates if the first message has been received from the client.
         /// </summary>
         private bool _isFirstMessage = true;
 
+        /// <summary>
+        /// Indicates whether the RSA public key has been sent.
+        /// </summary>
         private bool _isRsaSent = false;
-
 
         /// <summary>
         /// Buffer for reading data from the client.
@@ -42,40 +47,54 @@ namespace YoavDiscordClient
         /// </summary>
         private MemoryStream memoryStream = new MemoryStream();
 
-
         /// <summary>
         /// The TCP client representing the connection.
         /// </summary>
         private TcpClient _client;
 
+        /// <summary>
+        /// Reference to the class that handles server message processing.
+        /// </summary>
         private ConnectionWithServer _connectionWithServer;
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TcpConnectionHandler"/> class.
+        /// </summary>
+        /// <param name="tcpClient">The TCP client used for communication.</param>
+        /// <param name="connectionWithServer">The server connection handler.</param>
         public TcpConnectionHandler(TcpClient tcpClient, ConnectionWithServer connectionWithServer)
         {
             this._client = tcpClient;
             this._connectionWithServer = connectionWithServer;
-            // Read data from the client asynchronously
             this._data = new byte[this._client.ReceiveBufferSize];
-
         }
 
+        /// <summary>
+        /// Starts listening for incoming messages from the server.
+        /// </summary>
         public void StartListen()
         {
-            // Begin async read from the NetworkStream
             _client.GetStream().BeginRead(this._data,
                                           0,
-                                          System.Convert.ToInt32(this._client.ReceiveBufferSize),
+                                          Convert.ToInt32(this._client.ReceiveBufferSize),
                                           ReceiveMessage,
                                           _client.GetStream());
-
         }
 
+        /// <summary>
+        /// Connects the client to a server using the specified IP and port.
+        /// </summary>
+        /// <param name="ip">Server IP address.</param>
+        /// <param name="port">Server port.</param>
         public void Connect(string ip, int port)
         {
             this._client.Connect(ip, port);
         }
 
+        /// <summary>
+        /// Sends the RSA public key to the server.
+        /// This is used to initiate secure communication.
+        /// </summary>
         public void SendRsaPublicKey()
         {
             var jsonString = JsonConvert.SerializeObject(RsaFunctions.PublicKey);
@@ -83,26 +102,22 @@ namespace YoavDiscordClient
             this._isRsaSent = true;
         }
 
-
-
         /// <summary>
-        /// The function convert the string that we want to send to the server into byte array and send it to the server over the tcp connection
+        /// Sends a message to the server.
+        /// Encrypts the message if RSA exchange has already been completed.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">The plaintext message to send.</param>
         public void SendMessage(string message)
         {
             try
             {
-                // send message to the server
-
                 NetworkStream ns;
 
-                // Use lock to prevent multiple threads from accessing the network stream simultaneously
+                // Prevent simultaneous stream access
                 lock (this._client.GetStream())
                 {
                     ns = this._client.GetStream();
                 }
-
 
                 if (this._isRsaSent)
                 {
@@ -113,15 +128,13 @@ namespace YoavDiscordClient
                     message = AesFunctions.Encrypt(message);
                 }
 
-                byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
+                byte[] data = Encoding.UTF8.GetBytes(message);
                 byte[] length = BitConverter.GetBytes(data.Length);
                 byte[] bytes = new byte[data.Length + 4];
-                // combine byte array, I took this code from the website StackOverFlow in this link:
-                // https://stackoverflow.com/questions/415291/best-way-to-combine-two-or-more-byte-arrays-in-c-sharp
-                System.Buffer.BlockCopy(length, 0, bytes, 0, length.Length);
-                System.Buffer.BlockCopy(data, 0, bytes, length.Length, data.Length);
 
-                // send the text
+                Buffer.BlockCopy(length, 0, bytes, 0, length.Length);
+                Buffer.BlockCopy(data, 0, bytes, length.Length, data.Length);
+
                 ns.Write(bytes, 0, bytes.Length);
                 ns.Flush();
             }
@@ -131,29 +144,26 @@ namespace YoavDiscordClient
             }
         }
 
-
-
-
         /// <summary>
-        /// Receives a message from the client asynchronously and processes it when complete.
+        /// Callback function for asynchronous read operation.
+        /// Handles incoming messages and starts the next read.
         /// </summary>
-        /// <param name="ar"></param>
+        /// <param name="ar">The result of the asynchronous operation.</param>
         private void ReceiveMessage(IAsyncResult ar)
         {
             NetworkStream stream = (NetworkStream)ar.AsyncState;
 
             try
             {
-                // Complete the asynchronous read operation
                 int bytesRead = stream.EndRead(ar);
                 if (bytesRead > 0)
                 {
                     HandleReceivedMessage(bytesRead);
                 }
+
                 lock (this._client.GetStream())
                 {
-                    // Continue reading from the client
-                    this._client.GetStream().BeginRead(this._data, 0, System.Convert.ToInt32(this._client.ReceiveBufferSize),
+                    this._client.GetStream().BeginRead(this._data, 0, Convert.ToInt32(this._client.ReceiveBufferSize),
                         ReceiveMessage, _client.GetStream());
                 }
             }
@@ -164,9 +174,13 @@ namespace YoavDiscordClient
             }
         }
 
+        /// <summary>
+        /// Processes incoming message data and checks for complete messages.
+        /// If a full message is received, it is passed to the connection handler.
+        /// </summary>
+        /// <param name="bytesRead">Number of bytes read from the stream.</param>
         private void HandleReceivedMessage(int bytesRead)
         {
-            // If message length is not set, read the first 4 bytes for message length
             if (this.messageLength == -1 && this.totalBytesRead < 4)
             {
                 int remainingLengthBytes = 4 - this.totalBytesRead;
@@ -174,20 +188,15 @@ namespace YoavDiscordClient
                 memoryStream.Write(this._data, 0, bytesToCopy);
                 this.totalBytesRead += bytesToCopy;
 
-                // Check if we have read the full length header
                 if (this.totalBytesRead >= 4)
                 {
-                    // Move the memory stream's read pointer to the beginning 
                     this.memoryStream.Seek(0, SeekOrigin.Begin);
                     byte[] lengthBytes = new byte[4];
-                    // Read 4 bytes from the memory stream into lengthBytes
                     this.memoryStream.Read(lengthBytes, 0, 4);
                     this.messageLength = BitConverter.ToInt32(lengthBytes, 0);
-                    // Reset memory stream to accumulate the rest of the message
                     this.memoryStream.SetLength(0);
                 }
 
-                // If there’s more data in this chunk, process it as part of the message body
                 if (bytesRead > bytesToCopy)
                 {
                     this.memoryStream.Write(this._data, bytesToCopy, bytesRead - bytesToCopy);
@@ -196,31 +205,25 @@ namespace YoavDiscordClient
             }
             else
             {
-                // Accumulate message data into memory stream
                 this.memoryStream.Write(this._data, 0, bytesRead);
                 this.totalBytesRead += bytesRead;
             }
 
-            // If we've accumulated the full message, process it
             if (this.messageLength > 0 && this.totalBytesRead >= this.messageLength + 4)
             {
-                this._connectionWithServer.ProcessMessage(this.memoryStream.ToArray(), this.messageLength,
-                    this._isFirstMessage);
+                this._connectionWithServer.ProcessMessage(this.memoryStream.ToArray(), this.messageLength, this._isFirstMessage);
                 this._isFirstMessage = false;
 
-                //At this point the memory stream can contain more messages
                 int remainingDataBytes = this.totalBytesRead - (this.messageLength + 4);
 
-
-                // Reset properties for the next message
                 this.messageLength = -1;
                 this.totalBytesRead = 0;
                 this.memoryStream.SetLength(0);
 
-                if (remainingDataBytes > 0) //Handle the next message, if we have one
+                if (remainingDataBytes > 0)
                 {
                     byte[] newData = new byte[this._client.ReceiveBufferSize];
-                    Array.Copy(this._data, bytesRead-remainingDataBytes, newData, 0, remainingDataBytes);
+                    Array.Copy(this._data, bytesRead - remainingDataBytes, newData, 0, remainingDataBytes);
                     this._data = newData;
                     HandleReceivedMessage(remainingDataBytes);
                 }

@@ -90,6 +90,7 @@ namespace YoavDiscordClient
             leftSidePanel.Name = "leftSidePanel";
             leftSidePanel.Size = new System.Drawing.Size(471, 1209);
             leftSidePanel.TabIndex = 0;
+            leftSidePanel.Enabled = false;
             leftSidePanel.MouseDown += DiscordApp_MouseDown;
             // 
             // userInfoPanel
@@ -451,7 +452,7 @@ namespace YoavDiscordClient
             nameOfTheProjectLabel.Name = "nameOfTheProjectLabel";
             nameOfTheProjectLabel.Size = new System.Drawing.Size(1300, 48);
             nameOfTheProjectLabel.TabIndex = 12;
-            nameOfTheProjectLabel.Text = "Yoav Discord";
+            nameOfTheProjectLabel.Text = "Yodiscord";
             nameOfTheProjectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // mediaControlsPanel

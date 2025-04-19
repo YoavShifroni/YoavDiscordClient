@@ -9,13 +9,37 @@ namespace YoavDiscordClient.Managers
     /// </summary>
     public class ChatManager
     {
+        /// <summary>
+        /// Reference to the main Discord application form that owns this manager.
+        /// Used to access application-wide functionality and other managers.
+        /// </summary>
         private readonly DiscordApp _form;
+
+        /// <summary>
+        /// The panel where chat messages and UI elements are displayed.
+        /// This panel serves as the container for all chat-related visual components.
+        /// </summary>
         private readonly Panel _chatAreaPanel;
 
+        /// <summary>
+        /// Initializes a new instance of the ChatManager class.
+        /// </summary>
+        /// <param name="form">The main Discord application form that owns this manager.</param>
+        /// <param name="chatAreaPanel">The panel where chat messages will be displayed.</param>
+        /// <remarks>
+        /// The ChatManager is responsible for handling:
+        /// - Displaying chat messages
+        /// - Handling user text input
+        /// - Managing chat history
+        /// - Switching between different text channels
+        /// 
+        /// It requires references to the main form for application-wide coordination
+        /// and to the chat area panel for UI manipulation.
+        /// </remarks>
         public ChatManager(DiscordApp form, Panel chatAreaPanel)
         {
-            _form = form;
-            _chatAreaPanel = chatAreaPanel;
+            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _chatAreaPanel = chatAreaPanel ?? throw new ArgumentNullException(nameof(chatAreaPanel));
         }
 
         /// <summary>
@@ -82,6 +106,7 @@ namespace YoavDiscordClient.Managers
             {
                 this.AddMessageToChatFromOtherUser(message.Username, message.userId, message.Message, message.Time, message.ChatRoomId);
             }
+            this._form.leftSidePanel.Enabled = true;
             if (messages != null && messages.Count > 0)
             {
                 string nameOfActivePanel = $"ChatMessagesPanel{messages[0].ChatRoomId}";

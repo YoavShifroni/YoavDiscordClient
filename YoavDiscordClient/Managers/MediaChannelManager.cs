@@ -13,9 +13,28 @@ namespace YoavDiscordClient.Managers
     /// </summary>
     public class MediaChannelManager
     {
+        /// <summary>
+        /// Reference to the main Discord application form that owns this manager.
+        /// Used to access application-wide functionality and other managers.
+        /// </summary>
         private readonly DiscordApp _form;
+
+        /// <summary>
+        /// The panel on the left side of the UI containing channel lists and navigation controls.
+        /// This is where media channel buttons and user lists for media rooms are displayed.
+        /// </summary>
         private readonly Panel _leftSidePanel;
+
+        /// <summary>
+        /// The main content panel where chat messages or media content is displayed.
+        /// This panel's content changes when switching between text and media channels.
+        /// </summary>
         private readonly Panel _chatAreaPanel;
+
+        /// <summary>
+        /// The panel containing media control buttons such as mute, video toggle, and disconnect.
+        /// This panel is typically displayed at the bottom of the UI during media sessions.
+        /// </summary>
         private readonly Panel _mediaControlsPanel;
 
         /// <summary>
@@ -63,6 +82,24 @@ namespace YoavDiscordClient.Managers
         /// </summary>
         public static VideoStreamConnection VideoStreamConnection;
 
+        /// <summary>
+        /// Initializes a new instance of the MediaChannelManager class.
+        /// </summary>
+        /// <param name="form">The main Discord application form that owns this manager.</param>
+        /// <param name="leftSidePanel">The panel containing channel lists and navigation controls.</param>
+        /// <param name="chatAreaPanel">The main content panel where media content is displayed.</param>
+        /// <param name="mediaControlsPanel">The panel containing media control buttons.</param>
+        /// <remarks>
+        /// The MediaChannelManager is responsible for:
+        /// - Managing voice and video communication between users
+        /// - Handling connections to media rooms
+        /// - Managing the UI display of active media participants
+        /// - Controlling audio/video mute states
+        /// - Coordinating with the server for media room membership changes
+        /// 
+        /// It requires references to multiple UI panels to coordinate the display of
+        /// media channels, participants, and controls throughout the application.
+        /// </remarks>
         public MediaChannelManager(DiscordApp form, Panel leftSidePanel, Panel chatAreaPanel, Panel mediaControlsPanel)
         {
             _form = form;

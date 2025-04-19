@@ -14,7 +14,16 @@ namespace YoavDiscordClient.Managers
     /// </summary>
     public class UserManager
     {
+        /// <summary>
+        /// Reference to the main Discord application form that owns this manager.
+        /// Used to access application-wide functionality and other managers.
+        /// </summary>
         private readonly DiscordApp _form;
+
+        /// <summary>
+        /// The panel on the right side of the UI displaying user information.
+        /// This panel contains user lists, profile information, and status indicators.
+        /// </summary>
         private readonly Panel _rightSidePanel;
 
         /// <summary>
@@ -49,10 +58,27 @@ namespace YoavDiscordClient.Managers
         /// </summary>
         private int _role;
 
+        /// <summary>
+        /// Initializes a new instance of the UserManager class.
+        /// </summary>
+        /// <param name="form">The main Discord application form that owns this manager.</param>
+        /// <param name="rightSidePanel">The panel on the right side of the UI for displaying user information.</param>
+        /// <remarks>
+        /// The UserManager is responsible for:
+        /// - Managing user profiles and status information
+        /// - Displaying the user list in the right side panel
+        /// - Handling user selection and context menu interactions
+        /// - Updating user status indicators (online, offline, muted, etc.)
+        /// - Loading and caching user profile pictures
+        /// - Coordinating with the server for user data updates
+        /// 
+        /// It maintains a reference to the main form and the right side panel to
+        /// coordinate user-related UI updates throughout the application.
+        /// </remarks>
         public UserManager(DiscordApp form, Panel rightSidePanel)
         {
-            _form = form;
-            _rightSidePanel = rightSidePanel;
+            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _rightSidePanel = rightSidePanel ?? throw new ArgumentNullException(nameof(rightSidePanel));
         }
 
         /// <summary>
